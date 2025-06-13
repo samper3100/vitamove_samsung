@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="?attr/colorPrimary"
+    app:cardBackgroundColor="?attr/colorSurface">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/nutrient_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Витамин A"
+            android:textSize="16sp"
+            android:textColor="?android:attr/textColorPrimary"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@+id/nutrient_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="33.0 мкг"
+            android:textSize="16sp"
+            android:textColor="?android:attr/textColorSecondary"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/nutrient_percent"
+            app:layout_constraintBottom_toBottomOf="@id/nutrient_name"/>
+
+        <TextView
+            android:id="@+id/nutrient_percent"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="3%"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorDanger"
+            android:gravity="end"
+            android:layout_marginStart="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/nutrient_name"/>
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/nutrient_progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:progress="3"
+            app:trackThickness="6dp"
+            app:trackCornerRadius="3dp"
+            app:indicatorColor="@color/colorDanger"
+            app:trackColor="@color/progress_track_color_light"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nutrient_name"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView> 

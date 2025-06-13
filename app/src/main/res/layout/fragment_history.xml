@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:background="@color/colorBackground"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Прогресс загрузки -->
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:indicatorColor="@color/orange_500"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/content_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/calendar_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginHorizontal="16dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="8dp"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <!-- Градиентная "шапочка" карточки календаря -->
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="80dp"
+                                android:background="@drawable/calendar_card_header_gradient"/>
+                                
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="80dp"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:paddingHorizontal="20dp">
+                                
+                                <ImageView
+                                    android:layout_width="48dp"
+                                    android:layout_height="48dp"
+                                    android:src="@drawable/ic_calendar"
+                                    android:padding="8dp"
+                                    android:tint="@color/textColorSecondary"
+                                    android:background="@drawable/circle_white_background"
+                                    android:contentDescription="Календарь"/>
+                                    
+                                <TextView
+                                    style="@style/TextAppearance.VitaMove.Card.Title"
+                                    android:textSize="17sp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="16dp"
+                                    android:textColor="@android:color/white"
+                                    android:text="Календарь тренировок" />
+                            </LinearLayout>
+                        </FrameLayout>
+
+                        <!-- Календарь -->
+                        <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+                            android:id="@+id/calendarView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.VitaMove.Card.Workout"
+                            android:selectedWeekBackgroundColor="@color/orange_200"
+                            android:weekSeparatorLineColor="@color/gray_200"
+                            android:dateTextAppearance="@style/CalendarDateText"
+                            android:weekDayTextAppearance="@style/CalendarWeekText"
+                            android:padding="8dp"
+                            app:mcv_selectionColor="@color/orange_500"
+                            app:mcv_showOtherDates="none"
+                            app:mcv_calendarMode="month"
+                            app:mcv_tileHeight="48dp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/stats_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="8dp"
+                    app:layout_constraintTop_toBottomOf="@id/calendar_card">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <!-- Градиентная "шапочка" карточки -->
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="80dp"
+                                android:background="@drawable/stats_card_header_gradient"/>
+                                
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="80dp"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:paddingHorizontal="20dp">
+                                
+                                <ImageView
+                                    android:layout_width="48dp"
+                                    android:layout_height="48dp"
+                                    android:src="@drawable/ic_analytics"
+                                    android:padding="8dp"
+                                    android:tint="@color/textColorSecondary"
+                                    android:background="@drawable/circle_white_background"
+                                    android:contentDescription="Статистика"/>
+                                    
+                                <TextView
+                                    style="@style/TextAppearance.VitaMove.Card.Title"
+                                    android:textSize="17sp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="16dp"
+                                    android:textColor="@android:color/white"
+                                    android:text="Статистика за месяц" />
+                            </LinearLayout>
+                        </FrameLayout>
+
+                        <!-- Контент статистики -->
+                        <LinearLayout
+                            style="@style/Widget.VitaMove.Card.Workout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:baselineAligned="false">
+
+                                <!-- Всего тренировок -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginEnd="8dp"
+                                    android:orientation="vertical"
+                                    android:background="@drawable/stat_card_background"
+                                    android:padding="12dp">
+
+                                    <ImageView
+                                        android:layout_width="32dp"
+                                        android:layout_height="32dp"
+                                        android:src="@drawable/ic_workout"
+                                        android:layout_gravity="center_horizontal" 
+                                        android:layout_marginBottom="8dp"
+                                        android:tint="@color/accent_color"
+                                        android:contentDescription="Тренировки"/>
+
+                                    <TextView
+                                        android:layout_gravity="center"
+                                        android:id="@+id/total_workouts"
+                                        style="@style/TextAppearance.VitaMove.Stats.Value"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:text="0" />
+
+                                    <TextView
+                                        style="@style/TextAppearance.VitaMove.Stats.Label"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:layout_marginTop="4dp"
+                                        android:text="Всего\n тренировок" />
+                                </LinearLayout>
+
+                                <!-- Всего упражнений -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="8dp"
+                                    android:orientation="vertical"
+                                    android:background="@drawable/stat_card_background"
+                                    android:padding="12dp">
+
+                                    <ImageView
+                                        android:layout_width="32dp"
+                                        android:layout_height="32dp"
+                                        android:src="@drawable/ic_exercise"
+                                        android:layout_gravity="center_horizontal" 
+                                        android:layout_marginBottom="8dp"
+                                        android:tint="@color/accent_color"
+                                        android:contentDescription="Упражнения"/>
+
+                                    <TextView
+                                        android:layout_gravity="center"
+                                        android:id="@+id/total_exercises"
+                                        style="@style/TextAppearance.VitaMove.Stats.Value"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:text="0" />
+
+                                    <TextView
+                                        style="@style/TextAppearance.VitaMove.Stats.Label"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:layout_marginTop="4dp"
+                                        android:text="Всего\n упражнений" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginTop="16dp"
+                                android:baselineAligned="false">
+
+                                <!-- Средняя длительность -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginEnd="8dp"
+                                    android:orientation="vertical"
+                                    android:background="@drawable/stat_card_background"
+                                    android:padding="12dp">
+
+                                    <ImageView
+                                        android:layout_width="32dp"
+                                        android:layout_height="32dp"
+                                        android:src="@drawable/ic_timer"
+                                        android:layout_gravity="center_horizontal" 
+                                        android:layout_marginBottom="8dp"
+                                        android:tint="@color/accent_color"
+                                        android:contentDescription="Длительность"/>
+
+                                    <TextView
+                                        android:id="@+id/avg_duration"
+                                        style="@style/TextAppearance.VitaMove.Stats.Value"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:text="0 мин" />
+
+                                    <TextView
+                                        style="@style/TextAppearance.VitaMove.Stats.Label"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:layout_marginTop="4dp"
+                                        android:text="Средняя\n длительность" />
+                                </LinearLayout>
+
+                                <!-- Любимое упражнение -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="8dp"
+                                    android:orientation="vertical"
+                                    android:background="@drawable/stat_card_background"
+                                    android:padding="12dp">
+
+                                    <ImageView
+                                        android:layout_width="32dp"
+                                        android:layout_height="32dp"
+                                        android:src="@drawable/ic_favorite"
+                                        android:layout_gravity="center_horizontal" 
+                                        android:layout_marginBottom="8dp"
+                                        android:tint="@color/accent_color"
+                                        android:contentDescription="Любимое упражнение"/>
+
+                                    <TextView
+                                        android:id="@+id/favorite_exercise"
+                                        style="@style/TextAppearance.VitaMove.Stats.Value"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:minHeight="36dp"
+                                        android:gravity="center"
+                                        android:text="Нет данных"
+                                        android:maxLines="2"
+                                        android:ellipsize="end"
+                                        android:textSize="16sp"
+                                        android:lineSpacingMultiplier="0.9" />
+
+                                    <TextView
+                                        style="@style/TextAppearance.VitaMove.Stats.Label"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:layout_marginTop="4dp"
+                                        android:text="Любимое\n упражнение" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:id="@+id/recent_workouts_title"
+                    style="@style/TextAppearance.VitaMove.Headline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="История тренировок за месяц"
+                    android:layout_margin="16dp"
+                    app:layout_constraintTop_toBottomOf="@id/stats_card"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recent_workouts_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:nestedScrollingEnabled="false"
+                    app:layout_constraintTop_toBottomOf="@id/recent_workouts_title"
+                    android:clipToPadding="false"
+                    android:paddingBottom="16dp"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout> 

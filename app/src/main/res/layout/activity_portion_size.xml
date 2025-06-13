@@ -1,0 +1,1270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface">
+
+    <!-- Аппбар с кнопкой назад -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        app:elevation="0dp">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_back"
+            android:padding="12dp"
+            app:tint="@color/colorAccent"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Добавить"
+            android:textSize="20sp"
+                    android:textColor="@color/textColorPrimary"
+            android:gravity="center"
+            android:layout_marginEnd="48dp"/>
+
+    </LinearLayout>
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Основной контент в NestedScrollView для прокрутки -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+            <!-- Название продукта -->
+        <TextView
+            android:id="@+id/food_name_text"
+                android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="24sp"
+                android:textColor="@color/textColorPrimary"
+                android:textStyle="bold"/>
+                
+            <!-- Категория продукта с кнопкой редактирования -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp">
+                
+                <TextView
+                    android:id="@+id/food_category_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text=""
+                    android:textSize="16sp"
+                    android:textColor="@color/textColorSecondary"/>
+                    
+                <ImageButton
+                    android:id="@+id/edit_category_button"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_edit"
+                    android:padding="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Редактировать категорию"
+                    android:visibility="gone"
+                    app:tint="@color/colorAccent"/>
+            </LinearLayout>
+
+            <!-- Карточка с вводом размера порции -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="?attr/colorSurface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+                        android:text="Размер порции"
+                        android:textSize="18sp"
+                        android:textColor="@color/textColorPrimary"
+                        android:textStyle="bold"/>
+
+        <!-- Ввод размера порции -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:hint="Укажите размер порции"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_weight"
+                        app:endIconTint="@color/colorAccent"
+                        android:textColorHint="?android:attr/textColorHint"
+                        app:boxBackgroundColor="?attr/colorSurface"
+                        app:boxStrokeColor="@color/colorAccent"
+                        app:hintTextColor="@color/colorAccent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/custom_portion_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                            android:textColor="@color/textColorPrimary"
+                            android:textSize="18sp"
+                android:maxLength="4"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Единица измерения -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="грамм"
+                        android:textColor="@color/textColorSecondary"
+                        android:textSize="14sp"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="4dp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Компонент индекса полезности -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="?attr/colorSurface">
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Пищевая ценность"
+                        android:textSize="18sp"
+                        android:textColor="@color/textColorPrimary"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- Калории отдельно, крупно -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="16dp">
+                        
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_fire"
+                            app:tint="@color/colorAccent"/>
+
+                        <TextView
+                            android:id="@+id/calories_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="24sp"
+                            android:textColor="@color/textColorPrimary"
+                            android:textStyle="bold"
+                            android:layout_marginStart="16dp"/>
+                    </LinearLayout>
+
+                    <!-- БЖУ в виде карточек в ряд -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="3"
+                        android:layout_marginBottom="24dp">
+
+                    <!-- Белки -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="8dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="0dp"
+                            app:cardBackgroundColor="@color/card_bju_background">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:padding="12dp">
+
+                                <TextView
+                                    android:id="@+id/proteins_value"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/card_bju_text"
+                                    android:textStyle="bold"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Белки"
+                                    android:textSize="14sp"
+                                    android:textColor="@color/textColorSecondary"
+                                    android:layout_marginTop="4dp"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Жиры -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="0dp"
+                            app:cardBackgroundColor="@color/card_bju_background">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:padding="12dp">
+
+                                <TextView
+                                    android:id="@+id/fats_value"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/card_bju_text"
+                                    android:textStyle="bold"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Жиры"
+                                    android:textSize="14sp"
+                                    android:textColor="@color/textColorSecondary"
+                                    android:layout_marginTop="4dp"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Углеводы -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="8dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="0dp"
+                            app:cardBackgroundColor="@color/card_bju_background">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:padding="12dp">
+
+                                <TextView
+                                    android:id="@+id/carbs_value"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/card_bju_text"
+                                    android:textStyle="bold"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Углеводы"
+                                    android:textSize="14sp"
+                                    android:textColor="@color/textColorSecondary"
+                                    android:layout_marginTop="4dp"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                    
+                    <!-- Индекс полезности перемещен вниз -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_heart"
+                            app:tint="@color/red_500"/>
+                            
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Индекс полезности"
+                            android:textSize="16sp"
+                            android:textColor="@color/textColorPrimary"
+                            android:textStyle="bold"
+                            android:layout_marginStart="8dp"/>
+                            
+                        <TextView
+                            android:id="@+id/usefulness_index_value"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="16sp"
+                            android:textColor="@color/red_500"
+                            android:textStyle="bold"
+                            android:layout_marginStart="8dp"/>
+                            
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="/10"
+                            android:textSize="14sp"
+                            android:textColor="@color/textColorSecondary"/>
+                    </LinearLayout>
+                    
+                    <ProgressBar
+                        android:id="@+id/usefulness_index_progress"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:layout_marginTop="12dp"
+                        android:progressDrawable="@drawable/usefulness_progress_medium"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:max="10"/>
+                        
+                    <TextView
+                        android:id="@+id/usefulness_index_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Этот продукт имеет средний индекс полезности"
+                        android:textSize="14sp"
+                        android:textColor="@color/textColorSecondary"
+                        android:layout_marginTop="8dp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Карточка с базовой пищевой ценностью -->
+            <!-- Оставляем только карточки для дополнительных питательных веществ -->
+
+            <!-- Карточка с дополнительными элементами питания -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/additional_nutrients_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="?attr/colorSurface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Дополнительная информация"
+                        android:textSize="18sp"
+                        android:textColor="@color/textColorPrimary"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- Таблица нутриентов -->
+                    <TableLayout
+                        android:id="@+id/additional_nutrients_table"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:stretchColumns="0,1,2"
+                        android:shrinkColumns="0,1,2"
+                        android:collapseColumns="">
+
+                        <!-- Заголовок таблицы -->
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Нутриент"
+                                android:textColor="@color/textColorSecondary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Значение"
+                                android:textColor="@color/textColorSecondary"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="% от РНП"
+                                android:textColor="@color/textColorSecondary"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+
+                        <!-- Клетчатка -->
+                        <TableRow
+                            android:id="@+id/fiber_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Клетчатка"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/fiber_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+
+                            <TextView
+                                android:id="@+id/fiber_percent"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorAccent"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+
+                        <!-- Сахар -->
+                        <TableRow
+                            android:id="@+id/sugar_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Сахар"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/sugar_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+
+                            <TextView
+                                android:id="@+id/sugar_percent"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorAccent"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+
+                        <!-- Холестерин -->
+                        <TableRow
+                            android:id="@+id/cholesterol_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Холестерин"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/cholesterol_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+
+                            <TextView
+                                android:id="@+id/cholesterol_percent"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorAccent"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+
+                        <!-- Насыщенные жиры -->
+                        <TableRow
+                            android:id="@+id/saturated_fats_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Насыщенные жиры"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/saturated_fats_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+
+                            <TextView
+                                android:id="@+id/saturated_fats_percent"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorAccent"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+                        
+                        <!-- Транс-жиры -->
+                        <TableRow
+                            android:id="@+id/trans_fats_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Транс-жиры"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/trans_fats_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/textColorPrimary"
+                    android:textSize="14sp"
+                                android:gravity="end"/>
+
+                            <TextView
+                                android:id="@+id/trans_fats_percent"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+                    </TableLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Карточка с минералами -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/minerals_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="?attr/colorSurface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Минералы"
+                        android:textSize="18sp"
+                        android:textColor="@color/textColorPrimary"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- Прогресс минералов -->
+                    <LinearLayout
+                        android:id="@+id/minerals_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <!-- Кальций -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginBottom="4dp">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Кальций"
+                                    android:textColor="@color/textColorPrimary"
+                                    android:textSize="14sp"/>
+
+                                <TextView
+                                    android:id="@+id/calcium_value"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/textColorPrimary"
+                                    android:textSize="14sp"/>
+                            </LinearLayout>
+
+                            <ProgressBar
+                                android:id="@+id/calcium_progress"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="8dp"
+                                android:progressTint="@color/colorAccent"
+                                android:backgroundTint="?attr/colorSurface"
+                                android:max="100"/>
+                        </LinearLayout>
+
+                        <!-- Железо -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginBottom="4dp">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Железо"
+                                    android:textColor="@color/textColorPrimary"
+                                    android:textSize="14sp"/>
+
+                                <TextView
+                                    android:id="@+id/iron_value"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/textColorPrimary"
+                                    android:textSize="14sp"/>
+                            </LinearLayout>
+
+                            <ProgressBar
+                                android:id="@+id/iron_progress"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="8dp"
+                                android:progressTint="@color/colorAccent"
+                                android:backgroundTint="?attr/colorSurface"
+                                android:max="100"/>
+                        </LinearLayout>
+
+                        <!-- Магний -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginBottom="4dp">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Магний"
+                                    android:textColor="@color/textColorPrimary"
+                                    android:textSize="14sp"/>
+
+                                <TextView
+                                    android:id="@+id/magnesium_value"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/textColorPrimary"
+                                    android:textSize="14sp"/>
+                            </LinearLayout>
+
+                            <ProgressBar
+                                android:id="@+id/magnesium_progress"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="8dp"
+                                android:progressTint="@color/colorAccent"
+                                android:backgroundTint="?attr/colorSurface"
+                                android:max="100"/>
+            </LinearLayout>
+
+                        <!-- Фосфор -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginBottom="4dp">
+
+                                <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                                    android:text="Фосфор"
+                                    android:textColor="@color/textColorPrimary"
+                                    android:textSize="14sp"/>
+
+                                <TextView
+                                    android:id="@+id/phosphorus_value"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/textColorPrimary"
+                                    android:textSize="14sp"/>
+                            </LinearLayout>
+
+                            <ProgressBar
+                                android:id="@+id/phosphorus_progress"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="8dp"
+                                android:progressTint="@color/colorAccent"
+                                android:backgroundTint="?attr/colorSurface"
+                                android:max="100"/>
+                        </LinearLayout>
+                        
+                        <!-- Калий -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                android:orientation="vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginBottom="4dp">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Калий"
+                                    android:textColor="@color/textColorPrimary"
+                                    android:textSize="14sp"/>
+
+                <TextView
+                                    android:id="@+id/potassium_value"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/textColorPrimary"
+                                    android:textSize="14sp"/>
+                            </LinearLayout>
+
+                            <ProgressBar
+                                android:id="@+id/potassium_progress"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="8dp"
+                                android:progressTint="@color/colorAccent"
+                                android:backgroundTint="?attr/colorSurface"
+                                android:max="100"/>
+                        </LinearLayout>
+                        
+                        <!-- Натрий -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginBottom="4dp">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Натрий"
+                                    android:textColor="@color/textColorPrimary"
+                                    android:textSize="14sp"/>
+
+                                <TextView
+                                    android:id="@+id/sodium_value"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/textColorPrimary"
+                                    android:textSize="14sp"/>
+                            </LinearLayout>
+
+                            <ProgressBar
+                                android:id="@+id/sodium_progress"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="8dp"
+                                android:progressTint="@color/colorAccent"
+                                android:backgroundTint="?attr/colorSurface"
+                                android:max="100"/>
+                        </LinearLayout>
+                        
+                        <!-- Цинк -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginBottom="4dp">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Цинк"
+                                    android:textColor="@color/textColorPrimary"
+                                    android:textSize="14sp"/>
+
+                                <TextView
+                                    android:id="@+id/zinc_value"
+                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/textColorPrimary"
+                                    android:textSize="14sp"/>
+                            </LinearLayout>
+
+                            <ProgressBar
+                                android:id="@+id/zinc_progress"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="8dp"
+                                android:progressTint="@color/colorAccent"
+                                android:backgroundTint="?attr/colorSurface"
+                                android:max="100"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Карточка с витаминами -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/vitamins_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="84dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="?attr/colorSurface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Витамины"
+                        android:textSize="18sp"
+                        android:textColor="@color/textColorPrimary"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- Таблица витаминов -->
+                    <TableLayout
+                        android:id="@+id/vitamins_table"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:stretchColumns="0,1"
+                        android:shrinkColumns="0,1"
+                        android:collapseColumns="">
+
+                        <!-- Заголовок таблицы -->
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Витамин"
+                                android:textColor="@color/textColorSecondary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Значение"
+                                android:textColor="@color/textColorSecondary"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+
+                        <!-- Витамин A -->
+                        <TableRow
+                            android:id="@+id/vitamin_a_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Витамин A"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/vitamin_a_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorAccent"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+
+                        <!-- Витамин B1 (тиамин) -->
+                        <TableRow
+                            android:id="@+id/vitamin_b1_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Витамин B1 (тиамин)"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/vitamin_b1_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorAccent"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+
+                        <!-- Витамин B2 (рибофлавин) -->
+                        <TableRow
+                            android:id="@+id/vitamin_b2_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Витамин B2 (рибофлавин)"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/vitamin_b2_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorAccent"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+
+                        <!-- Витамин B3 (ниацин) -->
+                        <TableRow
+                            android:id="@+id/vitamin_b3_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Витамин B3 (ниацин)"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/vitamin_b3_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorAccent"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+
+                        <!-- Витамин B5 -->
+                        <TableRow
+                            android:id="@+id/vitamin_b5_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Витамин B5"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/vitamin_b5_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorAccent"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+
+                        <!-- Витамин B6 -->
+                        <TableRow
+                            android:id="@+id/vitamin_b6_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Витамин B6"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/vitamin_b6_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorAccent"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+
+                        <!-- Витамин B9 (фолиевая кислота) -->
+                        <TableRow
+                            android:id="@+id/vitamin_b9_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Витамин B9 (фолиевая к-та)"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/vitamin_b9_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorAccent"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+
+                        <!-- Витамин B12 -->
+                        <TableRow
+                            android:id="@+id/vitamin_b12_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Витамин B12"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/vitamin_b12_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorAccent"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+
+                        <!-- Витамин C -->
+                        <TableRow
+                            android:id="@+id/vitamin_c_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Витамин C"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/vitamin_c_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorAccent"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+
+                        <!-- Витамин D -->
+                        <TableRow
+                            android:id="@+id/vitamin_d_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Витамин D"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/vitamin_d_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorAccent"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+
+                        <!-- Витамин E -->
+                        <TableRow
+                            android:id="@+id/vitamin_e_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Витамин E"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/vitamin_e_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorAccent"
+                                android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+
+                        <!-- Витамин K -->
+                        <TableRow
+                            android:id="@+id/vitamin_k_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Витамин K"
+                                android:textColor="@color/textColorPrimary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/vitamin_k_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                                android:gravity="end"/>
+                        </TableRow>
+                    </TableLayout>
+            </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Кнопка добавления (прикреплена к низу экрана) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/add_button"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:text="ДОБАВИТЬ"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:layout_gravity="bottom"
+        android:layout_margin="16dp"
+        app:cornerRadius="32dp"
+        android:backgroundTint="@color/colorPrimary"
+        app:elevation="8dp"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout> 

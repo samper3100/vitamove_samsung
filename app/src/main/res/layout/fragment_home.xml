@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    android:fitsSystemWindows="true">
+
+    <!-- Градиентный фон верхней части экрана -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="260dp"
+        android:background="@drawable/dashboard_gradient_background"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:clipToPadding="false">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="80dp"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <!-- Приветствие и дата -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/header_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/dashboard_greeting"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Доброе утро, Сергей!"
+                    android:textColor="@android:color/white"
+                    android:textSize="28sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" 
+                    app:layout_constraintEnd_toStartOf="@+id/btn_settings"/>
+
+                <TextView
+                    android:id="@+id/dashboard_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Сегодня, 04 мая"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:alpha="0.85"
+                    android:layout_marginTop="4dp"
+                    app:layout_constraintTop_toBottomOf="@+id/dashboard_greeting"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Карточка баланса калорий -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_calories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardElevation="10dp"
+                app:strokeWidth="0dp"
+                app:cardCornerRadius="24dp"
+                app:layout_constraintTop_toBottomOf="@+id/header_section">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/calories_card_gradient"
+                    android:padding="24dp">
+
+                    <ImageView
+                        android:id="@+id/icon_calories"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_fire"
+                        android:padding="8dp"
+                        android:background="@drawable/circle_icon_background"
+                        app:tint="@android:color/white"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/calories_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Баланс калорий"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginStart="16dp"
+                        app:layout_constraintStart_toEndOf="@+id/icon_calories"
+                        app:layout_constraintTop_toTopOf="@+id/icon_calories"
+                        app:layout_constraintBottom_toBottomOf="@+id/icon_calories"/>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/calories_progress_container"
+                        android:layout_width="140dp"
+                        android:layout_height="140dp"
+                        android:layout_marginTop="24dp"
+                        app:layout_constraintTop_toBottomOf="@+id/icon_calories"
+                        app:layout_constraintStart_toStartOf="parent">
+
+                        <ProgressBar
+                            android:id="@+id/calories_circular_progress"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:indeterminate="false"
+                            android:max="100"
+                            android:progress="0"
+                            android:progressDrawable="@drawable/circle_progress_calories"
+                            android:background="@android:color/transparent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+
+                        <TextView
+                            android:id="@+id/calories_remaining"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="3,705"
+                            android:textColor="@android:color/white"
+                            android:textSize="26sp"
+                            android:fontFamily="sans-serif-medium"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintVertical_bias="0.4"/>
+
+                        <TextView
+                            android:id="@+id/calories_progress_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Осталось"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp"
+                            android:alpha="0.9"
+                            app:layout_constraintTop_toBottomOf="@+id/calories_remaining"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <!-- Правая часть со статистикой -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        app:layout_constraintStart_toEndOf="@+id/calories_progress_container"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/calories_progress_container"
+                        app:layout_constraintBottom_toBottomOf="@+id/calories_progress_container">
+
+                        <!-- Потреблено и сожжено -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <!-- Потреблено -->
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/home_calories_potreb"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="0dp"
+                                app:cardBackgroundColor="#33FFFFFF">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:gravity="center"
+                                    android:padding="12dp">
+
+                                    <TextView
+                                        android:id="@+id/calories_food_label"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="ПОТРЕБЛЕНО"
+                                        android:textColor="#FFF3E0"
+                                        android:textSize="12sp"/>
+
+                                    <TextView
+                                        android:id="@+id/calories_food"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="0"
+                                        android:textColor="@android:color/white"
+                                        android:textSize="24sp"
+                                        android:fontFamily="sans-serif-medium"/>
+                                </LinearLayout>
+                            </androidx.cardview.widget.CardView>
+
+                            <!-- Сожжено -->
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="0dp"
+                                app:cardBackgroundColor="#33FFFFFF">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:gravity="center"
+                                    android:padding="12dp">
+
+                                    <TextView
+                                        android:id="@+id/calories_exercise_label"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="СОЖЖЕНО"
+                                        android:textColor="#FFF3E0"
+                                        android:textSize="12sp"/>
+
+                                    <TextView
+                                        android:id="@+id/calories_exercise"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="527"
+                                        android:textColor="@android:color/white"
+                                        android:textSize="24sp"
+                                        android:fontFamily="sans-serif-medium"/>
+                                </LinearLayout>
+                            </androidx.cardview.widget.CardView>
+                        </LinearLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Карточка воды -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_water"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardElevation="10dp"
+                app:strokeWidth="0dp"
+                app:cardCornerRadius="24dp"
+                app:layout_constraintTop_toBottomOf="@+id/card_calories">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/water_card_gradient"
+                    android:padding="24dp">
+
+                    <ImageView
+                        android:id="@+id/icon_water"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_water"
+                        android:padding="8dp"
+                        android:background="@drawable/circle_icon_background"
+                        app:tint="@android:color/white"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/water_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Водный баланс"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginStart="16dp"
+                        app:layout_constraintStart_toEndOf="@+id/icon_water"
+                        app:layout_constraintTop_toTopOf="@+id/icon_water"
+                        app:layout_constraintBottom_toBottomOf="@+id/icon_water"/>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/water_progress_container"
+                        android:layout_width="140dp"
+                        android:layout_height="140dp"
+                        android:layout_marginTop="24dp"
+                        app:layout_constraintTop_toBottomOf="@+id/icon_water"
+                        app:layout_constraintStart_toStartOf="parent">
+
+                        <ProgressBar
+                            android:id="@+id/water_circular_progress"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:indeterminate="false"
+                            android:max="100"
+                            android:progress="60"
+                            android:progressDrawable="@drawable/water_circle_progress"
+                            android:background="@android:color/transparent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+
+                        <TextView
+                            android:id="@+id/water_progress_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="60%"
+                            android:textColor="@android:color/white"
+                            android:textSize="26sp"
+                            android:fontFamily="sans-serif-medium"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintVertical_bias="0.4"/>
+
+                        <TextView
+                            android:id="@+id/water_amount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1.5 / 2.5 л"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp"
+                            android:alpha="0.9"
+                            app:layout_constraintTop_toBottomOf="@+id/water_progress_text"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_marginTop="2dp"/>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <!-- Кнопки быстрого добавления воды -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        app:layout_constraintStart_toEndOf="@+id/water_progress_container"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/water_progress_container"
+                        app:layout_constraintBottom_toBottomOf="@+id/water_progress_container">
+
+                        <TextView
+                            android:id="@+id/water_quick_add_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Быстрое добавление"
+                            android:textSize="16sp"
+                            android:textColor="#E3F2FD"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+
+                        <!-- Стаканчики с водой -->
+                        <LinearLayout
+                            android:id="@+id/water_buttons_row1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="12dp"
+                            android:gravity="center"
+                            android:baselineAligned="false"
+                            app:layout_constraintTop_toBottomOf="@+id/water_quick_add_label">
+
+                            <!-- Стаканчик 200 мл -->
+                            <FrameLayout
+                                android:id="@+id/btn_add_water_200"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="10dp"
+                                android:paddingTop="10dp"
+                                android:paddingBottom="10dp"
+                                android:background="@drawable/btn_glass_background"
+                                android:foreground="?android:attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:focusable="true">
+                                
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:gravity="center">
+                                    
+                                    <ImageView
+                                        android:layout_width="50dp"
+                                        android:layout_height="60dp"
+                                        android:src="@drawable/water_glass_icon"
+                                        android:scaleType="fitCenter"/>
+                                    
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="200 мл"
+                                        android:textColor="@android:color/white"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold"
+                                        android:layout_marginTop="4dp"/>
+                                </LinearLayout>
+                            </FrameLayout>
+
+                            <!-- Стаканчик 500 мл -->
+                            <FrameLayout
+                                android:id="@+id/btn_add_water_500"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:paddingTop="10dp"
+                                android:paddingBottom="10dp"
+                                android:background="@drawable/btn_glass_background"
+                                android:foreground="?android:attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:focusable="true">
+                                
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:gravity="center">
+                                    
+                                    <ImageView
+                                        android:layout_width="55dp"
+                                        android:layout_height="70dp"
+                                        android:src="@drawable/water_glass_icon_large"
+                                        android:scaleType="fitCenter"/>
+                                    
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="500 мл"
+                                        android:textColor="@android:color/white"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold"
+                                        android:layout_marginTop="4dp"/>
+                                </LinearLayout>
+                            </FrameLayout>
+                        </LinearLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Карточка шагов -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_steps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="24dp"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardElevation="10dp"
+                app:strokeWidth="0dp"
+                app:cardCornerRadius="24dp"
+                app:layout_constraintTop_toBottomOf="@+id/card_water"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/steps_card_gradient"
+                    android:padding="24dp">
+
+                    <ImageView
+                        android:id="@+id/icon_steps"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_footsteps"
+                        android:padding="8dp"
+                        android:background="@drawable/circle_icon_background"
+                        app:tint="@android:color/white"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/steps_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Шаги"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginStart="16dp"
+                        app:layout_constraintStart_toEndOf="@+id/icon_steps"
+                        app:layout_constraintTop_toTopOf="@+id/icon_steps"
+                        app:layout_constraintBottom_toBottomOf="@+id/icon_steps"/>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/steps_progress_container"
+                        android:layout_width="140dp"
+                        android:layout_height="140dp"
+                        android:layout_marginTop="24dp"
+                        app:layout_constraintTop_toBottomOf="@+id/icon_steps"
+                        app:layout_constraintStart_toStartOf="parent">
+
+                        <ProgressBar
+                            android:id="@+id/steps_circular_progress"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:indeterminate="false"
+                            android:max="100"
+                            android:progress="85"
+                            android:progressDrawable="@drawable/circle_progress_steps"
+                            android:background="@android:color/transparent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+
+                        <TextView
+                            android:id="@+id/steps_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="10,345"
+                            android:textColor="@android:color/white"
+                            android:textSize="26sp"
+                            android:fontFamily="sans-serif-medium"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <TextView
+                        android:id="@+id/steps_goal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="из 10,000"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp"
+                        android:alpha="0.8"
+                        app:layout_constraintTop_toBottomOf="@+id/steps_progress_container"
+                        app:layout_constraintStart_toStartOf="@+id/steps_progress_container"
+                        app:layout_constraintEnd_toEndOf="@+id/steps_progress_container"/>
+
+                    <!-- Правая часть с графиком -->
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/steps_chart"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_marginStart="16dp"
+                        app:layout_constraintTop_toTopOf="@+id/steps_progress_container"
+                        app:layout_constraintBottom_toBottomOf="@+id/steps_goal"
+                        app:layout_constraintStart_toEndOf="@+id/steps_progress_container"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

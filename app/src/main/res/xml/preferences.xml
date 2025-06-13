@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:key="general_category"
+        android:title="Общие настройки"
+        android:iconSpaceReserved="false">
+
+        <ListPreference
+            android:key="fitness_goal"
+            android:title="Цель тренировок"
+            android:dialogTitle="Выберите вашу цель"
+            android:entries="@array/fitness_goal_entries"
+            android:entryValues="@array/fitness_goal_values"
+            android:defaultValue="weight_loss"
+            android:iconSpaceReserved="false" />
+    </PreferenceCategory>
+
+<!--    <PreferenceCategory-->
+<!--        android:key="notifications_category"-->
+<!--        android:title="Уведомления"-->
+<!--        android:iconSpaceReserved="false">-->
+
+<!--        <SwitchPreferenceCompat-->
+<!--            android:key="notifications_enabled"-->
+<!--            android:title="Включить уведомления"-->
+<!--            android:summary="Получать напоминания о тренировках и других событиях"-->
+<!--            android:defaultValue="true"-->
+<!--            android:iconSpaceReserved="false" />-->
+<!--    </PreferenceCategory>-->
+
+    <PreferenceCategory
+        android:title="Внешний вид"
+        android:iconSpaceReserved="false">
+
+        <ListPreference
+            android:key="dark_mode"
+            android:title="Тема приложения"
+            android:summary="Выберите светлую или темную тему"
+            android:defaultValue="system"
+            android:entries="@array/dark_mode_entries"
+            android:entryValues="@array/dark_mode_values"
+            android:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Приложение"
+        android:iconSpaceReserved="false">
+
+        <Preference
+            android:key="app_version"
+            android:title="Версия приложения"
+            android:summary="1.0.0"
+            android:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="feedback"
+            android:title="Обратная связь"
+            android:summary="Отправить отзыв разработчикам"
+            android:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Аккаунт"
+        android:iconSpaceReserved="false">
+
+        <Preference
+            android:key="delete_account"
+            android:title="Удалить аккаунт"
+            android:summary="Удалить аккаунт и всю связанную с ним информацию"
+            android:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen> 

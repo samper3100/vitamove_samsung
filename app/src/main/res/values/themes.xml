@@ -1,0 +1,33 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.VitaMove" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/accent_color</item>
+        <item name="colorSecondary">@color/accent_color</item>
+        <item name="android:colorBackground">@color/background_color</item>
+        <item name="android:windowBackground">@drawable/app_background</item>
+        <item name="colorPrimaryContainer">@color/colorAccentLight</item>
+        
+        <!-- Стили для стандартных компонентов -->
+        <item name="materialButtonStyle">@style/Widget.VitaMove.Button</item>
+        <item name="chipStyle">@style/Widget.VitaMove.Chip.Filter</item>
+        <item name="textInputStyle">@style/Widget.VitaMove.TextInputLayout</item>
+        
+        <!-- Переопределение стилей диалогов -->
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.MaterialComponents.Dialog.Alert</item>
+        <!-- Дополнительные атрибуты для тем -->
+        <item name="dividerColor">@color/gray_200</item>
+    </style>
+
+    <style name="Theme.VitaMove" parent="Base.Theme.VitaMove">
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="fontFamily">@font/montserrat</item>
+        <item name="android:statusBarColor">@color/background_color</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+    </style>
+
+</resources>
