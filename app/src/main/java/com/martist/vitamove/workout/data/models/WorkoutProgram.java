@@ -2,7 +2,6 @@ package com.martist.vitamove.workout.data.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,14 +65,14 @@ public class WorkoutProgram implements Parcelable {
     public List<Integer> getWorkoutDays() {
 
         if (workoutDays == null || workoutDays.isEmpty()) {
-            
+
             List<Integer> defaultDays = new ArrayList<>();
             defaultDays.add(0);
             defaultDays.add(2);
             defaultDays.add(4);
             return defaultDays;
         }
-        
+
         return workoutDays;
     }
     
@@ -103,9 +102,9 @@ public class WorkoutProgram implements Parcelable {
         this.exercises = exercises != null ? new ArrayList<>(exercises) : new ArrayList<>();
     }
     public void setWorkoutDays(List<Integer> workoutDays) {
-        
+
         if (workoutDays == null || workoutDays.isEmpty()) {
-            
+
             this.workoutDays = new ArrayList<>();
             return;
         }

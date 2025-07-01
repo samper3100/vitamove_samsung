@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSurface">
@@ -126,36 +124,24 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:hint="Укажите размер порции"
-            app:endIconMode="custom"
-            app:endIconDrawable="@drawable/ic_weight"
-                        app:endIconTint="@color/colorAccent"
-                        android:textColorHint="?android:attr/textColorHint"
-                        app:boxBackgroundColor="?attr/colorSurface"
-                        app:boxStrokeColor="@color/colorAccent"
-                        app:hintTextColor="@color/colorAccent">
+            android:layout_marginTop="16dp"
+            android:hint="Укажите размер порции"
+            android:id="@+id/portion_size_input_layout"
+            android:textColorHint="?android:attr/textColorHint"
+            app:boxBackgroundColor="?attr/colorSurface"
+            app:boxStrokeColor="@color/colorAccent"
+            app:hintTextColor="@color/colorAccent">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/custom_portion_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
-                            android:textColor="@color/textColorPrimary"
-                            android:textSize="18sp"
+                android:textColor="@color/textColorPrimary"
+                android:textSize="18sp"
                 android:maxLength="4"/>
 
         </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Единица измерения -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="грамм"
-                        android:textColor="@color/textColorSecondary"
-                        android:textSize="14sp"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginTop="4dp"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

@@ -8,32 +8,32 @@ import android.util.Log;
 public class Food implements Parcelable {
     private static final String TAG = "Food";
     
-    
+
     static {
         try {
-            
-            
+
+
             System.setProperty("food.class.loading", "true");
-            
+
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при инициализации класса Food: " + e.getMessage(), e);
         }
     }
     
-    
+
     public static void ensureClassLoaded() {
         try {
-            
+
             if (isClassLoaded()) {
-                
+
                 return;
             }
             
-            
+
             Class<?> cls = Class.forName("com.martist.vitamove.models.Food");
+
             
-            
-            
+
             initCreator();
         } catch (ClassNotFoundException e) {
             Log.e(TAG, "ClassNotFoundException при загрузке Food: " + e.getMessage(), e);
@@ -42,13 +42,13 @@ public class Food implements Parcelable {
         }
     }
     
-    
+
     private static void initCreator() {
         try {
             if (CREATOR != null) {
+
                 
-                
-                
+
                 Food testFood = new Food.Builder()
                         .id(1)
                         .name("TestFood")
@@ -63,18 +63,18 @@ public class Food implements Parcelable {
                 parcel.recycle();
                 
                 if (createdFood != null) {
-                    
+
                     System.setProperty("food.class.loaded", "true");
                 }
             } else {
-                
+
             }
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при инициализации CREATOR: " + e.getMessage(), e);
         }
     }
     
-    
+
     public static boolean isClassLoaded() {
         return "true".equals(System.getProperty("food.class.loaded"));
     }
@@ -113,7 +113,8 @@ public class Food implements Parcelable {
     private final float fiber;
     private final float sugar;
     private final int usefulness_index;
-    private final String idUUID; 
+    private final String idUUID;
+    private final boolean is_liquid;
 
     private Food(Builder builder) {
         this.id = builder.id;
@@ -151,6 +152,7 @@ public class Food implements Parcelable {
         this.sugar = builder.sugar;
         this.usefulness_index = builder.usefulness_index;
         this.idUUID = builder.idUUID;
+        this.is_liquid = builder.is_liquid;
     }
 
     public static class Builder {
@@ -188,10 +190,11 @@ public class Food implements Parcelable {
         private float fiber;
         private float sugar;
         private int usefulness_index;
-        private String idUUID; 
+        private String idUUID;
+        private boolean is_liquid;
 
         public Builder id(long id) { this.id = id; return this; }
-        public Builder idUUID(String idUUID) { this.idUUID = idUUID; return this; } 
+        public Builder idUUID(String idUUID) { this.idUUID = idUUID; return this; }
         public Builder name(String name) { this.name = name; return this; }
         public Builder category(String category) { this.category = category; return this; }
         public Builder subcategory(String subcategory) { this.subcategory = subcategory; return this; }
@@ -225,13 +228,14 @@ public class Food implements Parcelable {
         public Builder fiber(float fiber) { this.fiber = fiber; return this; }
         public Builder sugar(float sugar) { this.sugar = sugar; return this; }
         public Builder usefulness_index(int usefulness_index) { this.usefulness_index = usefulness_index; return this; }
+        public Builder is_liquid(boolean is_liquid) { this.is_liquid = is_liquid; return this; }
 
         public Food build() {
             return new Food(this);
         }
     }
 
-    
+
     public long getId() { return id; }
     public String getName() { return name; }
     public String getCategory() { return category; }
@@ -267,13 +271,14 @@ public class Food implements Parcelable {
     public float getSugar() { return sugar; }
     public int getUsefulnessIndex() { return usefulness_index; }
     public String getIdUUID() { return idUUID; }
+    public boolean isLiquid() { return is_liquid; }
 
-    
+
     protected Food(Parcel in) {
-        
+
         id = in.readLong();
         name = in.readString();
-        
+
         category = in.readString();
         subcategory = in.readString();
         calories = in.readInt();
@@ -307,12 +312,13 @@ public class Food implements Parcelable {
         sugar = in.readFloat();
         usefulness_index = in.readInt();
         idUUID = in.readString();
-        
+        is_liquid = in.readByte() != 0;
+
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        
+
         dest.writeLong(id);
         dest.writeString(name);
         dest.writeString(category);
@@ -348,7 +354,8 @@ public class Food implements Parcelable {
         dest.writeFloat(sugar);
         dest.writeInt(usefulness_index);
         dest.writeString(idUUID);
-        
+        dest.writeByte((byte) (is_liquid ? 1 : 0));
+
     }
 
     @Override
@@ -368,11 +375,11 @@ public class Food implements Parcelable {
         }
     };
     
-    
+
     static {
         try {
-            
-            
+
+
             initCreator();
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при инициализации CREATOR в Food: " + e.getMessage(), e);

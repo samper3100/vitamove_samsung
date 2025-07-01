@@ -6,6 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".ui.program.create.CreateProgramWeekActivity">
 
+    <!-- Добавляем кнопку "Назад" -->
+    <ImageButton
+        android:id="@+id/btn_back"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/back_button_description"
+        android:src="@drawable/ic_arrow_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/tv_week_title"
         android:layout_width="wrap_content"

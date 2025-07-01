@@ -22,16 +22,16 @@ public class ProgramDay implements Parcelable {
     private List<ProgramExercise> exercises;
     private long createdAt;
     private long updatedAt;
-    private String templateDayId; 
+    private String templateDayId;
     private transient long plannedTimestamp;
-    private String status; 
+    private String status;
 
-    
+
     public ProgramDay() {
         this.exercises = new ArrayList<>();
     }
 
-    
+
     public ProgramDay(String id, String programId, int dayNumber, String title, String description, int durationMinutes) {
         this.id = id;
         this.programId = programId;
@@ -97,7 +97,7 @@ public class ProgramDay implements Parcelable {
         }
     };
 
-    
+
     public String getId() {
         return id;
     }
@@ -166,7 +166,7 @@ public class ProgramDay implements Parcelable {
         return status;
     }
 
-    
+
     public void setId(String id) {
         this.id = id;
     }
@@ -239,7 +239,7 @@ public class ProgramDay implements Parcelable {
         this.status = status;
     }
 
-    
+
     public void addExercise(ProgramExercise exercise) {
         if (this.exercises == null) {
             this.exercises = new ArrayList<>();
@@ -268,11 +268,11 @@ public class ProgramDay implements Parcelable {
             }
         }
         
-        
+
         this.durationMinutes = (int) Math.ceil(totalDuration / 60.0);
     }
 
-    
+
     public static class Builder {
         private final ProgramDay programDay = new ProgramDay();
         

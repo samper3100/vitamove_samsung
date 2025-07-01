@@ -21,7 +21,7 @@ import java.util.Locale;
 public class WaterHistoryAdapter extends RecyclerView.Adapter<WaterHistoryAdapter.ViewHolder> {
 
     private List<WaterConsumptionRecord> waterRecords = new ArrayList<>();
-    private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+    private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private OnDeleteClickListener deleteListener;
     
 

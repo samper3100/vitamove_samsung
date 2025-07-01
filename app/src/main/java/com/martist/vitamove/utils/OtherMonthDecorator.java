@@ -22,6 +22,6 @@ public class OtherMonthDecorator implements DayViewDecorator {
 
     @Override
     public void decorate(DayViewFacade view) {
-        view.addSpan(new ForegroundColorSpan(Color.parseColor("#BEBEBE"))); 
+        view.addSpan(new ForegroundColorSpan(Color.parseColor("#BEBEBE")));
     }
 } 

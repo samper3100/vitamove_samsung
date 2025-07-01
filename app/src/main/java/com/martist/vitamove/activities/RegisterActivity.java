@@ -9,11 +9,14 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.lifecycle.ViewModelProvider;
+
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.martist.vitamove.R;
 import com.martist.vitamove.utils.Constants;
 import com.martist.vitamove.utils.SupabaseClient;
+import com.martist.vitamove.viewmodels.UserWeightViewModel;
 
 import org.json.JSONObject;
 
@@ -26,6 +29,7 @@ public class RegisterActivity extends BaseActivity {
     private MaterialButton googleRegisterButton;
     private TextView loginLink;
     private SupabaseClient supabaseClient;
+    private UserWeightViewModel userWeightViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +45,9 @@ public class RegisterActivity extends BaseActivity {
             Constants.SUPABASE_CLIENT_ID,
             Constants.SUPABASE_CLIENT_SECRET
         );
+        
+        
+        userWeightViewModel = new ViewModelProvider(this).get(UserWeightViewModel.class);
 
         initializeViews();
         setupClickListeners();
@@ -49,13 +56,13 @@ public class RegisterActivity extends BaseActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        
+
         
         
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            
+
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            
+
         }
     }
     
@@ -64,16 +71,13 @@ public class RegisterActivity extends BaseActivity {
         passwordInput = findViewById(R.id.register_password_text);
         confirmPasswordInput = findViewById(R.id.register_confirm_password_input);
         registerButton = findViewById(R.id.register_button);
-        googleRegisterButton = findViewById(R.id.register_google_button);
         loginLink = findViewById(R.id.login_link);
     }
 
     private void setupClickListeners() {
         registerButton.setOnClickListener(v -> attemptRegistration());
         
-        googleRegisterButton.setOnClickListener(v -> {
-            Toast.makeText(this, "Регистрация через Google пока недоступна", Toast.LENGTH_SHORT).show();
-        });
+
         
         loginLink.setOnClickListener(v -> {
             Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
@@ -143,7 +147,7 @@ public class RegisterActivity extends BaseActivity {
                         String payload = new String(android.util.Base64.decode(jwtParts[1], android.util.Base64.DEFAULT));
                         JSONObject jwtJson = new JSONObject(payload);
                         userId = jwtJson.getString("sub");
-                        
+
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Ошибка получения ID пользователя из токена", e);
@@ -163,6 +167,9 @@ public class RegisterActivity extends BaseActivity {
                                 .putString("userId", finalUserId)
                                 .putString("userEmail", email)
                                 .apply();
+
+                        
+                        addInitialWeightRecord();
 
                         Toast.makeText(this, "Регистрация успешна!", Toast.LENGTH_SHORT).show();
                         
@@ -206,5 +213,37 @@ public class RegisterActivity extends BaseActivity {
     
     private void showError(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    
+    private void addInitialWeightRecord() {
+        
+        SharedPreferences userDataPrefs = getSharedPreferences("user_data", MODE_PRIVATE);
+        float currentWeight = userDataPrefs.getFloat("current_weight", 0f);
+        
+        
+        if (currentWeight > 0) {
+            
+            new Thread(() -> {
+                try {
+                    
+                    Thread.sleep(1000);
+                    
+                    
+                    userWeightViewModel.addWeightRecordOnlyToSupabase(currentWeight, "Начальный вес");
+
+                    
+                    
+                    SharedPreferences.Editor editor = userDataPrefs.edit();
+                    editor.putBoolean("weight_record_created", true);
+                    editor.apply();
+
+                } catch (Exception e) {
+                    Log.e(TAG, "Ошибка при добавлении записи о весе: " + e.getMessage(), e);
+                }
+            }).start();
+        } else {
+
+        }
     }
 }

@@ -33,7 +33,7 @@ public class DevelopmentOverlay extends FrameLayout {
     private void init(Context context) {
         View view = LayoutInflater.from(context).inflate(R.layout.view_in_development_overlay, this, true);
         
-        
+
         TextView devText = view.findViewById(R.id.development_text);
         AlphaAnimation blinkAnimation = new AlphaAnimation(0.7f, 1.0f);
         blinkAnimation.setDuration(800);
@@ -42,7 +42,7 @@ public class DevelopmentOverlay extends FrameLayout {
         devText.startAnimation(blinkAnimation);
     }
 
-    
+
     public static void applyToView(View targetView) {
         if (targetView == null) return;
         
@@ -52,7 +52,7 @@ public class DevelopmentOverlay extends FrameLayout {
         if (targetView instanceof FrameLayout) {
             ((FrameLayout) targetView).addView(overlay);
         } else {
-            
+
             FrameLayout parent = (FrameLayout) targetView.getParent();
             int index = parent.indexOfChild(targetView);
             
@@ -63,7 +63,7 @@ public class DevelopmentOverlay extends FrameLayout {
             parent.addView(wrapper, index);
         }
         
-        
-        
+
+
     }
 } 

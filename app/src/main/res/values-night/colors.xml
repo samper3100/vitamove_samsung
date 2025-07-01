@@ -53,6 +53,7 @@
     <!-- Инвертированные цвета для темной темы -->
     <color name="black">#FFFFFF</color>
     <color name="white">#1E1E1E</color>
+    <color name="white_text">#FFFFFF</color>  <!-- Реальный белый цвет для текста в темной теме -->
     <color name="transparent">#00000000</color>
     
     <!-- Цвета для чипов и категорий -->
@@ -80,6 +81,7 @@
     <color name="colorBackgroundLight">#2A2A2A</color>
     <color name="colorSurface">#1F1F1F</color>
     <color name="colorOnSurface">@android:color/white</color>
+
     
     <!-- Цвет фона карточек БЖУ -->
     <color name="card_bju_background">#2A2A2A</color>
@@ -131,5 +133,14 @@
     <color name="assistant_message_background">#3D3D3D</color>
     <color name="assistant_text_color">#F0F0F0</color>
     <color name="assistant_hint_color">#9E9E9E</color>
+
+
+    <color name="weight_note">#313030</color>
+
+    <!-- Цвета для TabLayout в темной теме -->
+    <color name="tab_layout_background">#2A2A2A</color>
+    <color name="tab_indicator_color">@color/accent_color</color>
+    <color name="tab_selected_text_color">@android:color/white</color>
+    <color name="tab_unselected_text_color">#AAAAAA</color>
 
 </resources> 

@@ -42,7 +42,7 @@ public class ExerciseDetailsActivity extends BaseActivity {
     private ExerciseManager exerciseManager;
     private Exercise exercise;
 
-    
+
     private TextView textExerciseName;
     private TextView textDifficulty;
     private TextView textType;
@@ -58,7 +58,7 @@ public class ExerciseDetailsActivity extends BaseActivity {
     private ProgressBar loadingIndicator;
     private NestedScrollView contentContainer;
 
-    
+
     private TextView labelSecondaryMuscles;
     private TextView labelStabilizerMuscles;
     private TextView labelInstructions;
@@ -68,13 +68,13 @@ public class ExerciseDetailsActivity extends BaseActivity {
     private Executor executor;
     private Handler mainHandler;
 
-    private boolean hideAddButton = false; 
+    private boolean hideAddButton = false;
 
-    
+
     private GestureDetectorCompat gestureDetector;
     private ConstraintLayout rootLayout;
 
-    
+
     public static Intent newIntent(Context context, String exerciseId) {
         Intent intent = new Intent(context, ExerciseDetailsActivity.class);
         intent.putExtra(EXTRA_EXERCISE_ID, exerciseId);
@@ -87,8 +87,12 @@ public class ExerciseDetailsActivity extends BaseActivity {
         setContentView(R.layout.activity_exercise_details);
 
         exerciseId = getIntent().getStringExtra(EXTRA_EXERCISE_ID);
-        
+
         hideAddButton = getIntent().getBooleanExtra("hide_add_button", false);
+
+        boolean showAddToProgramButton = getIntent().getBooleanExtra("show_add_to_program_button", false);
+
+        boolean fromAnalytics = getIntent().getBooleanExtra("from_analytics", false);
         
         if (exerciseId == null) {
             Log.e(TAG, "No exercise ID provided in intent");
@@ -103,71 +107,84 @@ public class ExerciseDetailsActivity extends BaseActivity {
         initializeViews();
         setupActionBar();
         setupGestureDetector();
+        
+
+
+        if (showAddToProgramButton && buttonAddToWorkout != null) {
+            buttonAddToWorkout.setText("Добавить в программу");
+            buttonAddToWorkout.setOnClickListener(v -> addExerciseToProgram());
+        }
+
+
+        else if (fromAnalytics && buttonAddToWorkout != null) {
+            buttonAddToWorkout.setText("Отслеживать");
+        }
+        
         loadExerciseDetails();
     }
 
     private void initializeViews() {
-        
+
         textExerciseName = findViewById(R.id.textExerciseName);
         textDifficulty = findViewById(R.id.textDifficulty);
         textType = findViewById(R.id.textType);
         textDescription = findViewById(R.id.textDescription);
         
-        
+
         chipGroupPrimaryMuscles = findViewById(R.id.chipGroupPrimaryMuscles);
         chipGroupSecondaryMuscles = findViewById(R.id.chipGroupSecondaryMuscles);
         chipGroupStabilizerMuscles = findViewById(R.id.chipGroupStabilizerMuscles);
         
-        
+
         textEquipment = findViewById(R.id.textEquipment);
         textInstructions = findViewById(R.id.textInstructions);
         textCommonMistakes = findViewById(R.id.textCommonMistakes);
         textContraindications = findViewById(R.id.textContraindications);
         
-        
+
         labelSecondaryMuscles = findViewById(R.id.labelSecondaryMuscles);
         labelStabilizerMuscles = findViewById(R.id.labelStabilizerMuscles);
         labelInstructions = findViewById(R.id.labelInstructions);
         labelCommonMistakes = findViewById(R.id.labelCommonMistakes);
         labelContraindications = findViewById(R.id.labelContraindications);
         
-        
+
         buttonAddToWorkout = findViewById(R.id.buttonAddToWorkout);
         loadingIndicator = findViewById(R.id.loadingIndicator);
         contentContainer = findViewById(R.id.contentContainer);
         
-        
+
         rootLayout = findViewById(R.id.content_container);
         
-        
+
         MaterialButton backButton = findViewById(R.id.back_button);
         
-        
+
         if (hideAddButton && buttonAddToWorkout != null) {
             buttonAddToWorkout.setVisibility(View.GONE);
             
-            
+
             if (backButton != null) {
                 backButton.setVisibility(View.VISIBLE);
                 backButton.setOnClickListener(v -> {
-                    
+
                     finish();
                     overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                 });
             }
         } else {
-            
+
             if (backButton != null) {
                 backButton.setVisibility(View.GONE);
             }
         }
         
-        
+
         buttonAddToWorkout.setOnClickListener(v -> postAddExerciseEvent());
     }
 
     private void setupActionBar() {
-        
+
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(R.string.exercise_details);
@@ -177,8 +194,8 @@ public class ExerciseDetailsActivity extends BaseActivity {
     @Override
     public boolean onSupportNavigateUp() {
         if (hideAddButton) {
-            
-            
+
+
             finish();
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             return true;
@@ -212,16 +229,16 @@ public class ExerciseDetailsActivity extends BaseActivity {
     }
 
     private void populateUI() {
-        
+
         textExerciseName.setText(exercise.getName());
         
-        
+
         textDifficulty.setText(exercise.getDifficultyRussianName());
         
-        
+
         textType.setText(exercise.getExerciseTypeRussianName());
         
-        
+
         if (exercise.getDescription() != null && !exercise.getDescription().isEmpty()) {
             textDescription.setText(exercise.getDescription());
             textDescription.setVisibility(View.VISIBLE);
@@ -229,10 +246,10 @@ public class ExerciseDetailsActivity extends BaseActivity {
             textDescription.setVisibility(View.GONE);
         }
         
-        
+
         setupMuscleGroupChips(chipGroupPrimaryMuscles, exercise.getMuscleGroupRussianNames());
         
-        
+
         List<String> secondaryMuscles = exercise.getSecondaryMuscleRussianNames();
         if (secondaryMuscles != null && !secondaryMuscles.isEmpty()) {
             setupMuscleGroupChips(chipGroupSecondaryMuscles, secondaryMuscles);
@@ -243,7 +260,7 @@ public class ExerciseDetailsActivity extends BaseActivity {
             labelSecondaryMuscles.setVisibility(View.GONE);
         }
         
-        
+
         List<String> stabilizerMuscles = exercise.getStabilizerMuscleRussianNames();
         if (stabilizerMuscles != null && !stabilizerMuscles.isEmpty()) {
             setupMuscleGroupChips(chipGroupStabilizerMuscles, stabilizerMuscles);
@@ -254,7 +271,7 @@ public class ExerciseDetailsActivity extends BaseActivity {
             labelStabilizerMuscles.setVisibility(View.GONE);
         }
         
-        
+
         List<String> equipment = exercise.getEquipmentRussianNames();
         if (equipment != null && !equipment.isEmpty()) {
             textEquipment.setText(String.join(", ", equipment));
@@ -262,7 +279,7 @@ public class ExerciseDetailsActivity extends BaseActivity {
             textEquipment.setText(R.string.no_equipment_required);
         }
         
-        
+
         String instructions = exercise.getInstructionsText();
         if (instructions != null && !instructions.isEmpty()) {
             textInstructions.setText(instructions);
@@ -274,7 +291,7 @@ public class ExerciseDetailsActivity extends BaseActivity {
             labelInstructions.setVisibility(View.GONE);
         }
         
-        
+
         String commonMistakes = exercise.getCommonMistakesText();
         if (commonMistakes != null && !commonMistakes.isEmpty()) {
             textCommonMistakes.setText(commonMistakes);
@@ -286,7 +303,7 @@ public class ExerciseDetailsActivity extends BaseActivity {
             labelCommonMistakes.setVisibility(View.GONE);
         }
         
-        
+
         String contraindications = exercise.getFormattedContraindicationsText();
         if (contraindications != null && !contraindications.isEmpty()) {
             textContraindications.setText(contraindications);
@@ -322,28 +339,60 @@ public class ExerciseDetailsActivity extends BaseActivity {
         }
     }
 
-    
+
     private void postAddExerciseEvent() {
-         if (exercise == null || exerciseId == null) {
+        if (exercise == null || exerciseId == null) {
             Log.e(TAG, "Cannot post AddExerciseEvent, details not loaded");
             return;
         }
         
 
+        boolean fromAnalytics = getIntent().getBooleanExtra("from_analytics", false);
         
-        EventBus.getDefault().post(new AddExerciseEvent(exerciseId));
+        if (fromAnalytics) {
 
+
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("exercise_added_via_details", true);
+            resultIntent.putExtra("exercise_id", exerciseId);
+            setResult(RESULT_OK, resultIntent);
+            
+
+            Toast.makeText(this, "Упражнение выбрано для отслеживания", Toast.LENGTH_SHORT).show();
+        } else {
+
+
+            EventBus.getDefault().post(new AddExerciseEvent(exerciseId));
+            
+
+            Toast.makeText(this, R.string.exercise_added_to_workout, Toast.LENGTH_SHORT).show();
+            
+
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("exercise_added", true);
+            resultIntent.putExtra("exercise_id", exerciseId);
+            setResult(RESULT_OK, resultIntent);
+        }
         
-        Toast.makeText(this, R.string.exercise_added_to_workout, Toast.LENGTH_SHORT).show();
-        
+
+        finish(); 
+    }
+
+
+    private void addExerciseToProgram() {
+        if (exercise == null || exercise.getId() == null) {
+            Toast.makeText(this, "Ошибка: данные упражнения недоступны", Toast.LENGTH_SHORT).show();
+            return;
+        }
         
         Intent resultIntent = new Intent();
-        resultIntent.putExtra("exercise_added", true);
-        resultIntent.putExtra("exercise_id", exerciseId);
+        resultIntent.putExtra("selected_exercise_id", exercise.getId());
+
+        resultIntent.putExtra("com.martist.vitamove.EXTRA_IS_REPLACEMENT_MODE", 
+                getIntent().getBooleanExtra("com.martist.vitamove.EXTRA_IS_REPLACEMENT_MODE", false));
+        
         setResult(RESULT_OK, resultIntent);
-        
-        
-        finish(); 
+        finish();
     }
 
     private void showLoading(boolean isLoading) {
@@ -352,30 +401,30 @@ public class ExerciseDetailsActivity extends BaseActivity {
     }
 
     private void showError(String message) {
-        
+
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
-    
+
     private void setupGestureDetector() {
         gestureDetector = new GestureDetectorCompat(this, new SwipeGestureListener());
         
-        
-        
+
+
         if (hideAddButton) {
             if (rootLayout != null) {
                 rootLayout.setOnTouchListener((v, event) -> {
                     gestureDetector.onTouchEvent(event);
-                    return false; 
+                    return false;
                 });
             }
         }
     }
     
-    
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        
+
         if (hideAddButton) {
             gestureDetector.onTouchEvent(event);
         }
@@ -383,7 +432,7 @@ public class ExerciseDetailsActivity extends BaseActivity {
         return super.dispatchTouchEvent(event);
     }
     
-    
+
     private class SwipeGestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final int SWIPE_THRESHOLD = 100;
         private static final int SWIPE_VELOCITY_THRESHOLD = 100;
@@ -401,11 +450,11 @@ public class ExerciseDetailsActivity extends BaseActivity {
                 float diffY = e2.getY() - e1.getY();
                 float diffX = e2.getX() - e1.getX();
                 
-                
+
                 if (Math.abs(diffX) > Math.abs(diffY)) {
-                    
+
                     if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD && diffX > 0) {
-                        
+
                         finish();
                         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                         return true;
@@ -421,8 +470,8 @@ public class ExerciseDetailsActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         if (hideAddButton) {
-            
-            
+
+
             super.onBackPressed();
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         } else {

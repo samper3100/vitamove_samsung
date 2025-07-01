@@ -38,33 +38,33 @@ public class ProgramManager {
     private final String userId;
     private Context context;
 
-
+    
     private ProgramManager() {
-
+        
         SupabaseClient supabaseClient = SupabaseClient.getInstance(SupabaseClient.SUPABASE_URL, "public-anon-key");
         this.supabaseProgramRepository = new SupabaseProgramRepository(supabaseClient);
         this.mainHandler = new Handler(Looper.getMainLooper());
         this.executor = Executors.newCachedThreadPool();
-        this.userId = "default_user";
+        this.userId = "default_user"; 
     }
     
-
+    
     public ProgramManager(Context context) {
         this();
         init(context);
     }
 
-
+    
     public void init(Context context) {
         this.context = context;
         
-
+        
         if (supabaseProgramRepository instanceof SupabaseProgramRepository) {
-            ((SupabaseProgramRepository) supabaseProgramRepository).setContext(context);
+            supabaseProgramRepository.setContext(context);
         }
     }
 
-
+    
     public static synchronized ProgramManager getInstance() {
         if (instance == null) {
             instance = new ProgramManager();
@@ -72,18 +72,18 @@ public class ProgramManager {
         return instance;
     }
 
-
+    
     public List<WorkoutProgram> getAllPrograms() {
         try {
-            
-            
 
+            
+            
             List<WorkoutProgram> programs = supabaseProgramRepository.getAllPrograms();
             
 
 
             
-            
+
             return programs;
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при получении программ тренировок: " + e.getMessage(), e);
@@ -92,14 +92,14 @@ public class ProgramManager {
         return Collections.emptyList();
     }
 
-
+    
     public void getAllProgramsAsync(AsyncCallback<List<WorkoutProgram>> callback) {
-
+        
         if (supabaseProgramRepository instanceof SupabaseProgramRepository) {
-
-            ((SupabaseProgramRepository) supabaseProgramRepository).getAllProgramsAsync(callback);
+            
+            supabaseProgramRepository.getAllProgramsAsync(callback);
         } else {
-
+            
             executor.execute(() -> {
                 try {
                     List<WorkoutProgram> programs = getAllPrograms();
@@ -112,7 +112,7 @@ public class ProgramManager {
         }
     }
 
-
+    
     public List<WorkoutProgram> filterPrograms(String goal, String level, int maxDuration) {
         try {
             return supabaseProgramRepository.filterPrograms(goal, level, maxDuration);
@@ -122,7 +122,7 @@ public class ProgramManager {
         }
     }
     
-
+    
     public void getProgramByIdAsync(String programId, AsyncCallback<WorkoutProgram> callback) {
         executor.execute(() -> {
             try {
@@ -134,7 +134,7 @@ public class ProgramManager {
         });
     }
 
-
+    
     public WorkoutProgram getActiveProgram() {
         try {
             return supabaseProgramRepository.getActiveProgram(userId);
@@ -144,7 +144,7 @@ public class ProgramManager {
         }
     }
     
-
+    
     public WorkoutProgram getActiveProgram(String userId) {
         try {
             return supabaseProgramRepository.getActiveProgram(userId);
@@ -154,7 +154,7 @@ public class ProgramManager {
         }
     }
     
-
+    
     public void getActiveProgramAsync(AsyncCallback<WorkoutProgram> callback) {
         executor.execute(() -> {
             try {
@@ -169,7 +169,7 @@ public class ProgramManager {
     
 
 
-
+    
     public String startProgram(String programId, long startDate) {
         try {
             return supabaseProgramRepository.startProgram(userId, programId, startDate);
@@ -181,7 +181,7 @@ public class ProgramManager {
     
 
     
-
+    
     public void startProgramAsync(String programId, long startDate, AsyncCallback<String> callback) {
         executor.execute(() -> {
             try {
@@ -195,35 +195,35 @@ public class ProgramManager {
     
 
 
-
+    
     public List<ProgramDay> getProgramDays(String programId) {
         try {
-            
+
             if (context != null) {
                 ProgramRoomDatabase db = ProgramRoomDatabase.getInstance(context);
                 List<ProgramDayEntity> dayEntities = db.programDayDao().getAllByProgramId(programId);
 
                 if (dayEntities != null && !dayEntities.isEmpty()) {
-                    
+
                     List<ProgramDay> days = new ArrayList<>();
                     for (ProgramDayEntity entity : dayEntities) {
-
+                        
                         days.add(ProgramRoomCache.entityToProgramDay(entity)); 
                     }
-
+                    
                     Collections.sort(days, Comparator.comparingInt(ProgramDay::getDayNumber));
                     return days;
                 } else {
-                    
+
                 }
             } else {
-                
+
             }
 
-
             
-            List<ProgramDay> daysFromRepo = supabaseProgramRepository.getProgramDays(programId);
 
+            List<ProgramDay> daysFromRepo = supabaseProgramRepository.getProgramDays(programId);
+            
             if (daysFromRepo != null) {
                  Collections.sort(daysFromRepo, Comparator.comparingInt(ProgramDay::getDayNumber));
             }
@@ -235,11 +235,11 @@ public class ProgramManager {
         }
     }
     
-
+    
     public void getProgramDaysAsync(String programId, AsyncCallback<List<ProgramDay>> callback) {
         executor.execute(() -> {
             try {
-
+                
                 List<ProgramDay> days = getProgramDays(programId);
                 mainHandler.post(() -> callback.onSuccess(days));
             } catch (Exception e) {
@@ -248,11 +248,11 @@ public class ProgramManager {
         });
     }
 
-
+    
     public List<ProgramExercise> getProgramDayExercises(String dayId) {
         try {
-
             
+
             if (context != null) {
                 com.martist.vitamove.workout.data.cache.ProgramRoomDatabase db = 
                     com.martist.vitamove.workout.data.cache.ProgramRoomDatabase.getInstance(context);
@@ -260,26 +260,26 @@ public class ProgramManager {
                     db.programExerciseDao().getAllByDayId(dayId);
                 
                 if (exerciseEntities != null && !exerciseEntities.isEmpty()) {
-                    
+
                     List<ProgramExercise> exercises = new ArrayList<>();
                     for (com.martist.vitamove.workout.data.models.room.ProgramExerciseEntity entity : exerciseEntities) {
-
-
-                        exercises.add(ProgramRoomCache.entityToProgramExercise(entity));
+                        
+                        
+                        exercises.add(ProgramRoomCache.entityToProgramExercise(entity)); 
                     }
-
-                    Collections.sort(exercises, Comparator.comparingInt(ProgramExercise::getOrderNumber));
-                    return exercises;
-
-                } else {
                     
+                    Collections.sort(exercises, Comparator.comparingInt(ProgramExercise::getOrderNumber));
+                    return exercises; 
+                     
+                } else {
+
                 }
             } else {
-                 
+
             }
 
-
             
+
             return supabaseProgramRepository.getProgramDayExercises(dayId);
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при получении упражнений для дня программы: " + dayId, e);
@@ -288,7 +288,7 @@ public class ProgramManager {
     }
 
     
-
+    
     public ProgramDay getFirstProgramDay(String programId) {
         try {
             List<ProgramDay> days = getProgramDays(programId);
@@ -296,7 +296,7 @@ public class ProgramManager {
                 return null;
             }
             
-
+            
             Collections.sort(days, Comparator.comparingInt(ProgramDay::getDayNumber));
             return days.get(0);
         } catch (Exception e) {
@@ -305,26 +305,26 @@ public class ProgramManager {
         }
     }
 
-
+    
     public ProgramDay getProgramDayById(String dayId) {
         try {
-            
+
             if (context != null) {
                 ProgramRoomDatabase db = ProgramRoomDatabase.getInstance(context);
                 ProgramDayEntity dayEntity = db.programDayDao().getById(dayId);
 
                 if (dayEntity != null) {
-                    
+
                     return ProgramRoomCache.entityToProgramDay(dayEntity);
                 } else {
-                    
+
                 }
             } else {
-                
+
             }
 
-
             
+
             return supabaseProgramRepository.getProgramDayById(dayId); 
 
         } catch (Exception e) {
@@ -333,7 +333,7 @@ public class ProgramManager {
         }
     }
 
-
+    
     public void getProgramDayByIdAsync(String dayId, AsyncCallback<ProgramDay> callback) {
         executor.execute(() -> {
             try {
@@ -346,11 +346,11 @@ public class ProgramManager {
     }
 
     
-
+    
     public boolean deleteProgramExercise(String exerciseId) {
         try {
-
-
+            
+            
             return true;
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при удалении упражнения из программы: " + exerciseId, e);
@@ -360,7 +360,7 @@ public class ProgramManager {
     
 
 
-
+    
     public boolean saveProgramConfig(ProgramSetupConfig config) {
         if (config == null || !config.isValid()) {
             Log.e(TAG, "Невозможно сохранить недействительную конфигурацию программы: " + config);
@@ -371,14 +371,14 @@ public class ProgramManager {
             SharedPreferences sharedPrefs = context.getSharedPreferences("program_config_prefs", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPrefs.edit();
             
-
+            
             editor.putString("config_program_id_" + config.getProgramId(), config.getProgramId());
             editor.putLong("config_start_date_" + config.getProgramId(), config.getStartDate());
             editor.putBoolean("config_reminders_enabled_" + config.getProgramId(), config.isRemindersEnabled());
             editor.putLong("config_reminder_time_" + config.getProgramId(), config.getReminderTime());
             editor.putBoolean("config_auto_progression_" + config.getProgramId(), config.isAutoProgression());
             
-
+            
             StringBuilder daysBuilder = new StringBuilder();
             for (int i = 0; i < config.getWorkoutDays().size(); i++) {
                 daysBuilder.append(config.getWorkoutDays().get(i));
@@ -388,7 +388,7 @@ public class ProgramManager {
             }
             editor.putString("config_workout_days_" + config.getProgramId(), daysBuilder.toString());
             
-
+            
             return editor.commit();
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при сохранении конфигурации программы: " + e.getMessage(), e);
@@ -396,7 +396,7 @@ public class ProgramManager {
         }
     }
     
-
+    
     public void saveProgramConfigAsync(ProgramSetupConfig config, AsyncCallback<Boolean> callback) {
         executor.execute(() -> {
             try {
@@ -409,7 +409,7 @@ public class ProgramManager {
         });
     }
     
-
+    
     public ProgramSetupConfig getProgramConfig(String programId) {
         if (programId == null || programId.isEmpty()) {
             Log.e(TAG, "Невозможно получить конфигурацию для null или пустого programId");
@@ -419,9 +419,9 @@ public class ProgramManager {
         try {
             SharedPreferences sharedPrefs = context.getSharedPreferences("program_config_prefs", Context.MODE_PRIVATE);
             
-
+            
             if (!sharedPrefs.contains("config_program_id_" + programId)) {
-                
+
                 return null;
             }
             
@@ -432,7 +432,7 @@ public class ProgramManager {
             config.setReminderTime(sharedPrefs.getLong("config_reminder_time_" + programId, 0));
             config.setAutoProgression(sharedPrefs.getBoolean("config_auto_progression_" + programId, true));
             
-
+            
             String daysStr = sharedPrefs.getString("config_workout_days_" + programId, "");
             if (!daysStr.isEmpty()) {
                 List<Integer> workoutDays = new ArrayList<>();
@@ -455,31 +455,31 @@ public class ProgramManager {
     }
 
 
-
+    
     public void updateProgramWorkoutDaysAsync(String programId, List<Integer> workoutDays, AsyncCallback<Boolean> callback) {
         executor.execute(() -> {
             try {
-                
+
                 
                 WorkoutProgram program = supabaseProgramRepository.getProgramById(programId);
                 if (program != null) {
-                    
+
                     
                     program.setWorkoutDays(workoutDays);
                     boolean updated = supabaseProgramRepository.updateProgram(program);
+
                     
                     
-
-
+                    
                     if (supabaseProgramRepository instanceof SupabaseProgramRepository) {
-                        ((SupabaseProgramRepository) supabaseProgramRepository).saveWorkoutDaysToPrefs(programId, workoutDays);
-                        
+                        supabaseProgramRepository.saveWorkoutDaysToPrefs(programId, workoutDays);
+
                     }
                     
-
+                    
                     if (supabaseProgramRepository instanceof SupabaseProgramRepository) {
-                        List<Integer> savedDays = ((SupabaseProgramRepository) supabaseProgramRepository).loadWorkoutDaysFromPrefs(programId);
-                        
+                        List<Integer> savedDays = supabaseProgramRepository.loadWorkoutDaysFromPrefs(programId);
+
                     }
                     
                     mainHandler.post(() -> callback.onSuccess(true));
@@ -494,20 +494,20 @@ public class ProgramManager {
         });
     }
 
-
+    
     public boolean deactivateProgram(String programId) {
-        
+
         try {
             supabaseProgramRepository.deactivateProgram(programId);
             
-
+            
             SharedPreferences prefs = context.getSharedPreferences("program_activation_prefs", Context.MODE_PRIVATE);
             String currentActiveId = prefs.getString("active_program_id", null);
             
-
+            
             if (programId.equals(currentActiveId)) {
                 prefs.edit().remove("active_program_id").apply();
-                
+
             }
             
             return true;
@@ -518,12 +518,12 @@ public class ProgramManager {
     }
 
 
-
+    
     public ProgramExercise getProgramExerciseById(String exerciseId) {
-        
+
         try {
-
-
+            
+            
             return supabaseProgramRepository.getProgramExerciseById(exerciseId);
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при получении упражнения по ID: " + e.getMessage(), e);
@@ -532,27 +532,27 @@ public class ProgramManager {
     }
 
 
-
+    
     public void clearProgramCache() {
         try {
-
-            com.martist.vitamove.workout.data.cache.ProgramRoomCache.clearCache();
             
+            com.martist.vitamove.workout.data.cache.ProgramRoomCache.clearCache();
+
         } catch (Exception e) {
             Log.e(TAG, "clearProgramCache: Ошибка при очистке кэша программ", e);
         }
     }
 
-
+    
     public void getFullProgramAsync(String programId, AsyncCallback<JSONObject> callback) {
-        
 
+        
         if (supabaseProgramRepository instanceof SupabaseProgramRepository) {
-            ((SupabaseProgramRepository) supabaseProgramRepository).getFullProgramAsync(programId, new AsyncCallback<JSONObject>() {
+            supabaseProgramRepository.getFullProgramAsync(programId, new AsyncCallback<JSONObject>() {
                 @Override
                 public void onSuccess(JSONObject result) {
-
                     
+
                     callback.onSuccess(result);
                 }
 
@@ -569,31 +569,31 @@ public class ProgramManager {
     }
 
 
-
+    
     public void fetchAndCacheWorkoutPlansAsync(String programId, AsyncCallback<Void> callback) {
         if (programId == null || programId.isEmpty()) {
             callback.onFailure(new IllegalArgumentException("Program ID не может быть пустым"));
             return;
         }
-        
-        final long startTime = System.currentTimeMillis();
+
+        final long startTime = System.currentTimeMillis(); 
         executor.execute(() -> {
             try {
-
+                
                 List<WorkoutPlan> plans = supabaseProgramRepository.getWorkoutPlansForProgram(programId);
                 int plansCount = (plans != null) ? plans.size() : 0;
-                
+
  
                 if (plans != null) {
-
                     
+
                     com.martist.vitamove.workout.data.cache.ProgramRoomCache.saveWorkoutPlans(programId, plans);
-
-
-                    mainHandler.post(() -> callback.onSuccess(null));
+                    
+                    
+                    mainHandler.post(() -> callback.onSuccess(null)); 
                 } else {
-
                      
+
                      throw new Exception("Не удалось получить планы из репозитория (null)");
                 }
  
@@ -604,30 +604,30 @@ public class ProgramManager {
         });
     }
 
-
+    
     public void getCachedWorkoutPlansAsync(String programId, AsyncCallback<List<WorkoutPlan>> callback) {
         if (programId == null || programId.isEmpty()) {
             callback.onFailure(new IllegalArgumentException("Program ID не может быть пустым"));
             return;
         }
-         
 
+        
         com.martist.vitamove.workout.data.cache.ProgramRoomCache.getWorkoutPlansByProgramId(programId, callback);
     }
 
 
 
-
+    
     public List<WorkoutPlan> getWorkoutPlansByProgramId(String programId) {
         if (programId == null || programId.isEmpty()) {
             Log.e(TAG, "getWorkoutPlansByProgramId: programId не может быть null или пустым");
             return new ArrayList<>();
         }
         
-        
+
         
         try {
-
+            
             ProgramRoomDatabase db = ProgramRoomDatabase.getInstance(context);
             if (db == null) {
                 Log.e(TAG, "getWorkoutPlansByProgramId: Ошибка доступа к базе данных Room");
@@ -640,13 +640,13 @@ public class ProgramManager {
                 return new ArrayList<>();
             }
             
-
+            
             List<WorkoutPlan> plans = new ArrayList<>();
             for (WorkoutPlanEntity entity : entities) {
                 plans.add(com.martist.vitamove.workout.data.cache.ProgramRoomCache.mapEntityToWorkoutPlan(entity));
             }
             
-            
+
             return plans;
             
         } catch (Exception e) {
@@ -655,7 +655,7 @@ public class ProgramManager {
         }
     }
 
-
+    
     public void fetchAndCacheFullProgramAsync(String programId, AsyncCallback<Void> callback) {
         if (programId == null || programId.isEmpty()) {
             if (callback != null) {
@@ -664,37 +664,37 @@ public class ProgramManager {
             return;
         }
         
-        
-        
 
+        
+        
         getFullProgramAsync(programId, new AsyncCallback<JSONObject>() {
             @Override
             public void onSuccess(JSONObject programJson) {
                 try {
-
+                    
                     if (programJson != null) {
-                        
-                        
 
+                        
+                        
                         ProgramRoomCache.saveProgramAsync(programJson, new AsyncCallback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
-                                
-                                
 
+                                
+                                
                                 fetchAndCacheWorkoutPlansAsync(programId, new AsyncCallback<Void>() {
                                     @Override
                                     public void onSuccess(Void result) {
-                                        
+
                                         if (callback != null) {
-                                            callback.onSuccess(null);
+                                            callback.onSuccess(null); 
                                         }
                                     }
                                     
                                     @Override
                                     public void onFailure(Exception e) {
                                         Log.e(TAG, "Ошибка при загрузке планов тренировок: " + e.getMessage(), e);
-
+                                        
                                         if (callback != null) {
                                             callback.onSuccess(null);
                                         }

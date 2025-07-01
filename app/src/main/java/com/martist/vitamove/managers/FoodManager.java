@@ -49,27 +49,27 @@ public class FoodManager {
     private final Map<String, List<SelectedFood>> selectedFoods = new HashMap<>();
     
 
-    private Map<String, Float> dailyNorms = new HashMap<>();
+    private final Map<String, Float> dailyNorms = new HashMap<>();
     private String currentFitnessGoal = "weight_loss";
     private int targetCalories = 2000;
     
     private final SharedPreferences prefs;
     private final Gson gson;
     private final Context context;
-    private Map<String, Meal> meals;
+    private final Map<String, Meal> meals;
     private final SupabaseFoodRepository foodRepository;
     private final SupabaseBarcodeRepository barcodeRepository;
     private final GigaChatProductService gigaChatProductService;
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private List<Food> foods;
-    private Date currentDate;
+    private final Date currentDate;
     private Date selectedDateForView;
     private final MealsDatabase database;
     private static final String TAG = "FoodManager";
     private final Map<String, Boolean> foodExistsCache = new HashMap<>();
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler mainHandler = new Handler();
-    private String userId;
+    private final String userId;
 
 
     private final MutableLiveData<Float> caloriesNormLiveData = new MutableLiveData<>();
@@ -93,7 +93,7 @@ public class FoodManager {
 
         SharedPreferences userPrefs = context.getSharedPreferences("VitaMovePrefs", Context.MODE_PRIVATE);
         this.userId = userPrefs.getString("userId", "default_user");
-        
+
         
 
         SupabaseClient supabaseClient = SupabaseClient.getInstance(
@@ -227,7 +227,7 @@ public class FoodManager {
         meals.clear();
         meals.putAll(savedMeals);
         
-        
+
         return total;
     }
 
@@ -255,7 +255,7 @@ public class FoodManager {
             total += snack.getCalories();
         }
         
-        
+
         return total;
     }
 
@@ -300,7 +300,8 @@ public class FoodManager {
     }
 
     public void addFoodToMeal(String mealType, Food food, float amount) {
-        
+
+
                   
         if (mealType == null) {
             Log.e(TAG, "Ошибка: mealType равен null");
@@ -315,7 +316,7 @@ public class FoodManager {
 
         Meal meal = meals.get(mealType);
         if (meal == null) {
-            
+
             meal = new Meal(getMealTitle(mealType), getMealIcon(mealType));
         }
         
@@ -325,7 +326,8 @@ public class FoodManager {
 
         meals.put(mealType, meal);
         
-        
+
+
 
 
         final String dateStr = dateFormat.format(getSelectedDateForView());
@@ -349,11 +351,11 @@ public class FoodManager {
                     existingMeal.mealData = dayMeal.mealData;
                     existingMeal.updatedAt = new Date();
                     database.mealDao().update(existingMeal);
-                    
+
                 } else {
 
                     database.mealDao().insert(dayMeal);
-                    
+
                 }
                 
 
@@ -363,11 +365,11 @@ public class FoodManager {
                 CaloriesManager caloriesManager = CaloriesManager.getInstance(context);
                 caloriesManager.setConsumedCalories(totalCalories);
                 
-                
+
                 
 
                 mainHandler.post(() -> {
-                    
+
                     EventBus.getDefault().post(new MealUpdatedEvent(mealType));
                 });
             } catch (Exception e) {
@@ -452,7 +454,7 @@ public class FoodManager {
         new Thread(() -> {
             String dateStr = dateFormat.format(date);
             
-            
+
             List<DayMeal> dayMeals = database.mealDao().getMealsForDate(dateStr, userId);
             meals.clear();
             
@@ -460,7 +462,7 @@ public class FoodManager {
                 try {
                     Meal meal = gson.fromJson(dayMeal.mealData, Meal.class);
                     meals.put(dayMeal.mealType, meal);
-                    
+
                 } catch (JsonSyntaxException e) {
                     Log.e(TAG, "Error parsing meal data: " + e.getMessage());
                 }
@@ -550,7 +552,7 @@ public class FoodManager {
             SharedPreferences.Editor editor = appPrefs.edit();
             editor.putString("fitness_goal", fitnessGoal);
             editor.apply();
-            
+
         }
         
         this.currentFitnessGoal = fitnessGoal;
@@ -559,7 +561,7 @@ public class FoodManager {
         this.targetCalories = userPrefs.getInt("target_calories", 2000);
         
 
-        
+
         
 
         updateNutrientsNorms();
@@ -692,7 +694,7 @@ public class FoodManager {
         float currentProteinGrams = dailyNorms.get("proteins");
         if (currentProteinGrams > maxProteinGrams) {
 
-            
+
             dailyNorms.put("proteins", maxProteinGrams);
             
 
@@ -720,7 +722,7 @@ public class FoodManager {
         float minFatGrams = 0.5f * currentWeight;
         
         if (currentFatGrams < minFatGrams) {
-            
+
             dailyNorms.put("fats", minFatGrams);
             
 
@@ -735,7 +737,7 @@ public class FoodManager {
         }
         
 
-        
+
         
 
         caloriesNormLiveData.postValue(dailyNorms.get("calories"));
@@ -775,7 +777,7 @@ public class FoodManager {
 
 
     public void updateMeal(String mealType, Meal meal) {
-        
+
         
 
         meals.put(mealType, meal);
@@ -802,11 +804,11 @@ public class FoodManager {
                     existingMeal.mealData = dayMeal.mealData;
                     existingMeal.updatedAt = new Date();
                     database.mealDao().update(existingMeal);
-                    
+
                 } else {
 
                     database.mealDao().insert(dayMeal);
-                    
+
                 }
                 
 
@@ -816,7 +818,7 @@ public class FoodManager {
                 CaloriesManager caloriesManager = CaloriesManager.getInstance(context);
                 caloriesManager.setConsumedCalories(totalCalories);
                 
-                
+
                 
 
 
@@ -841,17 +843,18 @@ public class FoodManager {
     }
 
     public void searchProductWithGigaChat(String productName, GigaChatProductService.ProductListener listener) {
-        
+
         gigaChatProductService.searchProduct(productName, new GigaChatProductService.ProductListener() {
             @Override
             public void onProductFound(Food food) {
-                
+
+
                 listener.onProductFound(food);
             }
 
             @Override
             public void onProductNotFound() {
-                
+
                 listener.onProductNotFound();
             }
 
@@ -902,7 +905,7 @@ public class FoodManager {
 
 
         if (foods == null || foods.isEmpty()) {
-            
+
             return null;
         }
         
@@ -911,16 +914,16 @@ public class FoodManager {
         }
         
         String normalizedName = name.trim().toLowerCase();
-        
+
         
         for (Food food : foods) {
             if (food.getName() != null && food.getName().trim().toLowerCase().equals(normalizedName)) {
-                
+
                 return food;
             }
         }
         
-        
+
         return null;
     }
 
@@ -946,19 +949,19 @@ public class FoodManager {
             }
             
             String normalizedName = name.trim().toLowerCase();
-            
+
             
             Food foundFood = null;
             for (Food food : foods) {
                 if (food.getName() != null && food.getName().trim().toLowerCase().equals(normalizedName)) {
-                    
+
                     foundFood = food;
                     break;
                 }
             }
             
             if (foundFood == null) {
-                
+
             }
             
 
@@ -995,7 +998,7 @@ public class FoodManager {
             instance = null;
 
             MealsDatabase.resetInstance();
-            
+
         }
     }
 
@@ -1159,7 +1162,8 @@ public class FoodManager {
                 try {
                     Meal meal = gson.fromJson(dayMeal.mealData, Meal.class);
                     if (meal != null) {
-                        
+
+
                         return meal;
                     }
                 } catch (JsonSyntaxException e) {

@@ -4,9 +4,13 @@ import android.util.Log;
 
 import com.martist.vitamove.VitaMoveApplication;
 import com.martist.vitamove.managers.FoodManager;
+import com.martist.vitamove.models.Meal;
 import com.martist.vitamove.models.UserProfile;
 import com.martist.vitamove.repositories.UserRepository;
+import com.martist.vitamove.workout.data.models.ExerciseSet;
 import com.martist.vitamove.workout.data.models.UserWorkout;
+import com.martist.vitamove.workout.data.models.WorkoutExercise;
+import com.martist.vitamove.workout.data.repository.WorkoutRepository;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -51,26 +55,29 @@ public class GigaChatService {
     private String accessToken;
     private long tokenExpireTime;
     
-    
+
     private String sessionId;
-    private List<Map<String, String>> conversationHistory = new ArrayList<>();
+    private final List<Map<String, String>> conversationHistory = new ArrayList<>();
     private static final int MAX_HISTORY_MESSAGES = 10;
     
-    
+
     private UserProfile userProfile;
     private List<UserWorkout> recentWorkouts;
     private Map<String, Object> userFoodStats;
     private boolean contextInitialized = false;
     
+
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     
-    private static final int MAX_CONTEXT_LENGTH = 1000;
+
+    private static final int MAX_CONTEXT_LENGTH = 3000;
 
     private GigaChatService(String clientId, String clientSecret) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.sessionId = UUID.randomUUID().toString();
         
-        
+
         TrustManager[] trustAllCerts = new TrustManager[]{
             new X509TrustManager() {
                 @Override
@@ -95,7 +102,7 @@ public class GigaChatService {
             throw new RuntimeException(e);
         }
 
-        
+
         this.client = new OkHttpClient.Builder()
             .sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) trustAllCerts[0])
             .hostnameVerifier((hostname, session) -> true)
@@ -117,90 +124,261 @@ public class GigaChatService {
         void onError(String error);
     }
     
-    
+
     public void initializeUserContext() {
-        try {
-            
-            android.content.Context context = VitaMoveApplication.getAppContext();
-            if (context == null) {
-                Log.e(TAG, "Не удалось получить контекст приложения");
-                return;
-            }
-            
-            
-            UserRepository userRepository = new UserRepository(context);
-            userProfile = userRepository.getCurrentUserProfile();
-            
-            
-            FoodManager foodManager = FoodManager.getInstance(context);
-            userFoodStats = new HashMap<>();
-            userFoodStats.put("caloriesConsumed", foodManager.getTotalCaloriesForCurrentDate());
-            userFoodStats.put("proteinConsumed", foodManager.getTotalProtein());
-            userFoodStats.put("fatsConsumed", foodManager.getTotalFat());
-            userFoodStats.put("carbsConsumed", foodManager.getTotalCarbs());
-            
-            
-            
-            recentWorkouts = new ArrayList<>();
-            
-            contextInitialized = true;
-            
-        } catch (Exception e) {
-            Log.e(TAG, "Ошибка при инициализации контекста пользователя", e);
+
+        synchronized(this) {
+            contextInitialized = false;
         }
+        
+
+        new Thread(() -> {
+            try {
+
+                android.content.Context context = VitaMoveApplication.getAppContext();
+                if (context == null) {
+                    Log.e(TAG, "Не удалось получить контекст приложения");
+                    return;
+                }
+                
+
+                UserRepository userRepository = new UserRepository(context);
+                UserProfile profile = userRepository.getCurrentUserProfile();
+                
+
+                FoodManager foodManager = FoodManager.getInstance(context);
+                Map<String, Object> stats = new HashMap<>();
+                stats.put("caloriesConsumed", foodManager.getTotalCaloriesForCurrentDate());
+                stats.put("proteinConsumed", foodManager.getTotalProtein());
+                stats.put("fatsConsumed", foodManager.getTotalFat());
+                stats.put("carbsConsumed", foodManager.getTotalCarbs());
+                
+
+                Map<String, Meal> todayMeals = new HashMap<>();
+                todayMeals.put("breakfast", foodManager.getMealForDate("breakfast", dateFormat.format(new Date())));
+                todayMeals.put("lunch", foodManager.getMealForDate("lunch", dateFormat.format(new Date())));
+                todayMeals.put("dinner", foodManager.getMealForDate("dinner", dateFormat.format(new Date())));
+                todayMeals.put("snack", foodManager.getMealForDate("snack", dateFormat.format(new Date())));
+                
+
+                stats.put("meals", todayMeals);
+                
+
+                List<UserWorkout> workouts = new ArrayList<>();
+                
+
+                try {
+
+                    String userId = ((VitaMoveApplication) context).getCurrentUserId();
+                    if (userId != null) {
+                        WorkoutRepository workoutRepository = ((VitaMoveApplication) context).getWorkoutRepository();
+                        workouts = workoutRepository.getRecentWorkouts(userId, 3);
+
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Ошибка при загрузке тренировок", e);
+                }
+                
+
+                synchronized(this) {
+                    userProfile = profile;
+                    userFoodStats = stats;
+                    recentWorkouts = workouts;
+                    
+
+                    contextInitialized = true;
+
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Ошибка при инициализации контекста пользователя", e);
+            }
+        }).start();
     }
     
-    
+
     private String getUserContextString() {
-        if (!contextInitialized) {
-            initializeUserContext();
+        UserProfile profile;
+        Map<String, Object> foodStats;
+        List<UserWorkout> workouts;
+        boolean isInitialized;
+        
+
+        synchronized(this) {
+            isInitialized = contextInitialized;
+            profile = userProfile;
+            foodStats = userFoodStats;
+            workouts = recentWorkouts;
+        }
+        
+
+        if (!isInitialized) {
+
+            StringBuilder context = new StringBuilder("Пользователь использует фитнес-приложение VitaMove.");
+            
+
+            if (profile != null) {
+                context.append("\nПрофиль пользователя:\n");
+                context.append("Имя: ").append(profile.getName()).append("\n");
+                context.append("Возраст: ").append(profile.getAge()).append("\n");
+                context.append("Пол: ").append(profile.getGender()).append("\n");
+            }
+            
+            return context.toString();
         }
         
         StringBuilder context = new StringBuilder();
         
-        
-        if (userProfile != null) {
+
+        if (profile != null) {
             context.append("Профиль пользователя:\n");
-            context.append("Имя: ").append(userProfile.getName()).append("\n");
-            context.append("Возраст: ").append(userProfile.getAge()).append("\n");
-            context.append("Пол: ").append(userProfile.getGender()).append("\n");
-            context.append("Текущий вес: ").append(userProfile.getCurrentWeight()).append(" кг\n");
-            context.append("Целевой вес: ").append(userProfile.getTargetWeight()).append(" кг\n");
-            context.append("Рост: ").append(userProfile.getHeight()).append(" см\n");
-            context.append("Целевые калории: ").append(userProfile.getTargetCalories()).append(" ккал\n");
+            context.append("Имя: ").append(profile.getName()).append("\n");
+            context.append("Возраст: ").append(profile.getAge()).append("\n");
+            context.append("Пол: ").append(profile.getGender()).append("\n");
+            context.append("Текущий вес: ").append(profile.getCurrentWeight()).append(" кг\n");
+            context.append("Целевой вес: ").append(profile.getTargetWeight()).append(" кг\n");
+            context.append("Рост: ").append(profile.getHeight()).append(" см\n");
+            context.append("Целевые калории: ").append(profile.getTargetCalories()).append(" ккал\n");
         }
         
-        
-        if (userFoodStats != null && !userFoodStats.isEmpty()) {
+
+        if (foodStats != null && !foodStats.isEmpty()) {
             context.append("\nПитание сегодня:\n");
-            context.append("Калории: ").append(userFoodStats.get("caloriesConsumed")).append(" ккал\n");
-            context.append("Белки: ").append(userFoodStats.get("proteinConsumed")).append(" г\n");
-            context.append("Жиры: ").append(userFoodStats.get("fatsConsumed")).append(" г\n");
-            context.append("Углеводы: ").append(userFoodStats.get("carbsConsumed")).append(" г\n");
-        }
-        
-        
-        if (recentWorkouts != null && !recentWorkouts.isEmpty()) {
-            context.append("\nПоследние тренировки:\n");
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+            context.append("Калории: ").append(foodStats.get("caloriesConsumed")).append(" ккал\n");
+            context.append("Белки: ").append(foodStats.get("proteinConsumed")).append(" г\n");
+            context.append("Жиры: ").append(foodStats.get("fatsConsumed")).append(" г\n");
+            context.append("Углеводы: ").append(foodStats.get("carbsConsumed")).append(" г\n");
             
-            int count = Math.min(recentWorkouts.size(), 3); 
-            for (int i = 0; i < count; i++) {
-                UserWorkout workout = recentWorkouts.get(i);
-                context.append(dateFormat.format(new Date(workout.getStartTime())))
-                      .append(": ")
-                      .append(workout.getName())
-                      .append("\n");
+
+            if (foodStats.containsKey("meals") && foodStats.get("meals") != null) {
+                @SuppressWarnings("unchecked")
+                Map<String, Meal> meals = (Map<String, Meal>) foodStats.get("meals");
+                
+                if (!meals.isEmpty()) {
+                    context.append("\nПриемы пищи сегодня:\n");
+                    
+
+                    for (Map.Entry<String, Meal> entry : meals.entrySet()) {
+                        String mealType = entry.getKey();
+                        Meal meal = entry.getValue();
+                        
+                        if (meal != null && meal.getFoods() != null && !meal.getFoods().isEmpty()) {
+                            context.append("--- ").append(getMealTitle(mealType)).append(" ---\n");
+                            context.append("Калории: ").append(String.format("%.1f", meal.getCalories())).append(" ккал\n");
+                            context.append("Белки: ").append(String.format("%.1f", meal.getProteins())).append(" г\n");
+                            context.append("Жиры: ").append(String.format("%.1f", meal.getFats())).append(" г\n");
+                            context.append("Углеводы: ").append(String.format("%.1f", meal.getCarbs())).append(" г\n");
+                            
+
+                            context.append("Продукты:\n");
+                            List<Meal.FoodPortion> foods = meal.getFoods();
+                            int maxFoods = Math.min(foods.size(), 5);
+                            
+                            for (int i = 0; i < maxFoods; i++) {
+                                Meal.FoodPortion portion = foods.get(i);
+                                context.append("• ").append(portion.getFood().getName())
+                                      .append(": ").append(portion.getPortionSize()).append(" г\n");
+                            }
+                            
+                            if (foods.size() > maxFoods) {
+                                context.append("• и еще ").append(foods.size() - maxFoods).append(" продуктов\n");
+                            }
+                            
+                            context.append("\n");
+                        }
+                    }
+                }
             }
         }
         
+
+        if (workouts != null && !workouts.isEmpty()) {
+            context.append("\nПоследние тренировки:\n");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault());
+            
+            int count = Math.min(workouts.size(), 3);
+            for (int i = 0; i < count; i++) {
+                UserWorkout workout = workouts.get(i);
+                context.append("--- Тренировка от ").append(dateFormat.format(new Date(workout.getStartTime())))
+                      .append(" ---\n");
+                context.append("Название: ").append(workout.getName()).append("\n");
+                
+
+                if (workout.getExercises() != null && !workout.getExercises().isEmpty()) {
+                    int exerciseCount = workout.getExercises().size();
+                    context.append("Количество упражнений: ").append(exerciseCount).append("\n");
+                    
+
+                    int maxExercises = Math.min(exerciseCount, 5);
+                    for (int j = 0; j < maxExercises; j++) {
+                        WorkoutExercise exercise = workout.getExercises().get(j);
+                        if (exercise.getExercise() != null) {
+                            context.append("• ").append(exercise.getExercise().getName()).append(": ");
+                            
+
+                            List<ExerciseSet> sets = exercise.getSetsCompleted();
+                            if (sets != null && !sets.isEmpty()) {
+                                context.append(sets.size()).append(" подходов (");
+                                
+
+                                int maxSets = Math.min(sets.size(), 3);
+                                for (int k = 0; k < maxSets; k++) {
+                                    ExerciseSet set = sets.get(k);
+                                    if (k > 0) context.append(", ");
+                                    
+                                    if (set.getReps() != null) {
+                                        context.append(set.getReps()).append(" повт.");
+                                    }
+                                    
+                                    if (set.getWeight() != null && set.getWeight() > 0) {
+                                        context.append(" x ").append(set.getWeight()).append(" кг");
+                                    }
+                                }
+                                
+                                if (sets.size() > maxSets) {
+                                    context.append(" и ещё ").append(sets.size() - maxSets).append(" подх.");
+                                }
+                                
+                                context.append(")\n");
+                            } else {
+                                context.append("без подходов\n");
+                            }
+                        }
+                    }
+                    
+                    if (exerciseCount > maxExercises) {
+                        context.append("• и ещё ").append(exerciseCount - maxExercises).append(" упражнений\n");
+                    }
+                } else {
+                    context.append("Нет упражнений\n");
+                }
+                
+                context.append("\n");
+            }
+        }
         
+
         String result = context.toString();
         if (result.length() > MAX_CONTEXT_LENGTH) {
             result = result.substring(0, MAX_CONTEXT_LENGTH) + "...";
         }
         
         return result;
+    }
+    
+
+    private String getMealTitle(String mealType) {
+        switch (mealType.toLowerCase()) {
+            case "breakfast":
+                return "Завтрак";
+            case "lunch":
+                return "Обед";
+            case "dinner":
+                return "Ужин";
+            case "snack":
+                return "Перекус";
+            default:
+                return mealType;
+        }
     }
 
     private void refreshTokenIfNeeded(final Runnable onSuccess, final ChatCallback callback) {
@@ -212,16 +390,16 @@ public class GigaChatService {
         try {
             String authBody = "scope=GIGACHAT_API_PERS&grant_type=client_credentials";
             
-            
+
             String credentials = clientId + ":" + clientSecret;
             String basicAuth = "Basic " + android.util.Base64.encodeToString(
                 credentials.getBytes(),
                 android.util.Base64.NO_WRAP
             );
 
-            
-            
-            
+
+
+
 
             RequestBody body = RequestBody.create(
                 authBody,
@@ -236,9 +414,9 @@ public class GigaChatService {
                 .post(body)
                 .build();
 
-            
-            
-            
+
+
+
 
             client.newCall(request).enqueue(new Callback() {
                 @Override
@@ -251,8 +429,8 @@ public class GigaChatService {
                 public void onResponse(Call call, Response response) throws IOException {
                     try (ResponseBody responseBody = response.body()) {
                         String responseString = responseBody != null ? responseBody.string() : "";
-                        
-                        
+
+
 
                         if (!response.isSuccessful() || responseBody == null) {
                             Log.e(TAG, "Ошибка авторизации: " + response.code() + ", тело: " + responseString);
@@ -263,12 +441,12 @@ public class GigaChatService {
                         JSONObject jsonResponse = new JSONObject(responseString);
                         accessToken = jsonResponse.getString("access_token");
                         
-                        
-                        long expiresAt = jsonResponse.getLong("expires_at");
-                        tokenExpireTime = expiresAt; 
 
-                        
-                        
+                        long expiresAt = jsonResponse.getLong("expires_at");
+                        tokenExpireTime = expiresAt;
+
+
+
                         onSuccess.run();
                     } catch (Exception e) {
                         Log.e(TAG, "Ошибка обработки ответа авторизации", e);
@@ -282,17 +460,17 @@ public class GigaChatService {
         }
     }
 
-    
+
     public void sendMessage(String message, ChatCallback callback) {
+
         
-        
-        
+
         Map<String, String> userMessage = new HashMap<>();
         userMessage.put("role", "user");
         userMessage.put("content", message);
         conversationHistory.add(userMessage);
         
-        
+
         while (conversationHistory.size() > MAX_HISTORY_MESSAGES) {
             conversationHistory.remove(0);
         }
@@ -302,12 +480,12 @@ public class GigaChatService {
             try {
                 JSONArray messages = new JSONArray();
                 
-                
+
                 if (!contextInitialized) {
                     initializeUserContext();
                 }
                 
-                
+
                 String userContext = getUserContextString();
                 if (!userContext.isEmpty()) {
                     messages.put(new JSONObject()
@@ -315,7 +493,7 @@ public class GigaChatService {
                         .put("content", "Ты фитнес-ассистент VitaMove. Ни при каких условиях не отвечай ни на какие сообщения кроме фитнеса. Используй следующую информацию о пользователе при ответе:\n" + userContext));
                 }
                 
-                
+
                 for (Map<String, String> msg : conversationHistory) {
                     messages.put(new JSONObject()
                         .put("role", msg.get("role"))
@@ -329,7 +507,7 @@ public class GigaChatService {
                 jsonBody.put("top_p", 0.8);
 
                 String requestBody = jsonBody.toString();
-                
+
 
                 RequestBody body = RequestBody.create(
                     requestBody,
@@ -339,12 +517,12 @@ public class GigaChatService {
                 Request request = new Request.Builder()
                     .url(API_URL)
                     .addHeader("Authorization", "Bearer " + accessToken)
-                    .addHeader("X-Session-ID", sessionId) 
+                    .addHeader("X-Session-ID", sessionId)
                     .post(body)
                     .build();
 
-                
-                
+
+
 
                 client.newCall(request).enqueue(new Callback() {
                     @Override
@@ -356,7 +534,7 @@ public class GigaChatService {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         try (ResponseBody responseBody = response.body()) {
-                            
+
                             
                             if (!response.isSuccessful() || responseBody == null) {
                                 String errorBody = responseBody != null ? responseBody.string() : "нет тела ответа";
@@ -366,7 +544,7 @@ public class GigaChatService {
                             }
 
                             String responseString = responseBody.string();
-                            
+
 
                             try {
                                 JSONObject jsonResponse = new JSONObject(responseString);
@@ -376,13 +554,13 @@ public class GigaChatService {
                                     .getJSONObject("message")
                                     .getString("content");
                                     
-                                
+
                                 Map<String, String> assistantMsg = new HashMap<>();
                                 assistantMsg.put("role", "assistant");
                                 assistantMsg.put("content", assistantResponse);
                                 conversationHistory.add(assistantMsg);
 
-                                
+
                                 callback.onResponse(assistantResponse);
                             } catch (Exception e) {
                                 Log.e(TAG, "Ошибка обработки ответа: " + e.getMessage(), e);
@@ -401,31 +579,40 @@ public class GigaChatService {
         }, callback);
     }
     
-    
+
     public void addMessageToHistory(String role, String content) {
         Map<String, String> message = new HashMap<>();
         message.put("role", role);
         message.put("content", content);
         conversationHistory.add(message);
         
-        
+
         while (conversationHistory.size() > MAX_HISTORY_MESSAGES) {
             conversationHistory.remove(0);
         }
         
-        
+
     }
     
+
+    public boolean isContextInitialized() {
+        synchronized(this) {
+            return contextInitialized;
+        }
+    }
     
+
+    public void updateUserContext() {
+        synchronized(this) {
+            contextInitialized = false;
+        }
+        initializeUserContext();
+    }
+    
+
     public void resetConversation() {
         conversationHistory.clear();
         sessionId = UUID.randomUUID().toString();
-        
-    }
-    
-    
-    public void updateUserContext() {
-        contextInitialized = false;
-        initializeUserContext();
+
     }
 } 

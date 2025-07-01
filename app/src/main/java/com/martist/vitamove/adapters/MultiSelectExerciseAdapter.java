@@ -1,12 +1,12 @@
 package com.martist.vitamove.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
@@ -28,11 +28,29 @@ public class MultiSelectExerciseAdapter extends ListAdapter<Exercise, MultiSelec
     private final Set<String> selectedExerciseIds = new HashSet<>();
     private final boolean isSingleSelectionMode;
     private final Context context;
+    private OnExerciseClickListener listener;
+
+
+    public interface OnExerciseClickListener {
+
+        void onExerciseItemClick(Exercise exercise);
+    }
 
     public MultiSelectExerciseAdapter(Context context, boolean isSingleSelectionMode) {
         super(DIFF_CALLBACK);
         this.context = context;
         this.isSingleSelectionMode = isSingleSelectionMode;
+    }
+    
+    public MultiSelectExerciseAdapter(Context context, boolean isSingleSelectionMode, OnExerciseClickListener listener) {
+        super(DIFF_CALLBACK);
+        this.context = context;
+        this.isSingleSelectionMode = isSingleSelectionMode;
+        this.listener = listener;
+    }
+
+    public void setOnExerciseClickListener(OnExerciseClickListener listener) {
+        this.listener = listener;
     }
 
     private static final DiffUtil.ItemCallback<Exercise> DIFF_CALLBACK = new DiffUtil.ItemCallback<Exercise>() {
@@ -72,6 +90,15 @@ public class MultiSelectExerciseAdapter extends ListAdapter<Exercise, MultiSelec
         notifyDataSetChanged();
     }
 
+
+    public void setPreviouslySelectedIds(List<String> selectedIds) {
+        if (selectedIds != null) {
+            selectedExerciseIds.clear();
+            selectedExerciseIds.addAll(selectedIds);
+            notifyDataSetChanged();
+        }
+    }
+
     class ExerciseViewHolder extends RecyclerView.ViewHolder {
         private final TextView nameText;
         private final TextView muscleGroupText;
@@ -86,12 +113,19 @@ public class MultiSelectExerciseAdapter extends ListAdapter<Exercise, MultiSelec
             cardView = itemView.findViewById(R.id.cardView);
             addButton = itemView.findViewById(R.id.add_exercise_button);
 
+
             cardView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
                     Exercise clickedExercise = getItem(position);
                     if (clickedExercise != null && clickedExercise.getId() != null) {
-                        toggleSelection(clickedExercise);
+
+                        if (listener != null) {
+                            listener.onExerciseItemClick(clickedExercise);
+                        } else {
+
+                            toggleSelection(clickedExercise);
+                        }
                     }
                 }
             });

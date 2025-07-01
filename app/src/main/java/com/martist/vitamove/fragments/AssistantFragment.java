@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +50,7 @@ public class AssistantFragment extends Fragment {
     
     private static final String PREFS_NAME = "AssistantFragmentPrefs";
     private static final String KEY_CHAT_HISTORY = "chat_history";
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     @Nullable
     @Override
@@ -110,6 +109,7 @@ public class AssistantFragment extends Fragment {
         );
         
         
+        
         gigaChatService.initializeUserContext();
     }
 
@@ -153,7 +153,7 @@ public class AssistantFragment extends Fragment {
         editor.putString(KEY_CHAT_HISTORY, json);
         editor.apply();
         
-        
+
     }
     
     
@@ -177,7 +177,7 @@ public class AssistantFragment extends Fragment {
                 
                 chatRecyclerView.post(() -> chatRecyclerView.scrollToPosition(chatAdapter.getItemCount() - 1));
                 
-                
+
                 
                 
                 restoreChatHistoryToGigaChat(messages);
@@ -199,7 +199,7 @@ public class AssistantFragment extends Fragment {
             }
         }
         
-        
+
     }
     
     
@@ -341,14 +341,9 @@ public class AssistantFragment extends Fragment {
 
     private void setUIState(boolean isEnabled) {
         isProcessingMessage = !isEnabled;
-        if (sendButton != null) {
-            sendButton.setEnabled(isEnabled);
-            sendButton.setAlpha(isEnabled ? 1.0f : 0.5f);
-        }
-        if (messageInput != null) {
-            messageInput.setEnabled(isEnabled);
-            messageInput.setAlpha(isEnabled ? 1.0f : 0.7f);
-        }
+        
+       
+        
     }
 
     private void addUserMessage(String message) {
@@ -371,12 +366,15 @@ public class AssistantFragment extends Fragment {
         toolbar.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary));
         
         
+        if (getActivity() != null && getActivity().getWindow() != null) {
+            getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary));
+        }
+        
+        
         ImageButton resetButton = view.findViewById(R.id.resetButton);
         if (resetButton != null) {
             resetButton.setOnClickListener(v -> resetConversation());
             resetButton.setVisibility(View.VISIBLE);
         }
-        
-
     }
 } 

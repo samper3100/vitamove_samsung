@@ -23,7 +23,7 @@ public class HeightRulerAdapter extends RecyclerView.Adapter<HeightRulerAdapter.
     private static final int MAX_HEIGHT_CM = 270;
     
     private final Context context;
-    private HeightSelectedListener listener;
+    private final HeightSelectedListener listener;
 
     
     public interface HeightSelectedListener {

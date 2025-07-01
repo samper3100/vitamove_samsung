@@ -2,7 +2,6 @@ package com.martist.vitamove.workout.data.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import java.io.Serializable;
 
 public class ExerciseMedia implements Parcelable {
     private String previewImage;
@@ -53,7 +52,7 @@ public class ExerciseMedia implements Parcelable {
     public String getAnimationUrl() { return animationUrl; }
     public String getModelUrl() { return modelUrl; }
     
-    
+
     public String getPreviewImageUrl() { return previewImage; }
 
     public void setPreviewImage(String previewImage) { this.previewImage = previewImage; }

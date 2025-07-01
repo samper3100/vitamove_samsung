@@ -44,11 +44,11 @@ public class ProgramDayEntity {
     @ColumnInfo(name = "updated_at")
     private String updatedAt;
     
-    
+
     public ProgramDayEntity() {
     }
     
-    
+
     @NonNull
     public String getId() {
         return id;

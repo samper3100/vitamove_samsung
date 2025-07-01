@@ -8,24 +8,25 @@ import java.util.List;
 
 public class Exercise implements Parcelable {
     private static final String TAG = "Exercise";
-    private String id;
-    private String name;
-    private String description;
-    private List<String> muscleGroups;
-    private List<String> secondaryMuscles;
-    private List<String> stabilizerMuscles;
-    private List<String> equipmentRequired;
-    private String difficulty;
-    private String exerciseType;
-    private ExerciseMedia media;
-    private int defaultSets;
-    private String defaultReps;
-    private int defaultRestSeconds;
-    private float met;
+    private final String id;
+    private final String name;
+    private final String description;
+    private final List<String> muscleGroups;
+    private final List<String> secondaryMuscles;
+    private final List<String> stabilizerMuscles;
+    private final List<String> equipmentRequired;
+    private final String difficulty;
+    private final String exerciseType;
+    private final ExerciseMedia media;
+    private final int defaultSets;
+    private final String defaultReps;
+    private final int defaultRestSeconds;
+    private final float met;
     private int durationSeconds;
-    private String instructions;
-    private List<String> commonMistakes;
-    private String contraindications;
+    private final String instructions;
+    private final List<String> commonMistakes;
+    private final String contraindications;
+    private final List<String> categories;
 
     protected Exercise(Parcel in) {
         id = in.readString();
@@ -51,6 +52,8 @@ public class Exercise implements Parcelable {
         commonMistakes = new ArrayList<>();
         in.readStringList(commonMistakes);
         contraindications = in.readString();
+        categories = new ArrayList<>();
+        in.readStringList(categories);
     }
 
     @Override
@@ -73,6 +76,7 @@ public class Exercise implements Parcelable {
         dest.writeString(instructions);
         dest.writeStringList(commonMistakes);
         dest.writeString(contraindications);
+        dest.writeStringList(categories);
     }
 
     @Override
@@ -98,7 +102,7 @@ public class Exercise implements Parcelable {
                    List<String> equipmentRequired, String difficulty, String exerciseType,
                    ExerciseMedia media, int defaultSets, String defaultReps, int defaultRestSeconds,
                    float met, String instructions, List<String> commonMistakes,
-                   String contraindications) {
+                   String contraindications, List<String> categories) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -116,9 +120,9 @@ public class Exercise implements Parcelable {
         this.instructions = instructions;
         this.commonMistakes = commonMistakes != null ? commonMistakes : new ArrayList<>();
         this.contraindications = contraindications;
+        this.categories = categories != null ? categories : new ArrayList<>();
         
 
-        calculateDurationSeconds();
     }
 
 
@@ -126,10 +130,10 @@ public class Exercise implements Parcelable {
                    List<String> secondaryMuscles, List<String> stabilizerMuscles,
                    List<String> equipmentRequired, String difficulty, String exerciseType,
                    ExerciseMedia media, int defaultSets, String defaultReps, int defaultRestSeconds,
-                   float met, String instructions, List<String> commonMistakes) {
+                   float met, String instructions, List<String> commonMistakes, String category) {
         this(id, name, description, muscleGroups, secondaryMuscles, stabilizerMuscles,
              equipmentRequired, difficulty, exerciseType, media, defaultSets, defaultReps,
-             defaultRestSeconds, met, instructions, commonMistakes, null);
+             defaultRestSeconds, met, instructions, commonMistakes, null, new ArrayList<>());
     }
 
 
@@ -139,7 +143,7 @@ public class Exercise implements Parcelable {
                    float met) {
         this(id, name, description, muscleGroups, new ArrayList<>(), new ArrayList<>(),
              equipmentRequired, difficulty, exerciseType, media, defaultSets, defaultReps,
-             defaultRestSeconds, met, null, new ArrayList<>(), null);
+             defaultRestSeconds, met, null, new ArrayList<>(), null, new ArrayList<>());
     }
 
 
@@ -152,6 +156,15 @@ public class Exercise implements Parcelable {
     public List<String> getEquipmentRequired() { return equipmentRequired; }
     public String getInstructions() { return instructions; }
     public String getContraindications() { return contraindications; }
+    public List<String> getCategories() { return categories; }
+    
+
+    public String getCategory() { 
+        if (categories != null && !categories.isEmpty()) {
+            return categories.get(0);
+        }
+        return "";
+    }
     
 
     public String getDifficulty() { return difficulty; }
@@ -222,50 +235,63 @@ public class Exercise implements Parcelable {
     
 
     public int getDurationSeconds() {
-        if (durationSeconds <= 0) {
-            calculateDurationSeconds();
-        }
         return durationSeconds;
     }
     
 
+    public boolean isCardioExercise() {
+        if (exerciseType == null) {
+            return false;
+        }
+        
+        String exerciseTypeLower = exerciseType.toLowerCase();
+        return exerciseTypeLower.contains("кардио") || 
+               exerciseTypeLower.contains("cardio");
+    }
     
 
-    public void calculateDurationSeconds() {
-
-        int repsDuration = 0;
-        
-
-        try {
-
-            if (defaultReps != null && defaultReps.contains("-")) {
-
-                String firstValue = defaultReps.split("-")[0].trim();
-                int reps = Integer.parseInt(firstValue);
-
-                repsDuration = reps * 3;
-            } else if (defaultReps != null) {
-                int reps = Integer.parseInt(defaultReps);
-
-                repsDuration = reps * 3;
-            } else {
-
-                repsDuration = 30;
-            }
-        } catch (NumberFormatException e) {
-
-
-            repsDuration = 30;
+    public boolean isStaticExercise() {
+        if (exerciseType == null) {
+            return false;
         }
         
-
-        this.durationSeconds = (repsDuration + defaultRestSeconds) * defaultSets - defaultRestSeconds;
-        
-
-        if (this.durationSeconds < 30) {
-            this.durationSeconds = 30;
-        }
+        String exerciseTypeLower = exerciseType.toLowerCase();
+        return exerciseTypeLower.contains("статич") || 
+               exerciseTypeLower.contains("static") ||
+               exerciseTypeLower.contains("удержание") ||
+               exerciseTypeLower.contains("планка");
     }
+    
+
+    public boolean isFunctionalExercise() {
+        if (exerciseType == null) {
+            return false;
+        }
+        
+        String exerciseTypeLower = exerciseType.toLowerCase();
+        return exerciseTypeLower.contains("функциональн") || 
+               exerciseTypeLower.equals("functional");
+    }
+    
+
+    public boolean isBodyweightExercise() {
+        if (exerciseType == null) {
+            return false;
+        }
+        
+        String exerciseTypeLower = exerciseType.toLowerCase();
+        return exerciseTypeLower.equals("с собственным весом") ||
+               exerciseTypeLower.contains("собствен") ||
+               exerciseTypeLower.equals("bodyweight");
+    }
+    
+
+    public boolean usesTimer() {
+        return isCardioExercise() || isStaticExercise();
+
+    }
+
+
 
 
 
@@ -305,6 +331,7 @@ public class Exercise implements Parcelable {
         private String instructions = "";
         private List<String> commonMistakes = new ArrayList<>();
         private String contraindications = "";
+        private List<String> categories = new ArrayList<>();
 
         public Builder id(String id) {
             this.id = id;
@@ -347,14 +374,14 @@ public class Exercise implements Parcelable {
         }
 
 
-        public Builder equipmentRequiredFromEnum(List<Equipment> equipmentRequired) {
-            List<String> stringEquipment = new ArrayList<>();
-            for (Equipment equipment : equipmentRequired) {
-                stringEquipment.add(equipment.getRussianName());
-            }
-            this.equipmentRequired = stringEquipment;
-            return this;
-        }
+
+
+
+
+
+
+
+
 
 
         public Builder difficulty(String difficulty) {
@@ -417,6 +444,25 @@ public class Exercise implements Parcelable {
             return this;
         }
 
+        public Builder category(String category) {
+            if (category != null && !category.isEmpty()) {
+                if (this.categories == null) {
+                    this.categories = new ArrayList<>();
+                }
+                if (!this.categories.contains(category)) {
+                    this.categories.add(category);
+                }
+            }
+            return this;
+        }
+
+        public Builder categories(List<String> categories) {
+            this.categories = categories;
+            return this;
+        }
+
+
+
         public Exercise build() {
             return new Exercise(
                 id, 
@@ -435,7 +481,8 @@ public class Exercise implements Parcelable {
                 met, 
                 instructions, 
                 commonMistakes,
-                contraindications
+                contraindications,
+                categories
             );
         }
     }

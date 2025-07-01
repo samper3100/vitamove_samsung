@@ -55,7 +55,7 @@ public class ProgramTemplateManager {
             String difficulty,
             boolean isPublic) throws Exception {
         
-        
+
 
         ProgramTemplate template = new ProgramTemplate();
         template.setAuthorId(authorId);
@@ -115,7 +115,7 @@ public class ProgramTemplateManager {
             String focusArea,
             int estimatedDuration) throws Exception {
 
-        
+
 
         ProgramTemplateDay day = new ProgramTemplateDay();
         day.setTemplateId(templateId);
@@ -173,7 +173,7 @@ public class ProgramTemplateManager {
             String restTime,
             String notes) throws Exception {
 
-        
+
 
         ProgramTemplateExercise exercise = new ProgramTemplateExercise();
         exercise.setTemplateDayId(dayId);

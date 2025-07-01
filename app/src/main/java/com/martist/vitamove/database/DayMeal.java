@@ -1,8 +1,9 @@
 package com.martist.vitamove.database;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import androidx.room.ColumnInfo;
+
 import java.util.Date;
 
 @Entity(tableName = "meals")
@@ -17,7 +18,7 @@ public class DayMeal {
     public String mealType;
     
     @ColumnInfo(name = "meal_data")
-    public String mealData; 
+    public String mealData;
     
     @ColumnInfo(name = "created_at")
     public Date createdAt;
@@ -26,5 +27,5 @@ public class DayMeal {
     public Date updatedAt;
     
     @ColumnInfo(name = "user_id")
-    public String userId; 
+    public String userId;
 } 

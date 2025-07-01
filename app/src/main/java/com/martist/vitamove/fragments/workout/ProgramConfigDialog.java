@@ -30,8 +30,8 @@ public class ProgramConfigDialog extends BottomSheetDialogFragment {
     private ProgramManager programManager;
     private WorkoutProgram program;
     
-    private CheckBox[] dayCheckboxes = new CheckBox[7];
-    private List<Integer> selectedDays = new ArrayList<>();
+    private final CheckBox[] dayCheckboxes = new CheckBox[7];
+    private final List<Integer> selectedDays = new ArrayList<>();
     
     public static ProgramConfigDialog newInstance(String programId) {
         ProgramConfigDialog fragment = new ProgramConfigDialog();

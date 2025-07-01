@@ -23,14 +23,14 @@ public class WeightRulerAdapter extends RecyclerView.Adapter<WeightRulerAdapter.
     private static final int MAX_WEIGHT_KG = 150;
     
     private final Context context;
-    private WeightSelectedListener listener;
+    private final WeightSelectedListener listener;
 
-    
+
     public interface WeightSelectedListener {
         void onWeightSelected(int weightValue, boolean isMetric);
     }
 
-    
+
     public WeightRulerAdapter(Context context, boolean isMetric, WeightSelectedListener listener) {
         this.context = context;
         this.listener = listener;
@@ -48,44 +48,44 @@ public class WeightRulerAdapter extends RecyclerView.Adapter<WeightRulerAdapter.
         setupMetricRuler(holder, position);
     }
 
-    
+
     private void setupMetricRuler(RulerViewHolder holder, int position) {
         int weightValue = MIN_WEIGHT_KG + position;
         
-        
+
         if (weightValue % 10 == 0) {
             holder.line.setLayoutParams(new LinearLayout.LayoutParams(
-                    2, 
-                    dpToPx(context, 35)  
+                    2,
+                    dpToPx(context, 35)
             ));
-            holder.line.setBackgroundColor(Color.BLACK); 
+            holder.line.setBackgroundColor(Color.BLACK);
             holder.valueText.setVisibility(View.VISIBLE);
             holder.valueText.setText(String.valueOf(weightValue));
             holder.valueText.setTypeface(null, Typeface.BOLD);
         } 
-        
+
         else if (weightValue % 5 == 0) {
             holder.line.setLayoutParams(new LinearLayout.LayoutParams(
-                    1, 
-                    dpToPx(context, 25)  
+                    1,
+                    dpToPx(context, 25)
             ));
             holder.line.setBackgroundColor(ContextCompat.getColor(context, R.color.gray_700));
             holder.valueText.setVisibility(View.VISIBLE);
             holder.valueText.setText(String.valueOf(weightValue));
             holder.valueText.setTextSize(10);
         } 
-        
+
         else {
             holder.line.setLayoutParams(new LinearLayout.LayoutParams(
-                    1, 
-                    dpToPx(context, 15)  
+                    1,
+                    dpToPx(context, 15)
             ));
             holder.line.setBackgroundColor(ContextCompat.getColor(context, R.color.gray_500));
             holder.valueText.setVisibility(View.INVISIBLE);
         }
     }
 
-    
+
     private int dpToPx(Context context, int dp) {
         return (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
@@ -99,7 +99,7 @@ public class WeightRulerAdapter extends RecyclerView.Adapter<WeightRulerAdapter.
         return MAX_WEIGHT_KG - MIN_WEIGHT_KG + 1;
     }
 
-    
+
     static class RulerViewHolder extends RecyclerView.ViewHolder {
         View line;
         TextView valueText;

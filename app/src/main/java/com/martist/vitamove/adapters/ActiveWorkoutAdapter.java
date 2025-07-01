@@ -1,6 +1,5 @@
 package com.martist.vitamove.adapters;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +26,7 @@ public class ActiveWorkoutAdapter extends RecyclerView.Adapter<RecyclerView.View
     private ExerciseViewModel viewModel;
     
     private List<WorkoutExercise> exercises;
-    private OnExerciseClickListener listener;
+    private final OnExerciseClickListener listener;
 
     public interface OnExerciseClickListener {
         void onExerciseClick(WorkoutExercise exercise, int position);
@@ -40,7 +39,7 @@ public class ActiveWorkoutAdapter extends RecyclerView.Adapter<RecyclerView.View
     public ActiveWorkoutAdapter(List<WorkoutExercise> exercises, OnExerciseClickListener listener) {
         this.exercises = new ArrayList<>(exercises);
         this.listener = listener;
-        
+
     }
 
     @Override
@@ -69,23 +68,24 @@ public class ActiveWorkoutAdapter extends RecyclerView.Adapter<RecyclerView.View
         if (getItemViewType(position) == TYPE_EXERCISE) {
             WorkoutExercise exercise = exercises.get(position);
             ((ExerciseViewHolder) holder).bind(exercise, position);
-            
-        } else {
 
+        } else {
+            
         }
     }
 
     @Override
     public int getItemCount() {
-
+        
         return exercises.size() + 1;
     }
 
     public void updateExercises(List<WorkoutExercise> newExercises) {
-        
+
+
         this.exercises = new ArrayList<>(newExercises);
 
-
+        
         updateOrderNumbers();
 
         notifyDataSetChanged();
@@ -95,7 +95,7 @@ public class ActiveWorkoutAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 
     public boolean moveExercise(int fromPosition, int toPosition) {
-
+        
         if (fromPosition == exercises.size() || toPosition == exercises.size()) {
             return false;
         }
@@ -143,7 +143,7 @@ public class ActiveWorkoutAdapter extends RecyclerView.Adapter<RecyclerView.View
             setsText = itemView.findViewById(R.id.exercise_sets);
             repsText = itemView.findViewById(R.id.exercise_reps);
 
-
+            
             cardView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION && listener != null) {
@@ -151,7 +151,7 @@ public class ActiveWorkoutAdapter extends RecyclerView.Adapter<RecyclerView.View
                 }
             });
 
-
+            
             deleteButton.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION && listener != null) {
@@ -167,60 +167,46 @@ public class ActiveWorkoutAdapter extends RecyclerView.Adapter<RecyclerView.View
             String muscleGroups = String.join(", ", muscleGroupRussianNames);
             muscleGroupsText.setText(muscleGroups);
 
-            
+
             List<ExerciseSet> sets = exercise.getSetsCompleted();
             int totalSets = sets.size();
 
-            
-            
+
+
             for (int i = 0; i < sets.size(); i++) {
                 ExerciseSet set = sets.get(i);
-                
+
+
             }
 
+            
+            boolean isCardioExercise = exercise.getExercise().isCardioExercise();
+            boolean isStaticExercise = exercise.getExercise().isStaticExercise();
 
-            boolean isCardioExercise = exercise.getExercise().getExerciseType() != null &&
-                (exercise.getExercise().getExerciseType().equalsIgnoreCase("Кардио") ||
-                 exercise.getExercise().getExerciseType().equalsIgnoreCase("Cardio") ||
-                 exercise.getExercise().getExerciseType().toLowerCase().contains("кардио") ||
-                 exercise.getExercise().getExerciseType().toLowerCase().contains("cardio"));
-
-
-            boolean isStaticExercise = exercise.getExercise().getExerciseType() != null &&
-                (exercise.getExercise().getExerciseType().equalsIgnoreCase("Статическое") ||
-                 exercise.getExercise().getExerciseType().equalsIgnoreCase("Static") ||
-                 exercise.getExercise().getExerciseType().toLowerCase().contains("статич") ||
-                 exercise.getExercise().getExerciseType().toLowerCase().contains("static") ||
-                 exercise.getExercise().getExerciseType().toLowerCase().contains("удержание") ||
-                 exercise.getExercise().getExerciseType().toLowerCase().contains("планка"));
-
-
+            
             boolean isWarmupStretching = exercise.getExercise().getExerciseType() != null &&
                 (exercise.getExercise().getExerciseType().equalsIgnoreCase("разминка") ||
                  exercise.getExercise().getExerciseType().equalsIgnoreCase("warm-up") ||
                  exercise.getExercise().getExerciseType().equalsIgnoreCase("растяжка") ||
                  exercise.getExercise().getExerciseType().equalsIgnoreCase("stretching"));
 
+
+
             
-
-
             ImageView repsIcon = itemView.findViewById(R.id.exercise_reps_icon);
-
+            
             ImageView setsIcon = itemView.findViewById(R.id.exercise_sets_icon);
-
+            
             TextView separator = itemView.findViewById(R.id.stats_separator);
 
-
+            
             if (isWarmupStretching) {
+                
+                boolean isCompleted = exercise.isRated();
 
-                boolean isCompleted = false;
+                
 
-
-                if (exercise.isRated()) {
-                    isCompleted = true;
-                }
-
-
+                
                 if (!isCompleted && sets != null && !sets.isEmpty()) {
                     for (ExerciseSet set : sets) {
                         if (set.isCompleted()) {
@@ -230,81 +216,81 @@ public class ActiveWorkoutAdapter extends RecyclerView.Adapter<RecyclerView.View
                     }
                 }
 
-
+                
                 setsIcon.setVisibility(View.GONE);
                 setsText.setVisibility(View.GONE);
                 separator.setVisibility(View.GONE);
 
-
+                
                 repsIcon.setVisibility(View.VISIBLE);
                 repsIcon.setImageResource(isCompleted ?
-                   R.drawable.ic_check : R.drawable.ic_time);
+                   R.drawable.ic_check : R.drawable.ic_time); 
                 repsText.setVisibility(View.VISIBLE);
                 repsText.setText(isCompleted ? "Выполнено" : "Не выполнено");
 
-                
+
             }
-
+            
             else if (isCardioExercise || isStaticExercise) {
-
+                
                 int totalSeconds = 0;
 
-
+                
                 for (ExerciseSet set : sets) {
                     if (set.getDurationSeconds() != null) {
                         totalSeconds += set.getDurationSeconds();
                     }
                 }
 
-
+                
                 int totalMinutes = totalSeconds / 60;
 
-
+                
                 setsIcon.setVisibility(View.GONE);
                 setsText.setVisibility(View.GONE);
                 separator.setVisibility(View.GONE);
 
-
+                
                 repsIcon.setVisibility(View.VISIBLE);
-                repsIcon.setImageResource(R.drawable.ic_timer);
+                repsIcon.setImageResource(R.drawable.ic_timer); 
                 repsText.setVisibility(View.VISIBLE);
                 repsText.setText(totalMinutes > 0 ? totalMinutes + " минут" : totalSeconds > 0 ? totalSeconds + " секунд" : "0 минут");
 
-                
-            } else {
 
-                int completedSets = exercise.getCompletedSetsCount();
+            } else {
                 
+                int completedSets = exercise.getCompletedSetsCount();
+
 
                 int targetSets = exercise.getExercise().getDefaultSets();
 
-
+                
                 setsText.setVisibility(View.VISIBLE);
 
-
+                
                 if (repsIcon != null) {
                     repsIcon.setImageResource(R.drawable.ic_fitness);
                 }
 
-
+                
                 if (setsIcon != null) {
                     setsIcon.setVisibility(View.VISIBLE);
                 }
 
-
+                
                 if (separator != null) {
                     separator.setVisibility(View.VISIBLE);
                 }
 
                 if (totalSets > 0) {
                     setsText.setText(completedSets + "/" + totalSets + " подходов");
-                    
+
                 } else if (targetSets > 0) {
                     setsText.setText("0/" + targetSets + " подходов");
-                    
+
                 } else {
                     setsText.setText("0 подходов");
-                    
+
                 }
 
                 String defaultReps = exercise.getExercise().getDefaultReps();
@@ -314,27 +300,27 @@ public class ActiveWorkoutAdapter extends RecyclerView.Adapter<RecyclerView.View
                     Integer reps = firstSet.getTargetReps() != null
                         ? firstSet.getTargetReps()
                         : firstSet.getReps();
-                    
+
                     if (reps != null) {
                         repsText.setText(reps + " повторений");
-                        
+
                     } else if (firstSet.getDurationSeconds() != null) {
                         int seconds = firstSet.getDurationSeconds();
                         repsText.setText(seconds + " секунд");
-                        
+
                     } else if (defaultReps != null && !defaultReps.isEmpty()) {
                         repsText.setText(defaultReps + " повторений");
-                        
+
                     } else {
                         repsText.setText("-- повторений");
-                        
+
                     }
                 } else if (defaultReps != null && !defaultReps.isEmpty()) {
                     repsText.setText(defaultReps + " повторений");
-                    
+
                 } else {
                     repsText.setText("-- повторений");
-                    
+
                 }
             }
         }
@@ -344,7 +330,7 @@ public class ActiveWorkoutAdapter extends RecyclerView.Adapter<RecyclerView.View
         AddExerciseViewHolder(@NonNull View itemView) {
             super(itemView);
             
-
+            
             itemView.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onAddExerciseClick();

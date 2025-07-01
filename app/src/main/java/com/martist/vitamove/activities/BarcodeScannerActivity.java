@@ -72,13 +72,14 @@ public class BarcodeScannerActivity extends BaseActivity {
         scannerLine = findViewById(R.id.scanner_line);
         
         findViewById(R.id.close_button).setOnClickListener(v -> finish());
+      
         
         
         foodManager = FoodManager.getInstance(this);
         
         
         foodManager.loadFoodsAsync(() -> {
-            
+
         });
         
         
@@ -224,7 +225,7 @@ public class BarcodeScannerActivity extends BaseActivity {
             .addOnSuccessListener(barcodes -> {
                 if (!barcodes.isEmpty() && isScanning && !isSearching) {
                     String barcode = barcodes.get(0).getRawValue();
-                    
+
                     isSearching = true;
                     showLoadingDialog();
                     
@@ -242,7 +243,7 @@ public class BarcodeScannerActivity extends BaseActivity {
                             if (food != null) {
                                 
                                 runOnUiThread(() -> {
-                                    
+
                                     hideLoadingDialog();
                                     openPortionSizeActivity(food);
                                 });
@@ -252,7 +253,7 @@ public class BarcodeScannerActivity extends BaseActivity {
                         
                         
                         runOnUiThread(() -> {
-                            
+
                             
                             
                             openFoodFactsService.getProductByBarcode(barcode, new OpenFoodFactsService.ProductListener() {
@@ -263,7 +264,8 @@ public class BarcodeScannerActivity extends BaseActivity {
                                         
                                         foodManager.findFoodByExactNameAsync(food.getName(), localFood -> {
                                             if (localFood != null) {
-                                                
+
+
                                                 
                                                 
                                                 Food combinedFood = new Food.Builder()
@@ -308,7 +310,7 @@ public class BarcodeScannerActivity extends BaseActivity {
                                                 openPortionSizeActivity(combinedFood);
                                             } else {
                                                 
-                                                
+
                                                 hideLoadingDialog();
                                                 openPortionSizeActivity(food);
                                             }
@@ -335,19 +337,19 @@ public class BarcodeScannerActivity extends BaseActivity {
                                 @Override
                                 public void onProductFoundWithoutNutrients(String productName) {
                                     runOnUiThread(() -> {
-                                        
+
                                         
                                         
                                         
                                         foodManager.findFoodByExactNameAsync(productName, localFood -> {
                                             if (localFood != null) {
-                                                
+
                                                 
                                                 hideLoadingDialog();
                                                 openPortionSizeActivity(localFood);
                                             } else {
                                                 
-                                                
+
                                                 searchProductWithGigaChat(productName);
                                             }
                                         });
@@ -443,7 +445,7 @@ public class BarcodeScannerActivity extends BaseActivity {
                 return;
             }
             
-            
+
             productNameDialog.dismiss();
             showLoadingDialog();
             searchProductWithGigaChat(productName);
@@ -472,14 +474,12 @@ public class BarcodeScannerActivity extends BaseActivity {
         
         foodManager.findFoodByExactNameAsync(productName, localFood -> {
             if (localFood != null) {
-                
+
                 hideLoadingDialog();
                 openPortionSizeActivity(localFood);
                 return;
             }
-            
-            
-            
+
             
             foodManager.searchProductWithGigaChat(productName, new GigaChatProductService.ProductListener() {
                 @Override
@@ -488,7 +488,7 @@ public class BarcodeScannerActivity extends BaseActivity {
                         
                         Food localFood = foodManager.findFoodByExactName(food.getName());
                         if (localFood != null) {
-                            
+
                             
                             
                             Food combinedFood = new Food.Builder()
@@ -532,7 +532,7 @@ public class BarcodeScannerActivity extends BaseActivity {
                             openPortionSizeActivity(combinedFood);
                         } else {
                             
-                            
+
                             hideLoadingDialog();
                             openPortionSizeActivity(food);
                         }
@@ -561,8 +561,7 @@ public class BarcodeScannerActivity extends BaseActivity {
     }
     
     private void openPortionSizeActivity(Food food) {
-        
-        
+
         
         
         try {
@@ -576,12 +575,12 @@ public class BarcodeScannerActivity extends BaseActivity {
             Food testFood = testBundle.getParcelable("testFood");
             
             if (testFood != null) {
-                
+
             } else {
-                
+
             }
             
-            
+
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при загрузке класса Food: " + e.getMessage(), e);
         }
@@ -595,9 +594,9 @@ public class BarcodeScannerActivity extends BaseActivity {
         if (mealType == null) {
             
             mealType = "breakfast"; 
-            
+
         } else {
-            
+
         }
         
         
@@ -606,13 +605,13 @@ public class BarcodeScannerActivity extends BaseActivity {
         
         if (lastScannedBarcode != null && !lastScannedBarcode.isEmpty()) {
             intent.putExtra(Constants.EXTRA_BARCODE, lastScannedBarcode);
-            
+
         }
         
         
         intent.putExtra(Constants.EXTRA_FOOD, food);
         
-        
+
         
         
         startActivity(intent);

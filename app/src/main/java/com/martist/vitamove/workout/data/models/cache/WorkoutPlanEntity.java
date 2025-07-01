@@ -1,11 +1,11 @@
 package com.martist.vitamove.workout.data.models.cache;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import androidx.annotation.NonNull;
 
-@Entity(tableName = "workout_plans_cache")
+@Entity(tableName = "workout_plans_cache") 
 public class WorkoutPlanEntity {
 
     @PrimaryKey
@@ -20,9 +20,9 @@ public class WorkoutPlanEntity {
     public String name;
 
     @ColumnInfo(name = "planned_date")
-    public String plannedDate;
+    public String plannedDate; 
 
-    @ColumnInfo(name = "program_id", index = true)
+    @ColumnInfo(name = "program_id", index = true) 
     public String programId;
 
     @ColumnInfo(name = "program_day_id")
@@ -35,17 +35,17 @@ public class WorkoutPlanEntity {
     public String notes;
 
     @ColumnInfo(name = "created_at")
-    public String createdAt;
+    public String createdAt; 
 
     @ColumnInfo(name = "updated_at")
-    public String updatedAt;
+    public String updatedAt; 
 
-
+    
     @ColumnInfo(name = "cached_at")
     public long cachedAt;
 
-
+    
     public WorkoutPlanEntity() {}
 
-
+    
 } 

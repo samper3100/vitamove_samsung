@@ -11,14 +11,14 @@ public class UserWorkout {
     private Long endTime;
     private int totalCalories;
     private String notes;
-    private String programId;
-    private Integer programDayNumber;
-    private String programDayId;
-    private String planId;
+    private String programId;  
+    private Integer programDayNumber;  
+    private String programDayId;  
+    private String planId;  
     private List<WorkoutExercise> exercises;
     
-
-    private int cachedTotalSets = -1;
+    
+    private int cachedTotalSets = -1; 
 
     public UserWorkout() {
         this.exercises = new ArrayList<>();
@@ -41,7 +41,7 @@ public class UserWorkout {
         this.exercises = exercises != null ? exercises : new ArrayList<>();
     }
 
-
+    
     public String getId() { return id; }
     public String getUserId() { return userId; }
     public String getName() { return name; }
@@ -55,7 +55,7 @@ public class UserWorkout {
     public String getProgramDayId() { return programDayId; }
     public String getPlanId() { return planId; }
 
-
+    
     public int getTotalSets() {
         if (cachedTotalSets == -1) {
             calculateTotalSets();
@@ -63,7 +63,7 @@ public class UserWorkout {
         return cachedTotalSets;
     }
 
-
+    
     private void calculateTotalSets() {
         if (exercises == null || exercises.isEmpty()) {
             cachedTotalSets = 0;
@@ -72,10 +72,10 @@ public class UserWorkout {
         
         cachedTotalSets = exercises.stream()
             .mapToInt(e -> {
-
+                
                 int targetSets = e.getExercise().getDefaultSets();
-
-
+                
+                
                 if (e.getSetsCompleted() != null && e.getSetsCompleted().size() > targetSets) {
                     return e.getSetsCompleted().size();
                 }
@@ -84,12 +84,12 @@ public class UserWorkout {
             .sum();
     }
 
-
+    
     private void invalidateCache() {
         cachedTotalSets = -1;
     }
 
-
+    
     public void setId(String id) { this.id = id; }
     public void setUserId(String userId) { this.userId = userId; }
     public void setName(String name) { this.name = name; }
@@ -99,29 +99,29 @@ public class UserWorkout {
     public void setNotes(String notes) { this.notes = notes; }
     public void setExercises(List<WorkoutExercise> exercises) { 
         this.exercises = exercises != null ? exercises : new ArrayList<>(); 
-        invalidateCache();
+        invalidateCache(); 
     }
     public void setProgramId(String programId) { this.programId = programId; }
     public void setProgramDayNumber(Integer programDayNumber) { this.programDayNumber = programDayNumber; }
     public void setProgramDayId(String programDayId) { this.programDayId = programDayId; }
     public void setPlanId(String planId) { this.planId = planId; }
 
-
+    
     public void addExercise(WorkoutExercise exercise) {
         if (exercise != null) {
             exercises.add(exercise);
-            invalidateCache();
+            invalidateCache(); 
         }
     }
 
     public void removeExercise(WorkoutExercise exercise) {
         exercises.remove(exercise);
-        invalidateCache();
+        invalidateCache(); 
     }
 
     public void clearExercises() {
         exercises.clear();
-        invalidateCache();
+        invalidateCache(); 
     }
 
     public int getDurationMinutes() {
@@ -132,7 +132,7 @@ public class UserWorkout {
         }
     }
 
-
+    
     public boolean isPartOfProgram() {
         return programId != null && programDayNumber != null;
     }

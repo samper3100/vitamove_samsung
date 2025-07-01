@@ -228,10 +228,52 @@
 
     <!-- Стиль для текста в TabLayout -->
     <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">12sp</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:lineSpacingExtra">0dp</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <!-- Стиль для современного TabLayout с фоном для табов -->
+    <style name="ModernTabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="tabBackground">@drawable/tab_background_selector</item>
+        <item name="tabTextAppearance">@style/TabTextAppearance</item>
+        <item name="tabTextColor">@drawable/tab_text_selector</item>
+        <item name="tabIndicator">@null</item>
+        <item name="tabGravity">center</item>
+        <item name="tabInlineLabel">true</item>
+        <item name="tabMinWidth">80dp</item>
+        <item name="tabRippleColor">@android:color/transparent</item>
+        <item name="tabPaddingStart">4dp</item>
+        <item name="tabPaddingEnd">4dp</item>
+        <item name="tabPaddingTop">8dp</item>
+        <item name="tabPaddingBottom">8dp</item>
+    </style>
+
+    <!-- Стиль для анимированного TabLayout -->
+    <style name="AnimatedTabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="tabTextAppearance">@style/TabTextAppearance</item>
+        <item name="tabTextColor">@drawable/tab_text_selector</item>
+        <item name="tabIndicator">@null</item>
+        <item name="tabGravity">fill</item>
+        <item name="tabInlineLabel">true</item>
+        <item name="tabMinWidth">0dp</item>
+        <item name="tabRippleColor">@android:color/transparent</item>
+        <item name="tabPaddingStart">0dp</item>
+        <item name="tabPaddingEnd">0dp</item>
+        <item name="tabPaddingTop">0dp</item>
+        <item name="tabPaddingBottom">0dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="tabMode">fixed</item>
+    </style>
+
+    <!-- Стиль для суффикса в поле ввода размера порции -->
+    <style name="SuffixTextAppearance" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/textColorSecondary</item>
     </style>
 
     <!-- Стиль для основной кнопки активной программы -->
@@ -244,7 +286,7 @@
         <item name="android:paddingEnd">16dp</item>
         <item name="cornerRadius">12dp</item>
         <item name="elevation">2dp</item>
-        <item name="backgroundTint">@color/accent_color</item>
+        <item name="backgroundTint">@color/colorPrimary</item>
         <item name="android:textAllCaps">false</item>
         <item name="iconGravity">textStart</item>
         <item name="iconPadding">8dp</item>
@@ -449,4 +491,66 @@
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/text_secondary</item>
     </style>
+
+    <!-- Стиль для MaterialAlertDialog -->
+    <style name="MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorSecondary">@color/colorPrimary</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="android:background">@color/card_background</item>
+        <item name="android:windowBackground">@color/card_background</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialogTitleStyle</item>
+    </style>
+    
+    <style name="MaterialAlertDialogTitleStyle" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
+    <style name="PositiveButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+    
+    <style name="NegativeButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/colorGrey</item>
+    </style>
+
+    <!-- Стиль для текста в WorkoutTabLayout -->
+    <style name="WorkoutTabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.05</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <!-- Стиль для кнопок в header_layout (в fragment_calories) -->
+    <style name="Widget.App.HeaderButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="backgroundTint">#33FFFFFF</item>
+        <item name="iconTint">@android:color/white</item>
+        <item name="cornerRadius">24dp</item>
+    </style>
+
+    <!-- Стиль для центральной карточки с названием в header_layout -->
+    <style name="Widget.App.HeaderTitleCard" parent="CardView">
+        <item name="cardBackgroundColor">#33FFFFFF</item>
+        <item name="cardCornerRadius">24dp</item>
+        <item name="cardElevation">0dp</item>
+    </style>
+
+    <!-- Стиль для текста заголовка в header_layout -->
+    <style name="Widget.App.HeaderTitleText" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/montserrat_bold</item>
+        <item name="android:shadowColor">#80000000</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
+
 </resources> 

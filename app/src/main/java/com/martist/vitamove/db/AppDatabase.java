@@ -13,10 +13,12 @@ import com.martist.vitamove.db.converters.DateConverter;
 import com.martist.vitamove.db.converters.ListConverter;
 import com.martist.vitamove.db.dao.ExerciseDao;
 import com.martist.vitamove.db.dao.StepHistoryDao;
+import com.martist.vitamove.db.dao.UserWeightDao;
 import com.martist.vitamove.db.dao.WorkoutDao;
 import com.martist.vitamove.db.entity.ExerciseEntity;
 import com.martist.vitamove.db.entity.ExerciseSetEntity;
 import com.martist.vitamove.db.entity.StepHistoryEntity;
+import com.martist.vitamove.db.entity.UserWeightEntity;
 import com.martist.vitamove.db.entity.UserWorkoutEntity;
 import com.martist.vitamove.db.entity.WorkoutExerciseEntity;
 
@@ -25,8 +27,9 @@ import com.martist.vitamove.db.entity.WorkoutExerciseEntity;
         WorkoutExerciseEntity.class, 
         ExerciseSetEntity.class,
         ExerciseEntity.class,
-        StepHistoryEntity.class},
-        version = 7,
+        StepHistoryEntity.class,
+        UserWeightEntity.class},
+        version = 12,
         exportSchema = false)
 @TypeConverters({DateConverter.class, ListConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
@@ -39,6 +42,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract WorkoutDao workoutDao();
     public abstract ExerciseDao exerciseDao();
     public abstract StepHistoryDao stepHistoryDao();
+    public abstract UserWeightDao userWeightDao();
     
 
     public static synchronized AppDatabase getInstance(Context context) {
@@ -48,7 +52,7 @@ public abstract class AppDatabase extends RoomDatabase {
                     applicationContext,
                     AppDatabase.class,
                     DATABASE_NAME)
-                    .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+                    .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12)
                     .fallbackToDestructiveMigration()
                     .build();
         }
@@ -114,6 +118,110 @@ public abstract class AppDatabase extends RoomDatabase {
             database.execSQL(
                 "UPDATE exercise_sets SET created_at = " + System.currentTimeMillis() + 
                 " WHERE created_at IS NULL");
+        }
+    };
+    
+
+    static final Migration MIGRATION_7_8 = new Migration(7, 8) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+
+            database.execSQL(
+                "CREATE TABLE IF NOT EXISTS `user_weight_history` (" +
+                "`id` TEXT NOT NULL, " +
+                "`user_id` TEXT, " +
+                "`weight` REAL NOT NULL, " +
+                "`date` INTEGER NOT NULL, " +
+                "`notes` TEXT, " +
+                "`created_at` INTEGER NOT NULL, " +
+                "`updated_at` INTEGER NOT NULL, " +
+                "`is_synced` INTEGER NOT NULL DEFAULT 0, " +
+                "PRIMARY KEY(`id`))");
+                
+
+            database.execSQL(
+                "CREATE INDEX IF NOT EXISTS `index_user_weight_history_user_id` " +
+                "ON `user_weight_history` (`user_id`)");
+                
+
+            database.execSQL(
+                "CREATE INDEX IF NOT EXISTS `index_user_weight_history_date` " +
+                "ON `user_weight_history` (`date`)");
+        }
+    };
+    
+
+    static final Migration MIGRATION_8_9 = new Migration(8, 9) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+
+        }
+    };
+    
+
+    static final Migration MIGRATION_9_10 = new Migration(9, 10) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+
+            database.execSQL("ALTER TABLE exercises ADD COLUMN categories TEXT");
+            
+
+            database.execSQL(
+                "UPDATE exercises SET categories = '[\"' || category || '\"]' " +
+                "WHERE category IS NOT NULL AND category != ''");
+            
+
+            database.execSQL(
+                "UPDATE exercises SET categories = '[]' " +
+                "WHERE (category IS NULL OR category = '') AND categories IS NULL");
+        }
+    };
+    
+
+    static final Migration MIGRATION_10_11 = new Migration(10, 11) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+
+            
+
+            database.execSQL(
+                "CREATE TABLE `exercises_new` (" +
+                "`id` TEXT NOT NULL PRIMARY KEY, " +
+                "`name` TEXT, " +
+                "`description` TEXT, " +
+                "`difficulty` TEXT, " +
+                "`exerciseType` TEXT, " +
+                "`met` REAL NOT NULL, " +
+                "`muscleGroups` TEXT, " +
+                "`muscleGroupRussianNames` TEXT, " +
+                "`equipmentRequired` TEXT, " +
+                "`categories` TEXT)");
+            
+
+            database.execSQL(
+                "INSERT INTO `exercises_new` " +
+                "(`id`, `name`, `description`, `difficulty`, `exerciseType`, " +
+                "`met`, `muscleGroups`, `muscleGroupRussianNames`, " +
+                "`equipmentRequired`, `categories`) " +
+                "SELECT `id`, `name`, `description`, `difficulty`, `exerciseType`, " +
+                "`met`, `muscleGroups`, `muscleGroupRussianNames`, " +
+                "`equipmentRequired`, `categories` " +
+                "FROM `exercises`");
+            
+
+            database.execSQL("DROP TABLE `exercises`");
+            
+
+            database.execSQL("ALTER TABLE `exercises_new` RENAME TO `exercises`");
+        }
+    };
+    
+
+    static final Migration MIGRATION_11_12 = new Migration(11, 12) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+
+            database.execSQL("ALTER TABLE exercises ADD COLUMN instructions TEXT");
         }
     };
 } 

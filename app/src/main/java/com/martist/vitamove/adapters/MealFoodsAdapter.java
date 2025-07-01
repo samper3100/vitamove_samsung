@@ -30,8 +30,8 @@ public class MealFoodsAdapter extends RecyclerView.Adapter<MealFoodsAdapter.View
     private ItemTouchHelper itemTouchHelper;
     private OnFoodRemovedListener onFoodRemovedListener;
     private OnFoodClickListener onFoodClickListener;
-    private Paint textPaint;
-    private ColorDrawable background;
+    private final Paint textPaint;
+    private final ColorDrawable background;
     private Drawable deleteIcon;
 
     
@@ -84,7 +84,8 @@ public class MealFoodsAdapter extends RecyclerView.Adapter<MealFoodsAdapter.View
             holder.foodName.setText(food.getName());
             
             
-            holder.portionSize.setText(portion + "г");
+            String unit = food.isLiquid() ? "мл" : "г";
+            holder.portionSize.setText(portion + unit);
             
             
             String nutrients = String.format("Б %.1f • Ж %.1f • У %.1f",
@@ -107,7 +108,7 @@ public class MealFoodsAdapter extends RecyclerView.Adapter<MealFoodsAdapter.View
                 }
             });
             
-            
+
         } catch (Exception e) {
             Log.e(TAG, "Error binding view holder at position " + position, e);
         }
@@ -119,7 +120,7 @@ public class MealFoodsAdapter extends RecyclerView.Adapter<MealFoodsAdapter.View
     }
 
     public void updateFoods(List<Meal.FoodPortion> newFoods) {
-        
+
         this.foods = newFoods != null ? newFoods : new ArrayList<>();
         notifyDataSetChanged();
     }

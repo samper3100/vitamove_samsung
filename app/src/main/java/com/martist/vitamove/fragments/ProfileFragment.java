@@ -24,16 +24,17 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.martist.vitamove.R;
 import com.martist.vitamove.activities.EditProfileActivity;
 import com.martist.vitamove.activities.MainActivity;
 import com.martist.vitamove.activities.SettingsActivity;
+import com.martist.vitamove.activities.WeightHistoryActivity;
 import com.martist.vitamove.managers.FoodManager;
 import com.martist.vitamove.models.UserProfile;
 import com.martist.vitamove.utils.BMICalculator;
-import com.martist.vitamove.utils.DateUtils;
 import com.martist.vitamove.utils.ImageUtils;
 import com.martist.vitamove.views.DevelopmentOverlay;
 
@@ -41,7 +42,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
-import java.util.Date;
 
 public class ProfileFragment extends Fragment {
 
@@ -116,7 +116,7 @@ public class ProfileFragment extends Fragment {
         }
         
         
-        
+
     }
 
     private void initViews(View view) {
@@ -136,12 +136,7 @@ public class ProfileFragment extends Fragment {
         bmiDescription = view.findViewById(R.id.bmiDescription);
         bmiMarker = view.findViewById(R.id.bmiMarker);
         
-        
-        weightToLose = view.findViewById(R.id.weightToLose);
-        weightProgress = view.findViewById(R.id.weightProgress);
-        progressPercent = view.findViewById(R.id.progressPercent);
-        weightLossRate = view.findViewById(R.id.weightLossRate);
-        estimatedCompletionDate = view.findViewById(R.id.estimatedCompletionDate);
+
         
         
 
@@ -161,6 +156,10 @@ public class ProfileFragment extends Fragment {
 
         MaterialButton editProfileFab = view.findViewById(R.id.editProfileFab);
         editProfileFab.setOnClickListener(v -> openEditProfile());
+
+
+        MaterialCardView weight_card = view.findViewById(R.id.statsCardView);
+        weight_card.setOnClickListener(v-> openWeightHistory());
     }
 
     public void loadProfileData(View view) {
@@ -189,7 +188,7 @@ public class ProfileFragment extends Fragment {
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString("fitness_goal", fitnessGoal);
             editor.apply();
-            
+
         }
         
         
@@ -197,15 +196,15 @@ public class ProfileFragment extends Fragment {
         int targetCalories = prefs.getInt("target_calories", 0);
         float targetWater = prefs.getFloat("target_water", 0);
         
-        
+
+
         
         
         if (dataFromSupabase && targetCalories > 0) {
             
             userProfile.setTargetCalories(targetCalories);
             userProfile.setTargetWater(targetWater > 0 ? targetWater : userProfile.calculateTargetWater());
-            
-            
+
         } else {
             
             userProfile.updateTargetCalories();
@@ -221,7 +220,7 @@ public class ProfileFragment extends Fragment {
             editor.putFloat("target_water", updatedTargetWater);
             editor.apply();
             
-            
+
         }
         
         
@@ -242,7 +241,6 @@ public class ProfileFragment extends Fragment {
         targetWeight.setText(String.format("%.1f кг", userProfile.getTargetWeight()));
         
         updateBMIData(view);
-        updateWeightProgress();
         updateEnergyData();
         updateWaterData();
         
@@ -324,33 +322,10 @@ public class ProfileFragment extends Fragment {
         params.setMarginStart((int)absolutePosition);
         markerCard.setLayoutParams(params);
         
-        
-        
+
     }
     
-    private void updateWeightProgress() {
-        float weightDifference = userProfile.getCurrentWeight() - userProfile.getTargetWeight();
-        weightToLose.setText(String.format("%.1f кг", weightDifference));
-        
-        
-        float initialDifference = weightDifference * 1.2f;
-        float weightLost = initialDifference - weightDifference;
-        int progressPercentValue = (int)((weightLost / initialDifference) * 100);
-        
-        
-        weightProgress.setProgress(progressPercentValue);
-        progressPercent.setText(String.format("%d%% к цели", progressPercentValue));
-        
-        
-        float weeksToGoal = weightDifference / 0.5f;
-        Date estimatedDate = DateUtils.getDateAfterWeeks(weeksToGoal);
-        estimatedCompletionDate.setText(String.format("Расчетная дата достижения цели: %s", 
-                DateUtils.formatDate(estimatedDate)));
-                
-        
-        weightLossRate.setText(String.format("Средняя скорость: %.1f кг в неделю", 0.5f));
-    }
-    
+
     private void updateEnergyData() {
         
 
@@ -367,7 +342,7 @@ public class ProfileFragment extends Fragment {
             dailyCaloriesValue.setText(String.format("%d ккал", targetCalories));
             
             
-            
+
         } else {
             Log.e("ProfileFragment", "Не удалось обновить данные калорий: компонент равен null");
         }
@@ -421,6 +396,10 @@ public class ProfileFragment extends Fragment {
     
     private void openSettings() {
         Intent intent = new Intent(getActivity(), SettingsActivity.class);
+        startActivity(intent);
+    }
+    private void openWeightHistory(){
+        Intent intent = new Intent(getActivity(), WeightHistoryActivity.class);
         startActivity(intent);
     }
     
@@ -541,7 +520,7 @@ public class ProfileFragment extends Fragment {
                     editor.apply();
                     
                     Toast.makeText(requireContext(), "Аватар успешно обновлен", Toast.LENGTH_SHORT).show();
-                    
+
                 }
             } else {
                 Toast.makeText(requireContext(), "Не удалось сохранить аватар", Toast.LENGTH_SHORT).show();
@@ -562,12 +541,6 @@ public class ProfileFragment extends Fragment {
         }
         
         
-        View progressGoalCard = view.findViewById(R.id.progress_goal_card);
-        if (progressGoalCard != null) {
-            DevelopmentOverlay.applyToView(progressGoalCard);
-        }
-        
-        
     }
 
     
@@ -581,7 +554,7 @@ public class ProfileFragment extends Fragment {
             String fitnessGoal = appPrefs.getString("fitness_goal", "weight_loss");
             
             
-            
+
         } else {
             Log.e("ProfileFragment", "Не удалось обновить данные о потреблении воды: компонент или профиль равны null");
         }
@@ -596,7 +569,7 @@ public class ProfileFragment extends Fragment {
                 Bitmap avatarBitmap = ImageUtils.loadImageFromInternalStorage(requireContext(), AVATAR_FILE_NAME);
                 if (avatarBitmap != null) {
                     profileImage.setImageBitmap(avatarBitmap);
-                    
+
                     return;
                 }
             }
@@ -617,11 +590,11 @@ public class ProfileFragment extends Fragment {
                                 Bitmap avatarBitmap = ImageUtils.loadImageFromInternalStorage(requireContext(), AVATAR_FILE_NAME);
                                 if (avatarBitmap != null) {
                                     profileImage.setImageBitmap(avatarBitmap);
-                                    
+
                                 }
                             }
                         } else {
-                            
+
                             
                             prefs.edit().remove("profile_image").apply();
                         }
@@ -636,7 +609,7 @@ public class ProfileFragment extends Fragment {
                     prefs.edit().remove("profile_image").apply();
                 }
             } else {
-                
+
             }
         } catch (Exception e) {
             Log.e("ProfileFragment", "Ошибка при загрузке аватара: " + e.getMessage(), e);

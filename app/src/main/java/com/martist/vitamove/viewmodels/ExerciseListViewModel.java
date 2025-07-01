@@ -32,8 +32,8 @@ public class ExerciseListViewModel extends AndroidViewModel {
     private static final long CACHE_EXPIRATION_TIME = 24 * 60 * 60 * 1000; 
     
     private final Executor executor = Executors.newSingleThreadExecutor();
-    private SupabaseWorkoutRepository workoutRepository;
-    private ExerciseDao exerciseDao;
+    private final SupabaseWorkoutRepository workoutRepository;
+    private final ExerciseDao exerciseDao;
     
     
     private final MutableLiveData<List<Exercise>> exercises = new MutableLiveData<>(new ArrayList<>());
@@ -44,7 +44,7 @@ public class ExerciseListViewModel extends AndroidViewModel {
     private final MutableLiveData<Map<String, Exercise>> cachedExercisesMap = new MutableLiveData<>(new HashMap<>());
     
     
-    private SharedPreferences sharedPreferences;
+    private final SharedPreferences sharedPreferences;
     private static final String PREFS_NAME = "ExerciseListCache";
     
     
@@ -71,14 +71,14 @@ public class ExerciseListViewModel extends AndroidViewModel {
     
     public void loadExercises() {
         isLoading.postValue(true);
-        
+
         
         
         if (!exerciseCache.isEmpty()) {
             List<Exercise> cachedList = new ArrayList<>(exerciseCache.values());
             exercises.postValue(cachedList);
             isLoading.postValue(false);
-            
+
             
             
             long lastUpdateTime = sharedPreferences.getLong(KEY_LAST_UPDATE, 0);
@@ -86,14 +86,14 @@ public class ExerciseListViewModel extends AndroidViewModel {
             
             if (currentTime - lastUpdateTime > CACHE_EXPIRATION_TIME) {
                 
-                
+
                 refreshExercisesFromServer();
             }
         } else {
             
             executor.execute(() -> {
                 try {
-                    
+
                     List<ExerciseEntity> exerciseEntities = exerciseDao.getAllExercises();
                     
                     if (exerciseEntities != null && !exerciseEntities.isEmpty()) {
@@ -112,7 +112,8 @@ public class ExerciseListViewModel extends AndroidViewModel {
                         
                         cachedExercisesMap.postValue(new HashMap<>(exerciseCache));
                         
-                        
+
+
                         
                         
                         long lastUpdateTime = sharedPreferences.getLong(KEY_LAST_UPDATE, 0);
@@ -120,11 +121,12 @@ public class ExerciseListViewModel extends AndroidViewModel {
                         
                         if (currentTime - lastUpdateTime > CACHE_EXPIRATION_TIME) {
                             
-                            
+
+
                             refreshExercisesFromServer();
                         }
                     } else {
-                        
+
                         
                         refreshExercisesFromServer();
                     }
@@ -144,7 +146,7 @@ public class ExerciseListViewModel extends AndroidViewModel {
         
         executor.execute(() -> {
             try {
-                
+
                 long startTime = System.currentTimeMillis();
                 List<Exercise> loadedExercises = workoutRepository.getAllExercises();
                 long endTime = System.currentTimeMillis();
@@ -164,7 +166,8 @@ public class ExerciseListViewModel extends AndroidViewModel {
                     
                     saveExercisesToCache(loadedExercises);
                     
-                    
+
+
                 } else {
                     Log.e(TAG, "ИСТОЧНИК ДАННЫХ: Упражнения не получены с СЕРВЕРА или список пуст");
                     errorMessage.postValue("Не удалось загрузить упражнения с сервера");
@@ -183,7 +186,7 @@ public class ExerciseListViewModel extends AndroidViewModel {
     private void loadExercisesFromCache() {
         executor.execute(() -> {
             try {
-                
+
                 List<ExerciseEntity> entities = exerciseDao.getAllExercises();
                 
                 if (entities != null && !entities.isEmpty()) {
@@ -202,7 +205,7 @@ public class ExerciseListViewModel extends AndroidViewModel {
                     
                     cachedExercisesMap.postValue(new HashMap<>(exerciseCache));
                     
-                    
+
                 }
             } catch (Exception e) {
                 Log.e(TAG, "ИСТОЧНИК ДАННЫХ: Ошибка при загрузке упражнений из ROOM DATABASE: " + e.getMessage(), e);
@@ -214,7 +217,7 @@ public class ExerciseListViewModel extends AndroidViewModel {
     private void saveExercisesToCache(List<Exercise> exerciseList) {
         executor.execute(() -> {
             try {
-                
+
                 long startTime = System.currentTimeMillis();
                 
                 
@@ -232,7 +235,7 @@ public class ExerciseListViewModel extends AndroidViewModel {
                     .apply();
                 
                 long endTime = System.currentTimeMillis();
-                
+
             } catch (Exception e) {
                 Log.e(TAG, "КЭШИРОВАНИЕ: Ошибка при сохранении упражнений в ROOM DATABASE: " + e.getMessage(), e);
             }
@@ -245,25 +248,25 @@ public class ExerciseListViewModel extends AndroidViewModel {
         
         Exercise cachedExercise = exerciseCache.get(exerciseId);
         if (cachedExercise != null) {
-             
+
              return cachedExercise;
         }
 
         
         
         
-        
+
         return null;
     }
 
     
     
     public void preloadCacheWithPriority() {
-        
+
         
         
         if (!exerciseCache.isEmpty()) {
-            
+
             return;
         }
         
@@ -296,12 +299,13 @@ public class ExerciseListViewModel extends AndroidViewModel {
                     cachedExercisesMap.postValue(new HashMap<>(exerciseCache));
                     
                     long endTime = System.currentTimeMillis();
-                    
+
+
                     
                     
                     checkCacheInBackground();
                 } else {
-                    
+
                     refreshExercisesFromServer();
                 }
             } catch (Exception e) {
@@ -328,10 +332,11 @@ public class ExerciseListViewModel extends AndroidViewModel {
                 
                 
                 if (currentTime - lastUpdateTime > CACHE_EXPIRATION_TIME) {
-                    
+
                     refreshExercisesFromServer();
                 } else {
-                    
+
+
                 }
             } catch (Exception e) {
                 Log.e(TAG, "КЭШИРОВАНИЕ: Ошибка при проверке актуальности кэша: " + e.getMessage(), e);
@@ -341,7 +346,7 @@ public class ExerciseListViewModel extends AndroidViewModel {
     
     
     public LiveData<Boolean> cacheExercisesAfterLogin() {
-        
+
         initialCachingComplete.postValue(false);
         
         executor.execute(() -> {
@@ -350,22 +355,23 @@ public class ExerciseListViewModel extends AndroidViewModel {
                 int exerciseCount = exerciseDao.getExerciseCount();
                 
                 if (exerciseCount > 0) {
-                    
+
+
                     
                     
                     long lastUpdateTime = sharedPreferences.getLong(KEY_LAST_UPDATE, 0);
                     long currentTime = System.currentTimeMillis();
                     
                     if (currentTime - lastUpdateTime > CACHE_EXPIRATION_TIME) {
-                        
+
                         loadExercisesFromServerAndCache();
                     } else {
-                        
+
                         loadExercisesFromCache();
                         initialCachingComplete.postValue(true);
                     }
                 } else {
-                    
+
                     loadExercisesFromServerAndCache();
                 }
             } catch (Exception e) {
@@ -380,11 +386,12 @@ public class ExerciseListViewModel extends AndroidViewModel {
     
     private void loadExercisesFromServerAndCache() {
         try {
-            
+
             List<Exercise> loadedExercises = workoutRepository.getAllExercises();
             
             if (loadedExercises != null && !loadedExercises.isEmpty()) {
-                
+
+
                 
                 
                 exerciseCache.clear();
@@ -407,7 +414,7 @@ public class ExerciseListViewModel extends AndroidViewModel {
                     .putLong(KEY_LAST_UPDATE, System.currentTimeMillis())
                     .apply();
                 
-                
+
             } else {
                 Log.e(TAG, "ИСТОЧНИК ДАННЫХ: Не удалось загрузить упражнения с сервера (пустой список)");
             }

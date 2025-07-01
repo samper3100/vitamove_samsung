@@ -20,7 +20,7 @@ public class ActiveProgramInfoBottomSheet extends BottomSheetDialogFragment {
     
     private WorkoutProgram mProgram;
     
-    
+
     public static ActiveProgramInfoBottomSheet newInstance(WorkoutProgram program) {
         ActiveProgramInfoBottomSheet fragment = new ActiveProgramInfoBottomSheet();
         Bundle args = new Bundle();
@@ -52,7 +52,7 @@ public class ActiveProgramInfoBottomSheet extends BottomSheetDialogFragment {
             return;
         }
         
-        
+
         TextView titleTextView = view.findViewById(R.id.program_title);
         TextView durationTextView = view.findViewById(R.id.program_duration);
         TextView levelTextView = view.findViewById(R.id.program_level);
@@ -60,24 +60,24 @@ public class ActiveProgramInfoBottomSheet extends BottomSheetDialogFragment {
         TextView frequencyTextView = view.findViewById(R.id.program_frequency);
         TextView descriptionTextView = view.findViewById(R.id.program_description);
         
-        
+
         titleTextView.setText(mProgram.getName());
         
-        
+
         String duration = mProgram.getDurationWeeks() + " недель";
         durationTextView.setText(duration);
         
-        
+
         levelTextView.setText(mProgram.getLevel());
         
-        
+
 
         
-        
+
         String frequency = mProgram.getDaysPerWeek() + " " + getDaysText(mProgram.getDaysPerWeek());
         frequencyTextView.setText(frequency);
         
-        
+
         String description = mProgram.getDescription();
         if (description != null && !description.isEmpty()) {
             descriptionTextView.setText(description);
@@ -86,7 +86,7 @@ public class ActiveProgramInfoBottomSheet extends BottomSheetDialogFragment {
         }
     }
     
-    
+
     private String getDaysText(int days) {
         if (days == 1) {
             return "день в неделю";

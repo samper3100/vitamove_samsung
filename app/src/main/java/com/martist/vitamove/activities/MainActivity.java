@@ -45,7 +45,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         setContentView(R.layout.activity_main);
 
         
@@ -57,10 +57,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         boolean isLogged = prefs.getBoolean("isLogged", false);
         boolean exercisesCached = prefs.getBoolean("exercises_cached", false);
 
-        
+
 
         if (isFirstRun || !isLogged) {
-            
+
             startActivity(new Intent(this, OnboardingActivity.class));
             finish();
             return;
@@ -76,17 +76,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         
         if (!exercisesCached) {
-            
+
             exerciseListViewModel.cacheExercisesAfterLogin().observe(this, isComplete -> {
                 if (isComplete) {
-                    
+
                     
                     prefs.edit().putBoolean("exercises_cached", true).apply();
                 }
             });
         } else {
             
-            
+
             exerciseListViewModel.preloadCacheWithPriority();
         }
 
@@ -256,19 +256,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (!userDataGoal.isEmpty() && !userDataGoal.equals(appPrefsGoal)) {
             
             appPrefs.edit().putString("fitness_goal", userDataGoal).apply();
-            
+
         }
         
         else if (userDataGoal.isEmpty() && !appPrefsGoal.isEmpty()) {
             userDataPrefs.edit().putString("fitness_goal", appPrefsGoal).apply();
-            
+
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        
+
 
         
         checkAndSyncUserData();
@@ -280,7 +280,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onPause() {
         super.onPause();
-        
+
     }
 
     @Override
@@ -294,14 +294,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     
     private void syncUserDataWithSupabase() {
-        
+
 
         
         SharedPreferences prefs = getSharedPreferences("VitaMovePrefs", MODE_PRIVATE);
         String userId = prefs.getString("userId", null);
 
         if (userId == null) {
-            
+
             return;
         }
 
@@ -318,8 +318,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         
         if (name.isEmpty() || age == 0 || gender.isEmpty() || height == 0 || currentWeight == 0 || targetWeight == 0) {
-            
-            
+
             return;
         }
 
@@ -342,7 +341,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         supabaseClient.setUserToken(accessToken);
         supabaseClient.setRefreshToken(refreshToken);
 
-        
+
 
         
         new Thread(() -> {
@@ -361,7 +360,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 );
 
                 if (success) {
-                    
+
 
                     
                     SharedPreferences.Editor syncEditor = prefs.edit();
@@ -385,7 +384,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
                     userDataEditor.apply();
 
-                    
+
                 } else {
                     Log.e(TAG, "Не удалось синхронизировать данные пользователя с Supabase");
                 }
@@ -422,8 +421,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         int calories = prefs.getInt("target_calories", 0);
         float targetWater = prefs.getFloat("target_water", 0);
 
-        
-        
 
         
         DashboardManager dashboardManager = DashboardManager.getInstance(this);
@@ -435,7 +432,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (currentFragment instanceof HomeFragment) {
             
             ((HomeFragment) currentFragment).updateDashboardData();
-            
+
         }
 
         

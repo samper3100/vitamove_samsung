@@ -39,8 +39,8 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/calendar_button"
-                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
-                    android:layout_width="48dp"
+                    style="@style/Widget.App.HeaderButton"
+                    android:layout_width="50dp"
                     android:layout_height="48dp"
                     android:insetLeft="0dp"
                     android:insetTop="0dp"
@@ -49,9 +49,6 @@
                     app:icon="@drawable/ic_calendar"
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
-                    app:iconTint="@android:color/white"
-                    app:cornerRadius="24dp"
-                    android:backgroundTint="#33FFFFFF"
                     android:contentDescription="Календарь"/>
 
                 <androidx.cardview.widget.CardView
@@ -59,34 +56,25 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginHorizontal="12dp"
-                    app:cardCornerRadius="24dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="#33FFFFFF">
+                    style="@style/Widget.App.HeaderTitleCard">
                     
                     <TextView
                         android:id="@+id/app_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Vitamove"
-                        android:textSize="24sp"
-                        android:textStyle="bold"
                         android:textAllCaps="false"
-                        android:fontFamily="@font/montserrat_bold"
-                        android:textColor="@android:color/white"
                         android:gravity="center"
-                        android:padding="4dp"
+                        android:padding="6dp"
                         android:letterSpacing="0.05"
-                        android:shadowColor="#80000000"
-                        android:shadowDx="1"
-                        android:shadowDy="1"
-                        android:shadowRadius="2"/>
+                        style="@style/Widget.App.HeaderTitleText"/>
                 </androidx.cardview.widget.CardView>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/quick_add_button"
-                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    style="@style/Widget.App.HeaderButton"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:insetLeft="0dp"
                     android:insetTop="0dp"
                     android:insetRight="0dp"
@@ -94,9 +82,7 @@
                     app:icon="@drawable/ic_quick_add"
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
-                    app:iconTint="@android:color/white"
-                    app:cornerRadius="24dp"
-                    android:backgroundTint="#33FFFFFF"
+
                     android:contentDescription="Быстрое добавление калорий"/>
             </LinearLayout>
 

@@ -34,11 +34,7 @@ public class WorkoutExerciseHelper {
             exerciseManager.getExerciseByIdAsync(exerciseId, new ExerciseManager.AsyncCallback<Exercise>() {
                 @Override
                 public void onSuccess(Exercise result) {
-                    if (result != null) {
-                        displayExerciseDialog(exercise, result);
-                    } else {
-                        displayExerciseDialog(exercise, null);
-                    }
+                    displayExerciseDialog(exercise, result);
                 }
 
                 @Override
@@ -81,7 +77,7 @@ public class WorkoutExerciseHelper {
             
             builder.create().show();
             
-            
+
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при отображении диалога: " + e.getMessage(), e);
             Toast.makeText(context, 

@@ -1,7 +1,9 @@
 package com.martist.vitamove.fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,12 +12,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.martist.vitamove.R;
 import com.martist.vitamove.events.WorkoutStartedEvent;
+import com.martist.vitamove.fragments.workout.ActiveWorkoutFragment;
+import com.martist.vitamove.fragments.workout.AnalyticsFragment;
+import com.martist.vitamove.fragments.workout.HistoryFragment;
+import com.martist.vitamove.fragments.workout.ProgramsFragment;
+import com.martist.vitamove.views.AnimatedTabLayout;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -23,8 +31,14 @@ import org.greenrobot.eventbus.ThreadMode;
 
 public class WorkoutFragment extends Fragment {
     private static final String TAG = "WorkoutFragment";
-    private TabLayout tabLayout;
-    private NavController navController;
+    private AnimatedTabLayout tabLayout;
+    private ViewPager2 viewPager;
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    
+    private static final int TAB_WORKOUT = 1;
+    private static final int TAB_HISTORY = 0;
+    private static final int TAB_PROGRAMS = 2;
+    private static final int TAB_COUNT = 3;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,7 +46,7 @@ public class WorkoutFragment extends Fragment {
         
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
-            
+
         }
     }
 
@@ -42,12 +56,19 @@ public class WorkoutFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_workout, container, false);
 
         tabLayout = view.findViewById(R.id.workout_tab_layout);
+        viewPager = view.findViewById(R.id.workout_view_pager);
 
-        NavHostFragment navHostFragment = (NavHostFragment) getChildFragmentManager().findFragmentById(R.id.workout_nav_host_fragment);
-        if (navHostFragment != null) {
-            navController = navHostFragment.getNavController();
-            setupTabLayout();
-        }
+        
+        setupTopButtons(view);
+        
+        
+        setupTabLayout();
+        
+        
+        setupViewPager();
+        
+        
+        view.post(() -> selectInitialTab());
 
         return view;
     }
@@ -68,138 +89,174 @@ public class WorkoutFragment extends Fragment {
             }
             getActivity().getWindow().getDecorView().setSystemUiVisibility(flags);
         }
+        
+        
+        
+        
+        
+        
     }
 
-    private void setupTabLayout() {
+    private void setupViewPager() {
+        
+        viewPager.setUserInputEnabled(true);
         
         
-        
-        
-
-        if (tabLayout.getTabCount() == 0) { 
-            tabLayout.addTab(tabLayout.newTab().setText("История"));
-            tabLayout.addTab(tabLayout.newTab().setText("Тренировка"));
-            tabLayout.addTab(tabLayout.newTab().setText("Программа"));
-        }
-
-
-        
-        
-        
-        
-
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        viewPager.setAdapter(new FragmentStateAdapter(this) {
+            @NonNull
             @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                
-                if (navController == null) return;
-
-                
-                
-                int currentDestinationId = navController.getCurrentDestination() != null ? navController.getCurrentDestination().getId() : -1;
-
-                switch (tab.getPosition()) {
-                    case 0: 
-                        if (currentDestinationId != R.id.historyFragment) {
-                            navController.navigate(R.id.action_global_to_historyFragment);
-                        }
-                        break;
-                    case 1: 
-                        if (currentDestinationId != R.id.activeWorkoutFragment) {
-                            navController.navigate(R.id.action_global_to_activeWorkoutFragment);
-                        }
-                        break;
-                    case 2: 
-                        if (currentDestinationId != R.id.programsFragment) {
-                            navController.navigate(R.id.action_global_to_programsFragment);
-                        }
-                        break;
+            public Fragment createFragment(int position) {
+                switch (position) {
+                    case TAB_HISTORY: return new HistoryFragment();
+                    case TAB_WORKOUT: return new ActiveWorkoutFragment();
+                    case TAB_PROGRAMS: return new ProgramsFragment();
+                    default: throw new IllegalArgumentException("Invalid tab position");
                 }
             }
 
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                
-                
+            public int getItemCount() {
+                return TAB_COUNT;
             }
         });
 
         
+        viewPager.setOffscreenPageLimit(TAB_COUNT);
         
         
-         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            switch (position) {
+                case TAB_HISTORY:
+                    tab.setText("ИСТОРИЯ");
+                    break;
+                case TAB_WORKOUT:
+                    tab.setText("ТРЕНИРОВКА");
+                    break;
+                case TAB_PROGRAMS:
+                    tab.setText("ПРОГРАММА");
+                    break;
+            }
+        }).attach();
+        
+        
+        ViewGroup tabStrip = (ViewGroup) tabLayout.getChildAt(0);
+        if (tabStrip != null) {
+            for (int i = 0; i < tabStrip.getChildCount(); i++) {
+                View tabView = tabStrip.getChildAt(i);
+                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) tabView.getLayoutParams();
+                params.setMarginEnd(0);
+                params.setMarginStart(0);
+                params.width = ViewGroup.MarginLayoutParams.MATCH_PARENT;
+                tabView.requestLayout();
+                
+                
+                tabView.setBackground(null);
+            }
+        }
+    }
+
+    private void setupTabLayout() {
+        
+        tabLayout.setTabRippleColor(null);
+        
+        
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
+    }
+    
+    
+    private void selectWorkoutTab() {
+        viewPager.setCurrentItem(TAB_WORKOUT, false);
+    }
+
+    
+    private void selectInitialTab() {
+        if (viewPager != null) {
+            
+            int tabIndex = TAB_WORKOUT; 
             
             
-            if (destination.getId() == R.id.historyFragment) {
-                if (tabLayout.getSelectedTabPosition() != 0) tabLayout.selectTab(tabLayout.getTabAt(0));
-            } else if (destination.getId() == R.id.activeWorkoutFragment) {
-                if (tabLayout.getSelectedTabPosition() != 1) tabLayout.selectTab(tabLayout.getTabAt(1));
-            } else if (destination.getId() == R.id.programsFragment) {
-                 if (tabLayout.getSelectedTabPosition() != 2) tabLayout.selectTab(tabLayout.getTabAt(2));
+            SharedPreferences prefs = requireActivity().getSharedPreferences("VitaMovePrefs", 0);
+            int savedTabIndex = prefs.getInt("workout_tab_index", -1);
+            
+            
+            if (savedTabIndex >= 0 && savedTabIndex < TAB_COUNT) {
+                tabIndex = savedTabIndex;
+                
+                prefs.edit().remove("workout_tab_index").apply();
             }
-             
-            else if (destination.getId() == R.id.programDetailsFragment) {
-                if (tabLayout.getSelectedTabPosition() != 2) tabLayout.selectTab(tabLayout.getTabAt(2), false); 
-            }
-        });
+            
+            
+            viewPager.setCurrentItem(tabIndex, false);
 
-
-        
-        
-        
-        int startDestinationId = navController.getGraph().getStartDestinationId();
-
-        if (navController.getCurrentDestination() == null || navController.getCurrentDestination().getId() != startDestinationId) {
-             
-             
-             
-             
         }
-        
-        if (tabLayout.getTabCount() > 1 && tabLayout.getSelectedTabPosition() != 1) {
-             
-             
-             
-        }
-
     }
 
     
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onWorkoutStartedEvent(WorkoutStartedEvent event) {
+
+        selectWorkoutTab();
+    }
+
+    
+    private void setupTopButtons(View view) {
+        View analyticsButton = view.findViewById(R.id.analytics_button);
+        analyticsButton.setOnClickListener(v -> {
+            animateButtonClick(v);
+            openWorkoutAnalytics();
+        });
         
-        if (tabLayout != null && tabLayout.getTabCount() > 1) {
-            TabLayout.Tab workoutTab = tabLayout.getTabAt(1); 
-            if (workoutTab != null) {
-                workoutTab.select();
-            }
-        }
-        
-        
-        if (navController != null && 
-            (navController.getCurrentDestination() == null || 
-             navController.getCurrentDestination().getId() != R.id.activeWorkoutFragment)) {
-            try {
-                navController.navigate(R.id.action_global_to_activeWorkoutFragment);
-                
-            } catch (Exception e) {
-                Log.e(TAG, "Ошибка при навигации к activeWorkoutFragment: " + e.getMessage(), e);
-            }
-        }
+        View settingsButton = view.findViewById(R.id.settings_button);
+        settingsButton.setOnClickListener(v -> {
+            animateButtonClick(v);
+            openWorkoutSettings();
+        });
+    }
+    
+    
+    private void animateButtonClick(View view) {
+        view.animate()
+                .scaleX(0.9f)
+                .scaleY(0.9f)
+                .setDuration(100)
+                .withEndAction(() ->
+                        view.animate()
+                                .scaleX(1f)
+                                .scaleY(1f)
+                                .setDuration(100)
+                                .start())
+                .start();
+    }
+    
+    
+    private void openWorkoutAnalytics() {
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new AnalyticsFragment())
+                .addToBackStack(null)
+                .commit();
+    }
+    
+    
+    private void openWorkoutSettings() {
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new com.martist.vitamove.fragments.workout.WorkoutSettingsFragment())
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         
+        if (mainHandler != null) {
+            mainHandler.removeCallbacksAndMessages(null);
+        }
+        
+        
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
-            
+
         }
     }
 }

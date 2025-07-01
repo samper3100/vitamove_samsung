@@ -3,11 +3,11 @@ package com.martist.vitamove.models.openfoodfacts;
 import com.google.gson.annotations.SerializedName;
 
 public class Nutriments {
-
+    
     @SerializedName("energy-kcal_100g")
     private float energyKcal;
     
-
+    
     @SerializedName("proteins_100g")
     private float proteins;
     
@@ -17,7 +17,7 @@ public class Nutriments {
     @SerializedName("carbohydrates_100g")
     private float carbohydrates;
     
-
+    
     @SerializedName("fiber_100g")
     private float fiber;
     
@@ -30,14 +30,14 @@ public class Nutriments {
     @SerializedName("sodium_100g")
     private float sodium;
     
-
+    
     @SerializedName("saturated-fat_100g")
     private float saturatedFat;
     
     @SerializedName("trans-fat_100g")
     private float transFat;
     
-
+    
     @SerializedName("calcium_100g")
     private float calcium;
     
@@ -56,7 +56,7 @@ public class Nutriments {
     @SerializedName("zinc_100g")
     private float zinc;
     
-
+    
     @SerializedName("vitamin-a_100g")
     private float vitaminA;
     
@@ -93,7 +93,7 @@ public class Nutriments {
     @SerializedName("vitamin-b12_100g")
     private float vitaminB12;
     
-
+    
     public float getEnergyKcal() { return energyKcal; }
     public float getProteins() { return proteins; }
     public float getFat() { return fat; }

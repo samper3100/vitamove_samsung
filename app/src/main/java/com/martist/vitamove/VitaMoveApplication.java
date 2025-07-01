@@ -22,7 +22,7 @@ public class VitaMoveApplication extends Application {
     private static final String TAG = "VitaMoveApplication";
     public static Context context;
     private WorkoutRepository workoutRepository;
-    private static final String PREFS_NAME = "VitaMovePrefs";
+    public static final String PREFS_NAME = "VitaMovePrefs";
     private static AuthManager authManager;
     private static AppDatabase database;
 
@@ -68,7 +68,8 @@ public class VitaMoveApplication extends Application {
             new Thread(() -> {
                 try {
                     boolean isValid = authManager.ensureValidToken();
-                    
+
+
                 } catch (Exception e) {
                     Log.e(TAG, "Ошибка при проверке токенов: " + e.getMessage(), e);
                 }
@@ -148,12 +149,12 @@ public class VitaMoveApplication extends Application {
         Thread preloadThread = new Thread(() -> {
             try {
                 
-                
+
                 
                 
                 try {
                     Class<?> foodClass = Class.forName("com.martist.vitamove.models.Food");
-                    
+
                 } catch (ClassNotFoundException e) {
                     Log.e(TAG, "ClassNotFoundException при загрузке Food (способ 1): " + e.getMessage(), e);
                 }
@@ -161,7 +162,7 @@ public class VitaMoveApplication extends Application {
                 
                 try {
                     com.martist.vitamove.models.Food.ensureClassLoaded();
-                    
+
                 } catch (Exception e) {
                     Log.e(TAG, "Ошибка при загрузке Food (способ 2): " + e.getMessage(), e);
                 }
@@ -184,7 +185,7 @@ public class VitaMoveApplication extends Application {
                     com.martist.vitamove.models.Food retrievedFood = bundle.getParcelable("testFood");
                     
                     if (retrievedFood != null) {
-                        
+
                     } else {
                         Log.e(TAG, "Ошибка при тестовой десериализации Food: объект null");
                     }
@@ -194,12 +195,12 @@ public class VitaMoveApplication extends Application {
                 
                 
                 if (com.martist.vitamove.models.Food.isClassLoaded()) {
-                    
+
                 } else {
-                    
+
                 }
                 
-                
+
             } catch (Exception e) {
                 Log.e(TAG, "Общая ошибка при загрузке классов Parcelable: " + e.getMessage(), e);
             }
@@ -223,10 +224,10 @@ public class VitaMoveApplication extends Application {
             try {
                 String userId = getCurrentUserId();
                 if (userId != null && !userId.isEmpty()) {
-                    
+
                     
                     workoutRepository.getTodayWorkoutPlan(userId);
-                    
+
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при проверке невыполненных тренировок: " + e.getMessage(), e);

@@ -84,12 +84,12 @@ public class ProgramExerciseAdapter extends RecyclerView.Adapter<ProgramExercise
                 return;
             }
             
-
+            
             if (exerciseName != null) {
-
+                
                 exerciseName.setText("Загрузка...");
                 
-
+                
                 String exerciseId = exercise.getExerciseId();
                 if (exerciseId != null && !exerciseId.isEmpty()) {
                     exerciseManager.getExerciseByIdAsync(exerciseId, new ExerciseManager.AsyncCallback<Exercise>() {
@@ -115,7 +115,7 @@ public class ProgramExerciseAdapter extends RecyclerView.Adapter<ProgramExercise
                 }
             }
             
-
+            
             if (exerciseDetails != null) {
                 String details = String.format(Locale.getDefault(),
                     "%d подхода × %d повторений",
@@ -124,21 +124,21 @@ public class ProgramExerciseAdapter extends RecyclerView.Adapter<ProgramExercise
                 exerciseDetails.setText(details);
             }
 
-
+            
             if (cardView != null) {
                 cardView.setOnClickListener(v -> {
-
+                    
                     cardView.setCardBackgroundColor(cardView.getContext().getResources().getColor(R.color.ripple_color));
                     
-
+                    
                     new android.os.Handler().postDelayed(() -> {
                         cardView.setCardBackgroundColor(cardView.getContext().getResources().getColor(R.color.card_background));
                     }, 150);
                     
+                    
 
                     
                     
-
                     if (listener != null) {
                         listener.onExerciseClick(exercise);
                     } else {
@@ -147,13 +147,13 @@ public class ProgramExerciseAdapter extends RecyclerView.Adapter<ProgramExercise
                     }
                 });
                 
-
+                
                 cardView.setClickable(true);
                 cardView.setFocusable(true);
                 cardView.setForeground(cardView.getContext().getResources().getDrawable(R.drawable.ripple_effect));
             }
             
-
+            
             if (deleteButton != null) {
                 deleteButton.setOnClickListener(v -> listener.onDeleteClick(exercise, position));
             }

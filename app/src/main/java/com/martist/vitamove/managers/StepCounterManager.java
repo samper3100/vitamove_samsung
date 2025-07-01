@@ -60,7 +60,7 @@ public class StepCounterManager implements SensorEventListener {
         if (!isListening) {
             sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_NORMAL);
             isListening = true;
-            
+
         }
         
         return true;
@@ -75,14 +75,30 @@ public class StepCounterManager implements SensorEventListener {
             
             saveCurrentSteps();
             
-            
+
         }
     }
     
     
     public int getStepsToday() {
         
-        return Math.max(0, stepsToday);
+        final int MAX_REASONABLE_STEPS = 100000;
+        
+        
+        int validSteps = Math.max(0, stepsToday);
+        validSteps = Math.min(validSteps, MAX_REASONABLE_STEPS);
+        
+        
+        if (stepsToday > MAX_REASONABLE_STEPS) {
+            Log.e(TAG, "getStepsToday: Обнаружено аномально большое количество шагов: " + stepsToday + 
+                  ". Возвращаем ограниченное значение: " + validSteps);
+            
+            
+            stepsToday = validSteps;
+            saveCurrentSteps(); 
+        }
+        
+        return validSteps;
     }
     
     
@@ -94,11 +110,70 @@ public class StepCounterManager implements SensorEventListener {
         
         
         long lastSaveDate = sharedPreferences.getLong(KEY_LAST_SAVE_DATE, 0);
-        if (!isSameDay(lastSaveDate, System.currentTimeMillis())) {
+        long currentTime = System.currentTimeMillis();
+        
+
+        
+        boolean isNewDay = !isSameDay(lastSaveDate, currentTime);
+        
+        if (isNewDay) {
             
-            initialSteps = currentSteps; 
-            stepsToday = 0;
+
+
+            
+            
+            final int MAX_REASONABLE_STEPS = 100000;
+            
+            
+            if (stepsToday > MAX_REASONABLE_STEPS) {
+                Log.e(TAG, "Обнаружено аномально большое количество шагов при загрузке: " + stepsToday + 
+                      ". Сбрасываем счетчик.");
+                stepsToday = 0;
+            }
+            
+            
+            
+            if (stepsToday > 0) {
+                
+                try {
+                    
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(lastSaveDate);
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
+                    String previousDay = sdf.format(calendar.getTime());
+                    
+
+                    
+                    
+                    new Thread(() -> {
+                        try {
+                            
+                            com.martist.vitamove.repositories.StepHistoryRepository repository = 
+                                com.martist.vitamove.repositories.StepHistoryRepository.getInstance(context);
+                            
+                            
+                            repository.saveStepsForDate(previousDay, stepsToday);
+                            
+
+                        } catch (Exception e) {
+                            Log.e(TAG, "Ошибка при сохранении шагов за предыдущий день: " + e.getMessage(), e);
+                        }
+                    }).start();
+                } catch (Exception e) {
+                    Log.e(TAG, "Ошибка при попытке сохранить шаги за предыдущий день: " + e.getMessage(), e);
+                }
+            }
+
+            
+            
+            
+            initialSteps = sharedPreferences.getInt(KEY_CURRENT_STEPS, -1);
+            stepsToday = 0;    
             stepsBeforeReboot = 0; 
+
+
+            
+            
             saveData();
         }
     }
@@ -111,7 +186,7 @@ public class StepCounterManager implements SensorEventListener {
         editor.putLong(KEY_LAST_SAVE_DATE, System.currentTimeMillis());
         editor.apply();
         
-        
+
     }
     
     
@@ -124,7 +199,7 @@ public class StepCounterManager implements SensorEventListener {
         editor.putLong(KEY_LAST_SAVE_DATE, System.currentTimeMillis());
         editor.apply();
         
-        
+
     }
     
     
@@ -143,36 +218,85 @@ public class StepCounterManager implements SensorEventListener {
             
             int sensorSteps = (int) event.values[0];
             
+            
+            long lastSaveDate = sharedPreferences.getLong(KEY_LAST_SAVE_DATE, 0);
+            if (!isSameDay(lastSaveDate, System.currentTimeMillis())) {
+                
+
+                loadSavedData();
+            }
+            
             if (initialSteps == -1) {
                 
                 initialSteps = sensorSteps;
                 stepsBeforeReboot = 0; 
                 saveData();
-                
+
             }
 
             
             if (sensorSteps < initialSteps) {
+
+
                 
+                if (stepsToday > 0) {
+                    
+
+                    stepsBeforeReboot = stepsToday;
+                    initialSteps = sensorSteps;
+                } else {
+                    
+                    
+                    
+
+                    stepsBeforeReboot = sensorSteps;
+                    initialSteps = sensorSteps;
+                }
                 
-                stepsBeforeReboot = stepsToday;
-                
-                initialSteps = sensorSteps;
                 
                 saveData();
             }
             
             
             currentSteps = sensorSteps;
-            stepsToday = (currentSteps - initialSteps) + stepsBeforeReboot;
+            int calculatedSteps = (currentSteps - initialSteps) + stepsBeforeReboot;
             
             
-            if (stepsToday % 10 == 0) { 
+            
+            final int MAX_REASONABLE_STEPS = 100000;
+            
+            
+            if (calculatedSteps > MAX_REASONABLE_STEPS && stepsToday <= MAX_REASONABLE_STEPS) {
+                Log.e(TAG, "АНОМАЛЬНЫЙ СКАЧОК ШАГОВ! Предыдущее значение: " + stepsToday + 
+                     ", Новое значение: " + calculatedSteps + 
+                     ", Показания сенсора: " + sensorSteps + 
+                     ", Начальное значение: " + initialSteps +
+                     ", Шаги до перезагрузки: " + stepsBeforeReboot);
                 
+                
+                initialSteps = sensorSteps;
+                stepsBeforeReboot = 0;
+                calculatedSteps = 0;
+                saveData();
+                Log.e(TAG, "Счетчик сброшен из-за аномального значения");
             }
             
             
-            if (stepsToday % 100 == 0) {
+            
+            final int REASONABLE_STEP_DIFF = 1000;
+            if (Math.abs(calculatedSteps - stepsToday) > REASONABLE_STEP_DIFF) {
+
+            }
+            
+            stepsToday = calculatedSteps;
+            
+            
+            if (stepsToday % 10 == 0) { 
+
+            }
+            
+            
+            if (stepsToday % 100 == 0 || System.currentTimeMillis() - lastSaveDate > 5 * 60 * 1000) { 
                 saveCurrentSteps();
             }
         }
@@ -181,5 +305,16 @@ public class StepCounterManager implements SensorEventListener {
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         
+    }
+    
+    
+    public void checkAndResetForNewDayIfNeeded() {
+        long lastSaveDate = sharedPreferences.getLong(KEY_LAST_SAVE_DATE, 0);
+        long currentTime = System.currentTimeMillis();
+        
+        if (!isSameDay(lastSaveDate, currentTime)) {
+
+            loadSavedData(); 
+        }
     }
 } 

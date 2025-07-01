@@ -34,14 +34,14 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         
         
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         
         setContentView(R.layout.activity_login);
 
-        
+
         supabaseClient = SupabaseClient.getInstance(
                 Constants.SUPABASE_CLIENT_ID,
                 Constants.SUPABASE_CLIENT_SECRET
@@ -57,14 +57,14 @@ public class LoginActivity extends BaseActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        
+
         
         
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            
+
             
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            
+
             
         }
     }
@@ -76,7 +76,7 @@ public class LoginActivity extends BaseActivity {
             String prevUserId = prefs.getString("userId", null);
             
             if (prevUserId != null && !prevUserId.isEmpty()) {
-                
+
                 
                 
                 HistoryViewModel.clearCache(getApplication(), prevUserId);
@@ -86,7 +86,7 @@ public class LoginActivity extends BaseActivity {
                 com.martist.vitamove.managers.FoodManager.resetInstance();
                 com.martist.vitamove.managers.DashboardManager.resetInstance();
                 
-                
+
                 
                 
                 
@@ -97,20 +97,19 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void initializeViews() {
-        
+
         emailInput = findViewById(R.id.login_email);
         passwordInput = findViewById(R.id.login_password);
         loginButton = findViewById(R.id.login_button);
-        googleLoginButton = findViewById(R.id.login_google_button);
         registerLink = findViewById(R.id.register_link);
     }
 
     private void setupClickListeners() {
-        
+
         loginButton.setOnClickListener(v -> attemptLogin());
-        googleLoginButton.setOnClickListener(v -> {
-            Toast.makeText(this, "Вход через Google пока недоступен", Toast.LENGTH_SHORT).show();
-        });
+
+
+
         registerLink.setOnClickListener(v -> {
             startActivity(new Intent(this, SurveyActivity.class));
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -150,7 +149,7 @@ public class LoginActivity extends BaseActivity {
                     com.martist.vitamove.managers.FoodManager.resetInstance();
                     com.martist.vitamove.managers.CaloriesManager.resetInstance();
                     com.martist.vitamove.managers.DashboardManager.resetInstance();
-                    
+
                 } catch (Exception e) {
                     Log.e(TAG, "Ошибка при сбросе менеджеров", e);
                 }
@@ -171,7 +170,7 @@ public class LoginActivity extends BaseActivity {
                         String payload = new String(android.util.Base64.decode(jwtParts[1], android.util.Base64.DEFAULT));
                         JSONObject jwtJson = new JSONObject(payload);
                         userId = jwtJson.getString("sub");
-                        
+
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Ошибка получения ID пользователя из токена", e);
@@ -242,13 +241,13 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        
+
     }
 
     
@@ -261,7 +260,7 @@ public class LoginActivity extends BaseActivity {
         
         new Thread(() -> {
             try {
-                
+
                 
                 
                 JSONArray result = supabaseClient.from("users")
@@ -318,12 +317,12 @@ public class LoginActivity extends BaseActivity {
                         appEditor.putString("user_fitness_level", userProfile.optString("fitness_level", "intermediate"));
                         appEditor.apply();
                         
-                        
+
                     } catch (Exception e) {
                         Log.e(TAG, "Ошибка при синхронизации настроек между SharedPreferences: " + e.getMessage(), e);
                     }
                     
-                    
+
 
                     
                     
@@ -337,7 +336,7 @@ public class LoginActivity extends BaseActivity {
                             ((VitaMoveApplication) getApplication()).getWorkoutRepository();
                         
                         if (workoutRepository instanceof com.martist.vitamove.workout.data.repository.SupabaseWorkoutRepository) {
-                            
+
                             
                             com.martist.vitamove.workout.data.repository.SupabaseWorkoutRepository supabaseRepo = 
                                 (com.martist.vitamove.workout.data.repository.SupabaseWorkoutRepository) workoutRepository;
@@ -356,6 +355,8 @@ public class LoginActivity extends BaseActivity {
                     } catch (Exception e) {
                         Log.e(TAG, "Ошибка при синхронизации тренировок: " + e.getMessage(), e);
                     }
+
+                } else {
 
                 }
             } catch (Exception e) {

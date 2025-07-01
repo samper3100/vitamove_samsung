@@ -52,19 +52,19 @@ public class ProgramRoomCache {
                     ProgramEntity programEntity = jsonToProgramEntity(programJson);
                     if (programEntity != null) {
                         db.programDao().insert(programEntity);
-                        
+
                     }
                     
                     
                     if (programJson.has("days")) {
                         JSONArray daysArray = programJson.getJSONArray("days");
-                        
+
                         List<ProgramDayEntity> dayEntities = jsonToDayEntities(daysArray);
                         
                         if (!dayEntities.isEmpty()) {
                             
                             db.programDayDao().replaceDaysForProgram(programId, dayEntities);
-                            
+
                             
                             
                             int totalExercisesSaved = 0;
@@ -74,17 +74,17 @@ public class ProgramRoomCache {
                                 
                                 if (dayJson.has("exercises")) {
                                     JSONArray exercisesArray = dayJson.getJSONArray("exercises");
-                                    
+
                                     
                                     List<ProgramExerciseEntity> exerciseEntities = jsonToExerciseEntities(exercisesArray);
-                                    
+
                                     
                                     if (!exerciseEntities.isEmpty()) {
                                         
                                         boolean allMatch = true;
                                         for(ProgramExerciseEntity ex : exerciseEntities) {
                                             if (!ex.getDayId().equals(currentDayId)) {
-                                                
+
                                                 allMatch = false;
                                                 
                                                 
@@ -94,7 +94,7 @@ public class ProgramRoomCache {
                                         if (allMatch) {
                                             try {
                                                 db.programExerciseDao().replaceExercisesForDay(currentDayId, exerciseEntities);
-                                                
+
                                                 totalExercisesSaved += exerciseEntities.size();
                                             } catch (Exception e) {
                                                 Log.e(TAG, "saveProgram: Ошибка при сохранении упражнений для дня " + currentDayId, e);
@@ -104,27 +104,27 @@ public class ProgramRoomCache {
                                         }
                                     } else {
                                         
-                                        
+
                                         
                                         db.programExerciseDao().deleteAllByDayId(currentDayId);
                                     }
                                 } else {
-                                    
+
                                     db.programExerciseDao().deleteAllByDayId(currentDayId);
                                 }
                             }
-                            
+
                         } else {
-                             
+
                         }
                     } else {
-                        
+
                     }
                     
                     
                     
                     
-                    
+
                 } catch (Exception e) {
                     Log.e(TAG, "saveProgram: Ошибка сохранения программы в Room", e);
                 }
@@ -154,12 +154,12 @@ public class ProgramRoomCache {
                     Object typeValue = json.opt("periodization_type");
                     sb.append("periodization_type: присутствует, тип: ")
                       .append(typeValue != null ? typeValue.getClass().getName() : "null")
-                      .append(", значение: ").append(String.valueOf(typeValue)).append("\n");
+                      .append(", значение: ").append(typeValue).append("\n");
                     
                     
                     if (typeValue != null && !(typeValue instanceof String)) {
                         sb.append("⚠️ periodization_type не является строкой, будет преобразовано в: ")
-                          .append(String.valueOf(typeValue)).append("\n");
+                          .append(typeValue).append("\n");
                     }
                 } catch (Exception e) {
                     sb.append("⚠️ Ошибка при анализе periodization_type: ").append(e.getMessage()).append("\n");
@@ -174,12 +174,12 @@ public class ProgramRoomCache {
                     Object value = json.opt("current_phase");
                     sb.append("current_phase: присутствует, тип: ")
                       .append(value != null ? value.getClass().getName() : "null")
-                      .append(", значение: ").append(String.valueOf(value)).append("\n");
+                      .append(", значение: ").append(value).append("\n");
                     
                     
                     if (value != null && !(value instanceof String)) {
                         sb.append("⚠️ current_phase не является строкой, будет преобразовано в: ")
-                          .append(String.valueOf(value)).append("\n");
+                          .append(value).append("\n");
                     }
                 } catch (Exception e) {
                     sb.append("⚠️ Ошибка при анализе current_phase: ").append(e.getMessage()).append("\n");
@@ -194,11 +194,11 @@ public class ProgramRoomCache {
                     Object value = json.opt("current_phase_start_date");
                     sb.append("current_phase_start_date: присутствует, тип: ")
                       .append(value != null ? value.getClass().getName() : "null")
-                      .append(", значение: ").append(String.valueOf(value)).append("\n");
+                      .append(", значение: ").append(value).append("\n");
                     
                     if (value != null && !(value instanceof String)) {
                         sb.append("⚠️ current_phase_start_date не является строкой, будет преобразовано в: ")
-                          .append(String.valueOf(value)).append("\n");
+                          .append(value).append("\n");
                     }
                 } catch (Exception e) {
                     sb.append("⚠️ Ошибка при анализе current_phase_start_date: ").append(e.getMessage()).append("\n");
@@ -213,11 +213,11 @@ public class ProgramRoomCache {
                     Object value = json.opt("progression_type");
                     sb.append("progression_type: присутствует, тип: ")
                       .append(value != null ? value.getClass().getName() : "null")
-                      .append(", значение: ").append(String.valueOf(value)).append("\n");
+                      .append(", значение: ").append(value).append("\n");
                     
                     if (value != null && !(value instanceof String)) {
                         sb.append("⚠️ progression_type не является строкой, будет преобразовано в: ")
-                          .append(String.valueOf(value)).append("\n");
+                          .append(value).append("\n");
                     }
                 } catch (Exception e) {
                     sb.append("⚠️ Ошибка при анализе progression_type: ").append(e.getMessage()).append("\n");
@@ -274,7 +274,7 @@ public class ProgramRoomCache {
                 }
             }
             
-            
+
         } catch (Exception e) {
             Log.e(TAG, "inspectProgramJson: Ошибка при анализе JSON программы", e);
         }
@@ -390,7 +390,8 @@ public class ProgramRoomCache {
                     } else {
                         
                         entity.setPeriodizationType(String.valueOf(value));
-                        
+
+
                     }
                 }
             }
@@ -408,7 +409,8 @@ public class ProgramRoomCache {
                     } else {
                         
                         entity.setCurrentPhase(String.valueOf(value));
-                        
+
+
                     }
                 }
             }
@@ -426,7 +428,8 @@ public class ProgramRoomCache {
                     } else {
                         
                         entity.setCurrentPhaseStartDate(String.valueOf(value));
-                        
+
+
                     }
                 }
             }
@@ -444,7 +447,8 @@ public class ProgramRoomCache {
                     } else {
                         
                         entity.setProgressionType(String.valueOf(value));
-                        
+
+
                     }
                 }
             }
@@ -499,11 +503,11 @@ public class ProgramRoomCache {
     private static List<ProgramExerciseEntity> jsonToExerciseEntities(JSONArray exercisesArray) {
         List<ProgramExerciseEntity> entities = new ArrayList<>();
         try {
-            
+
             
             if (exercisesArray.length() > 0) {
                 JSONObject firstExercise = exercisesArray.getJSONObject(0);
-                
+
             }
             
             for (int i = 0; i < exercisesArray.length(); i++) {
@@ -511,14 +515,88 @@ public class ProgramRoomCache {
                 ProgramExerciseEntity entity = new ProgramExerciseEntity();
                 
                 try {
-                    entity.setId(exerciseJson.getString("id"));
                     
-                    entity.setDayId(exerciseJson.getString("day_id"));
-                    entity.setExerciseId(exerciseJson.getString("exercise_id"));
+                    try {
+                        entity.setId(exerciseJson.getString("id"));
+                    } catch (Exception e) {
+                        Object value = exerciseJson.opt("id");
+                        if (value == null) {
+                            Log.e(TAG, "jsonToExerciseEntities: Обязательное поле id отсутствует или null!");
+                            continue; 
+                        } else {
+                            entity.setId(String.valueOf(value));
+
+
+                        }
+                    }
+                    
+
+                    
+                    
+                    try {
+                        entity.setDayId(exerciseJson.getString("day_id"));
+                    } catch (Exception e) {
+                        Object value = exerciseJson.opt("day_id");
+                        if (value == null) {
+                            Log.e(TAG, "jsonToExerciseEntities: Обязательное поле day_id отсутствует или null для упражнения ID: " + entity.getId());
+                            continue; 
+                        } else {
+                            entity.setDayId(String.valueOf(value));
+
+
+                        }
+                    }
+                    
+                    
+                    try {
+                        entity.setExerciseId(exerciseJson.getString("exercise_id"));
+                    } catch (Exception e) {
+                        Object value = exerciseJson.opt("exercise_id");
+                        if (value == null) {
+                            Log.e(TAG, "jsonToExerciseEntities: Обязательное поле exercise_id отсутствует или null для упражнения ID: " + entity.getId());
+                            continue; 
+                        } else {
+                            entity.setExerciseId(String.valueOf(value));
+
+
+                        }
+                    }
+                    
                     entity.setOrderNumber(exerciseJson.getInt("order_number"));
                     entity.setTargetSets(exerciseJson.getInt("target_sets"));
-                    entity.setTargetReps(exerciseJson.getString("target_reps"));
-                    entity.setTargetWeight(exerciseJson.getString("target_weight"));
+                    
+                    
+                    try {
+                        entity.setTargetReps(exerciseJson.getString("target_reps"));
+                    } catch (Exception e) {
+                        
+                        Object value = exerciseJson.opt("target_reps");
+                        if (value == null) {
+                            entity.setTargetReps("10"); 
+
+                        } else {
+                            
+                            entity.setTargetReps(String.valueOf(value));
+
+                        }
+                    }
+                    
+                    
+                    try {
+                        entity.setTargetWeight(exerciseJson.getString("target_weight"));
+                    } catch (Exception e) {
+                        
+                        Object value = exerciseJson.opt("target_weight");
+                        if (value == null) {
+                            entity.setTargetWeight("0"); 
+
+                        } else {
+                            
+                            entity.setTargetWeight(String.valueOf(value));
+
+
+                        }
+                    }
                     
                     if (exerciseJson.has("rest_seconds")) {
                         entity.setRestSeconds(exerciseJson.getInt("rest_seconds"));
@@ -526,22 +604,80 @@ public class ProgramRoomCache {
                         entity.setRestSeconds(60); 
                     }
                     
+                    
                     if (exerciseJson.has("template_exercise_id")) {
-                        entity.setTemplateExerciseId(exerciseJson.getString("template_exercise_id"));
+                        try {
+                            entity.setTemplateExerciseId(exerciseJson.getString("template_exercise_id"));
+                        } catch (Exception e) {
+                            
+                            Object value = exerciseJson.opt("template_exercise_id");
+                            if (value == null) {
+                                entity.setTemplateExerciseId(null);
+                            } else {
+                                
+                                entity.setTemplateExerciseId(String.valueOf(value));
+
+
+                            }
+                        }
                     }
+                    
                     
                     if (exerciseJson.has("notes")) {
-                        entity.setNotes(exerciseJson.getString("notes"));
+                        try {
+                            entity.setNotes(exerciseJson.getString("notes"));
+                        } catch (Exception e) {
+                            
+                            Object value = exerciseJson.opt("notes");
+                            if (value == null) {
+                                entity.setNotes(null);
+                            } else {
+                                
+                                entity.setNotes(String.valueOf(value));
+
+
+                            }
+                        }
                     }
                     
+                    
                     if (exerciseJson.has("created_at")) {
-                        entity.setCreatedAt(exerciseJson.getString("created_at"));
+                        try {
+                            entity.setCreatedAt(exerciseJson.getString("created_at"));
+                        } catch (Exception e) {
+                            
+                            Object value = exerciseJson.opt("created_at");
+                            if (value == null) {
+                                entity.setCreatedAt(new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(new java.util.Date()));
+
+                            } else {
+                                
+                                entity.setCreatedAt(String.valueOf(value));
+
+
+                            }
+                        }
                     } else {
                         entity.setCreatedAt(new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(new java.util.Date()));
                     }
                     
+                    
                     if (exerciseJson.has("updated_at")) {
-                        entity.setUpdatedAt(exerciseJson.getString("updated_at"));
+                        try {
+                            entity.setUpdatedAt(exerciseJson.getString("updated_at"));
+                        } catch (Exception e) {
+                            
+                            Object value = exerciseJson.opt("updated_at");
+                            if (value == null) {
+                                entity.setUpdatedAt(new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(new java.util.Date()));
+
+                            } else {
+                                
+                                entity.setUpdatedAt(String.valueOf(value));
+
+
+                            }
+                        }
                     } else {
                         entity.setUpdatedAt(new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(new java.util.Date()));
                     }
@@ -551,7 +687,7 @@ public class ProgramRoomCache {
                     Log.e(TAG, "jsonToExerciseEntities: Ошибка при обработке упражнения #" + i, e);
                 }
             }
-            
+
         } catch (Exception e) {
             Log.e(TAG, "jsonToExerciseEntities: Ошибка преобразования JSON в сущности упражнений", e);
         }
@@ -610,12 +746,16 @@ public class ProgramRoomCache {
                     
                     String firstNumber = repsStr.split("-")[0].trim();
                     exercise.setTargetReps(Integer.parseInt(firstNumber));
+                } else if (repsStr.contains("+")) {
+                    
+                    String number = repsStr.replace("+", "").trim();
+                    exercise.setTargetReps(Integer.parseInt(number));
                 } else {
                     
                     exercise.setTargetReps(Integer.parseInt(repsStr.trim()));
                 }
             } else {
-                
+
                 exercise.setTargetReps(10); 
             }
         } catch (NumberFormatException e) {
@@ -632,11 +772,11 @@ public class ProgramRoomCache {
                  if (!weightStr.isEmpty() && !weightStr.equals(".")) { 
                     exercise.setTargetWeight(Float.parseFloat(weightStr));
                  } else {
-                     
+
                      exercise.setTargetWeight(0f); 
                  }
             } else {
-                
+
                 exercise.setTargetWeight(0f); 
             }
         } catch (NumberFormatException e) {
@@ -671,7 +811,7 @@ public class ProgramRoomCache {
                 
                 
                 
-                
+
             } catch (Exception e) {
                 Log.e(TAG, "clearCache: Ошибка очистки кэша", e);
             }
@@ -692,23 +832,24 @@ public class ProgramRoomCache {
                 
                 
                 List<ProgramDayEntity> days = db.programDayDao().getAllByProgramId(programId);
-                
+
                 
                 
                 for (ProgramDayEntity day : days) {
                     List<ProgramExerciseEntity> exercises = db.programExerciseDao().getAllByDayId(day.getId());
-                    
+
                     
                     
                     for (int i = 0; i < exercises.size(); i++) {
                         ProgramExerciseEntity exercise = exercises.get(i);
-                        
+
+
                     }
                 }
                 
                 
                 List<ProgramExerciseEntity> allExercises = db.programExerciseDao().getAll();
-                
+
                 
             } catch (Exception e) {
                 Log.e(TAG, "debugExerciseSaving: Ошибка при отладке сохранения упражнений", e);
@@ -721,7 +862,7 @@ public class ProgramRoomCache {
     
     public static void saveWorkoutPlans(String programId, List<WorkoutPlan> plans) {
         if (plans == null || programId == null || programId.isEmpty()) {
-            
+
             return;
         }
         Context context = VitaMoveApplication.getContext();
@@ -729,7 +870,7 @@ public class ProgramRoomCache {
             Log.e(TAG, "saveWorkoutPlans: Контекст приложения недоступен");
             return;
         }
-        
+
         executor.execute(() -> {
             try {
                 
@@ -743,9 +884,9 @@ public class ProgramRoomCache {
                 
                 if (!entities.isEmpty()) {
                     List<String> entityIds = entities.stream().map(e -> e.id).collect(Collectors.toList());
-                    
+
                 } else {
-                    
+
                 }
 
                 
@@ -756,7 +897,7 @@ public class ProgramRoomCache {
                     dao.insertAll(entities);
                 });
 
-                
+
             } catch (Exception e) {
                 Log.e(TAG, "saveWorkoutPlans: Ошибка сохранения планов в Room", e);
             }
@@ -781,7 +922,7 @@ public class ProgramRoomCache {
                         .map(ProgramRoomCache::mapEntityToWorkoutPlan) 
                         .collect(Collectors.toList());
 
-                
+
 
                 
                 new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
@@ -858,7 +999,7 @@ public class ProgramRoomCache {
             return;
         }
         
-        
+
         
         executor.execute(() -> {
             try {
@@ -868,7 +1009,7 @@ public class ProgramRoomCache {
                 
                 List<WorkoutPlanEntity> entities = dao.getPlanById(planId);
                 if (entities.isEmpty()) {
-                    
+
                     return;
                 }
                 
@@ -880,7 +1021,7 @@ public class ProgramRoomCache {
                 
                 dao.update(entity);
                 
-                
+
             } catch (Exception e) {
                 Log.e(TAG, "updateWorkoutPlanStatus: Ошибка обновления статуса плана в кэше", e);
             }
@@ -909,7 +1050,7 @@ public class ProgramRoomCache {
                 return;
             }
             
-            
+
             
             
             inspectProgramJson(programJson);
@@ -931,7 +1072,7 @@ public class ProgramRoomCache {
                     ProgramEntity programEntity = jsonToProgramEntity(programJson);
                     if (programEntity != null) {
                         db.programDao().insert(programEntity);
-                        
+
                     } else {
                         String errorMsg = "Не удалось создать ProgramEntity из JSON";
                         Log.e(TAG, "saveProgramAsync: " + errorMsg);
@@ -941,7 +1082,7 @@ public class ProgramRoomCache {
                                 Object periodzationType = programJson.opt("periodization_type");
                                 Log.e(TAG, "saveProgramAsync: Проблемное поле periodization_type тип: " + 
                                       (periodzationType != null ? periodzationType.getClass().getName() : "null") + 
-                                      ", значение: " + String.valueOf(periodzationType));
+                                      ", значение: " + periodzationType);
                             } else {
                                 Log.e(TAG, "saveProgramAsync: Поле periodization_type отсутствует в JSON");
                             }
@@ -951,7 +1092,7 @@ public class ProgramRoomCache {
                                 Object currentPhase = programJson.opt("current_phase");
                                 Log.e(TAG, "saveProgramAsync: Проблемное поле current_phase тип: " + 
                                       (currentPhase != null ? currentPhase.getClass().getName() : "null") + 
-                                      ", значение: " + String.valueOf(currentPhase));
+                                      ", значение: " + currentPhase);
                             } else {
                                 Log.e(TAG, "saveProgramAsync: Поле current_phase отсутствует в JSON");
                             }
@@ -961,7 +1102,7 @@ public class ProgramRoomCache {
                                 Object currentPhaseStartDate = programJson.opt("current_phase_start_date");
                                 Log.e(TAG, "saveProgramAsync: Поле current_phase_start_date тип: " + 
                                       (currentPhaseStartDate != null ? currentPhaseStartDate.getClass().getName() : "null") + 
-                                      ", значение: " + String.valueOf(currentPhaseStartDate));
+                                      ", значение: " + currentPhaseStartDate);
                             } 
                             
                             
@@ -969,7 +1110,7 @@ public class ProgramRoomCache {
                                 Object progressionType = programJson.opt("progression_type");
                                 Log.e(TAG, "saveProgramAsync: Поле progression_type тип: " + 
                                       (progressionType != null ? progressionType.getClass().getName() : "null") + 
-                                      ", значение: " + String.valueOf(progressionType));
+                                      ", значение: " + progressionType);
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "saveProgramAsync: Ошибка при диагностике полей JSON", e);
@@ -984,13 +1125,13 @@ public class ProgramRoomCache {
                     
                     if (programJson.has("days")) {
                         JSONArray daysArray = programJson.getJSONArray("days");
-                        
+
                         List<ProgramDayEntity> dayEntities = jsonToDayEntities(daysArray);
                         
                         if (!dayEntities.isEmpty()) {
                             
                             db.programDayDao().replaceDaysForProgram(programId, dayEntities);
-                            
+
                             
                             
                             int totalExercisesSaved = 0;
@@ -1000,34 +1141,34 @@ public class ProgramRoomCache {
                                 
                                 if (dayJson.has("exercises")) {
                                     JSONArray exercisesArray = dayJson.getJSONArray("exercises");
-                                    
+
                                     
                                     List<ProgramExerciseEntity> exerciseEntities = jsonToExerciseEntities(exercisesArray);
                                     
                                     if (!exerciseEntities.isEmpty()) {
                                         db.programExerciseDao().replaceExercisesForDay(currentDayId, exerciseEntities);
-                                        
+
                                         totalExercisesSaved += exerciseEntities.size();
                                     }
                                 } else {
-                                    
+
                                     
                                     db.programExerciseDao().deleteAllByDayId(currentDayId);
                                 }
                             }
                             
-                            
+
                             if (callback != null) {
                                 callback.onSuccess(true);
                             }
                         } else {
-                            
+
                             if (callback != null) {
                                 callback.onSuccess(false); 
                             }
                         }
                     } else {
-                        
+
                         if (callback != null) {
                             callback.onSuccess(false); 
                         }

@@ -15,10 +15,10 @@ import java.util.Locale;
 
 public class StepsMarkerView extends MarkerView {
 
-    private TextView tvContent;
-    private List<String> labels;
+    private final TextView tvContent;
+    private final List<String> labels;
 
-    
+
     public StepsMarkerView(Context context, int layoutResource, List<String> labels) {
         super(context, layoutResource);
         this.labels = labels;
@@ -35,7 +35,7 @@ public class StepsMarkerView extends MarkerView {
             label = labels.get(index);
         }
         
-        
+
         tvContent.setText(String.format(Locale.getDefault(), "%s: %d шагов", label, steps));
         
         super.refreshContent(e, highlight);
@@ -43,7 +43,7 @@ public class StepsMarkerView extends MarkerView {
 
     @Override
     public MPPointF getOffset() {
-        
+
         return new MPPointF(-(getWidth() / 2f), -getHeight() - 10);
     }
 } 

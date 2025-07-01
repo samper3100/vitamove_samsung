@@ -18,37 +18,38 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_top_adaptive"
-            android:text="Vitamove"
+            android:layout_marginHorizontal="24dp"
+            android:text="Войти"
             android:textColor="?android:attr/textColorPrimary"
-            android:textSize="36sp"
-            android:textStyle="bold"
+            android:textSize="30sp"
+
             android:fontFamily="@font/montserrat"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Карточка для изображения с эффектом тени -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/image_card"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginHorizontal="40dp"
-            app:cardCornerRadius="1000dp"
-            app:cardElevation="8dp"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintWidth_percent="0.6"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/login_appname">
+<!--        <androidx.cardview.widget.CardView-->
+<!--            android:id="@+id/image_card"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_marginTop="16dp"-->
+<!--            android:layout_marginHorizontal="40dp"-->
+<!--            app:cardCornerRadius="1000dp"-->
+<!--            app:cardElevation="8dp"-->
+<!--            app:layout_constraintDimensionRatio="1:1"-->
+<!--            app:layout_constraintWidth_percent="0.6"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/login_appname">-->
 
-            <ImageView
-                android:id="@+id/login_image"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/login_image" />
-        </androidx.cardview.widget.CardView>
+<!--            <ImageView-->
+<!--                android:id="@+id/login_image"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:scaleType="centerCrop"-->
+<!--                android:src="@drawable/login_image" />-->
+<!--        </androidx.cardview.widget.CardView>-->
 
         <!-- Карточка контейнер для полей ввода -->
         <androidx.cardview.widget.CardView
@@ -60,15 +61,19 @@
             app:cardCornerRadius="16dp"
             app:cardElevation="4dp"
             app:cardBackgroundColor="@color/card_background"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/image_card">
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"  >
 
             <LinearLayout
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp">
+
+
 
                 <!-- Поле для Email с иконкой -->
                 <com.google.android.material.textfield.TextInputLayout
@@ -128,52 +133,7 @@
             app:layout_constraintTop_toBottomOf="@id/inputs_card" />
 
         <!-- Разделитель с текстом "или" -->
-        <LinearLayout
-            android:id="@+id/divider_container"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/login_button">
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1"
-                android:background="?android:attr/textColorHint" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:text="или"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textSize="14sp" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1"
-                android:background="?android:attr/textColorHint" />
-        </LinearLayout>
-
-        <!-- Кнопка Google с улучшенным дизайном -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/login_google_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="16dp"
-            android:paddingVertical="14dp"
-            android:text="Продолжить через Google"
-            style="@style/Widget.VitaMove.Button.GoogleRegister"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/divider_container" />
 
         <!-- Ссылка на регистрацию -->
         <TextView
@@ -187,7 +147,7 @@
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/login_google_button" />
+            app:layout_constraintTop_toBottomOf="@id/login_button" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

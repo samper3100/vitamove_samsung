@@ -16,19 +16,19 @@ public class ProgramExercise implements Parcelable {
     private int restBetweenSetsSec;
     private String notes;
     private List<ProgramSet> sets;
-    private String dayId; 
-    private int targetSets; 
-    private int targetReps; 
-    private float targetWeight; 
-    private long createdAt; 
-    private long updatedAt; 
-    private String templateExerciseId; 
+    private String dayId;
+    private int targetSets;
+    private int targetReps;
+    private float targetWeight;
+    private long createdAt;
+    private long updatedAt;
+    private String templateExerciseId;
 
     public ProgramExercise() {
         sets = new ArrayList<>();
     }
 
-    
+
     public String getId() { return id; }
     public String getProgramDayId() { return programDayId; }
     public String getExerciseId() { return exerciseId; }
@@ -45,7 +45,7 @@ public class ProgramExercise implements Parcelable {
     public long getUpdatedAt() { return updatedAt; }
     public String getTemplateExerciseId() { return templateExerciseId; }
 
-    
+
     public void setId(String id) { this.id = id; }
     public void setProgramDayId(String programDayId) { this.programDayId = programDayId; }
     public void setExerciseId(String exerciseId) { this.exerciseId = exerciseId; }
@@ -106,7 +106,7 @@ public class ProgramExercise implements Parcelable {
     public void setUpdatedAt(long updatedAt) { this.updatedAt = updatedAt; }
     public void setTemplateExerciseId(String templateExerciseId) { this.templateExerciseId = templateExerciseId; }
 
-    
+
     public void addSet(ProgramSet set) {
         if (set != null) {
             sets.add(set);
@@ -121,24 +121,24 @@ public class ProgramExercise implements Parcelable {
         return sets.size();
     }
 
-    
+
     public int getDurationSeconds() {
-        
+
         if (exercise != null) {
             return exercise.getDurationSeconds();
         }
         
+
+        int repsDuration = targetReps * 3;
         
-        int repsDuration = targetReps * 3; 
-        
-        
+
         int totalDuration = (repsDuration + restBetweenSetsSec) * targetSets - restBetweenSetsSec;
         
-        
+
         return Math.max(totalDuration, 30);
     }
 
-    
+
     protected ProgramExercise(Parcel in) {
         id = in.readString();
         programDayId = in.readString();
@@ -194,7 +194,7 @@ public class ProgramExercise implements Parcelable {
         }
     };
     
-    
+
     public static class Builder {
         private final ProgramExercise programExercise = new ProgramExercise();
         

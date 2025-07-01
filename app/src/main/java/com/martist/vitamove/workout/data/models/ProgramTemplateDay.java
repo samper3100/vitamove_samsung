@@ -21,18 +21,18 @@ public class ProgramTemplateDay implements Parcelable {
     private int weekNumber;
     private String muscleGroups;
     private String focusArea;
-    private int estimatedDuration;
+    private int estimatedDuration; 
     private Date createdAt;
     private Date updatedAt;
     
-
+    
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
 
-
+    
     public ProgramTemplateDay() {
     }
 
-
+    
     public ProgramTemplateDay(String templateId, String name, String description, int dayNumber, 
                              int weekNumber, String muscleGroups, String focusArea, int estimatedDuration) {
         this.templateId = templateId;
@@ -47,7 +47,7 @@ public class ProgramTemplateDay implements Parcelable {
         this.updatedAt = new Date();
     }
 
-
+    
     public static ProgramTemplateDay fromJson(JSONObject json) throws JSONException, ParseException {
         ProgramTemplateDay day = new ProgramTemplateDay();
         day.id = json.getString("id");
@@ -71,7 +71,7 @@ public class ProgramTemplateDay implements Parcelable {
         return day;
     }
 
-
+    
     public JSONObject toJson() throws JSONException {
         JSONObject json = new JSONObject();
         if (id != null) {
@@ -97,7 +97,7 @@ public class ProgramTemplateDay implements Parcelable {
         return json;
     }
 
-
+    
     public String getId() {
         return id;
     }
@@ -186,7 +186,7 @@ public class ProgramTemplateDay implements Parcelable {
         this.updatedAt = updatedAt;
     }
 
-
+    
     protected ProgramTemplateDay(Parcel in) {
         id = in.readString();
         templateId = in.readString();

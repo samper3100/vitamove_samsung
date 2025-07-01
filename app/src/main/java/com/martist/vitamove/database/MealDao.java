@@ -28,7 +28,7 @@ public interface MealDao {
     @Query("DELETE FROM meals WHERE user_id = :userId")
     void deleteAllMealsForUser(String userId);
     
-    
+
     @Query("SELECT * FROM meals WHERE date = :date AND meal_type = :mealType AND user_id = :userId LIMIT 1")
     DayMeal getMealForDateAndType(String date, String mealType, String userId);
 } 

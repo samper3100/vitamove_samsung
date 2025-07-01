@@ -3,14 +3,15 @@ package com.martist.vitamove.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
 public class Meal implements Parcelable {
-    private String title;
-    private int iconResId;
-    private List<FoodPortion> foods;
+    private final String title;
+    private final int iconResId;
+    private final List<FoodPortion> foods;
     private float calories;
     private float proteins;
     private float fats;
@@ -29,7 +30,7 @@ public class Meal implements Parcelable {
     public int getIconResId() { return iconResId; }
     public List<FoodPortion> getFoods() { return foods; }
 
-
+    
     public Food getFood(int index) {
         if (foods != null && index >= 0 && index < foods.size()) {
             return foods.get(index).getFood();
@@ -121,7 +122,7 @@ public class Meal implements Parcelable {
     }
 
     public void addFood(SelectedFood selectedFood) {
-
+        
         Food food = selectedFood.getFood();
         int portionSize = (int) selectedFood.getAmount();
         addFood(food, portionSize);
@@ -141,71 +142,71 @@ public class Meal implements Parcelable {
         }
     }
 
-
+    
     public boolean removeFood(int position) {
-        
+
         if (foods != null && position >= 0 && position < foods.size()) {
             foods.remove(position);
             updateNutrients();
-            
+
             return true;
         }
         Log.e(TAG, "Ошибка при удалении продукта: некорректная позиция " + position);
         return false;
     }
 
-
+    
     public boolean updateFoodPortion(String foodId, int newPortionSize) {
-        
+
         if (foods != null) {
             for (int i = 0; i < foods.size(); i++) {
                 FoodPortion portion = foods.get(i);
                 if (portion.getFood().getId() == Long.parseLong(foodId)) {
-
-                    FoodPortion newPortion = new FoodPortion(portion.getFood(), newPortionSize);
-
-                    foods.set(i, newPortion);
-
-                    updateNutrients();
                     
+                    FoodPortion newPortion = new FoodPortion(portion.getFood(), newPortionSize);
+                    
+                    foods.set(i, newPortion);
+                    
+                    updateNutrients();
+
                     return true;
                 }
             }
         }
-        
+
         return false;
     }
     
-
+    
     public boolean addOrUpdateFood(Food food, int portionSize) {
         if (food == null) {
             Log.e(TAG, "Невозможно добавить null продукт");
             return false;
         }
         
-
+        
         if (foods != null) {
             for (int i = 0; i < foods.size(); i++) {
                 FoodPortion portion = foods.get(i);
                 if (portion.getFood().getId() == food.getId()) {
-
+                    
                     FoodPortion newPortion = new FoodPortion(food, portionSize);
                     foods.set(i, newPortion);
                     updateNutrients();
-                    
+
                     return true;
                 }
             }
         }
         
-
+        
         foods.add(new FoodPortion(food, portionSize));
         updateNutrients();
-        
+
         return false;
     }
 
-
+    
     protected Meal(Parcel in) {
         title = in.readString();
         iconResId = in.readInt();
@@ -262,7 +263,7 @@ public class Meal implements Parcelable {
             return portionSize;
         }
 
-
+        
         protected FoodPortion(Parcel in) {
             food = in.readParcelable(Food.class.getClassLoader());
             portionSize = in.readInt();
@@ -292,7 +293,7 @@ public class Meal implements Parcelable {
         };
     }
 
-
+    
     private float calculateTotalNutrient(Function<Food, Float> nutrientGetter) {
         return foods.stream()
             .map(portion -> {
@@ -303,7 +304,7 @@ public class Meal implements Parcelable {
             .reduce(0f, Float::sum);
     }
 
-
+    
     public void updateAllNutrients() {
         updateNutrients();
     }

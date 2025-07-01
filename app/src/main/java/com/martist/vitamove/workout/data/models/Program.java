@@ -17,7 +17,7 @@ public class Program {
     private float rating;
     private List<ProgramDay> days;
     
-    
+
     public Program() {
         this.goals = new ArrayList<>();
         this.days = new ArrayList<>();
@@ -25,7 +25,7 @@ public class Program {
     
 
     
-    
+
     
     public String getId() {
         return id;
@@ -100,17 +100,17 @@ public class Program {
     
 
 
-    
+
     public List<ProgramDay> getDays() {
         return days;
     }
     
-    
+
     public void setDays(List<ProgramDay> days) {
         this.days = days;
     }
     
-    
+
     public void addDay(ProgramDay day) {
         if (this.days == null) {
             this.days = new ArrayList<>();

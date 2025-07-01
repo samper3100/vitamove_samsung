@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -42,6 +43,7 @@ import com.martist.vitamove.workout.data.models.Exercise;
 import com.martist.vitamove.workout.data.models.ExerciseSet;
 import com.martist.vitamove.workout.data.models.WorkoutExercise;
 import com.martist.vitamove.workout.data.repository.SupabaseWorkoutRepository;
+import com.martist.vitamove.workout.utils.WorkoutSettingsManager;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -54,7 +56,6 @@ import java.util.concurrent.TimeUnit;
 
 public class ExerciseSettingsActivity extends BaseActivity {
     private static final String TAG = "ExerciseSettingsActivity";
-    private static final long REST_TIME_MILLIS = 60000;
     private static final int DEFAULT_REPS = 12;
     private static final String PREFS_NAME = "ExerciseSettings";
     private static final String KEY_SETS_DATA = "sets_data_";
@@ -90,7 +91,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
     private SupabaseWorkoutRepository workoutRepository;
     
 
-    private boolean isDescriptionExpanded = false;
+    private final boolean isDescriptionExpanded = false;
     
 
     private View muscleGroupsContainer;
@@ -123,7 +124,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exercise_settings);
 
-        
+
 
 
 
@@ -132,43 +133,27 @@ public class ExerciseSettingsActivity extends BaseActivity {
             workoutExercise = getIntent().getParcelableExtra("workout_exercise");
             workoutId = getIntent().getStringExtra("workout_id");
 
-            
+
             if (exercise != null) {
-                
+
+
                 
 
-                String exerciseType = exercise.getExerciseType();
-                isCardioExercise = exerciseType != null && 
-                    (exerciseType.equalsIgnoreCase("Кардио") || 
-                     exerciseType.equalsIgnoreCase("Cardio") ||
-                     exerciseType.toLowerCase().contains("кардио") ||
-                     exerciseType.toLowerCase().contains("cardio"));
+                isCardioExercise = exercise.isCardioExercise() || exercise.isStaticExercise();
                 
 
-                boolean isStaticExercise = exerciseType != null && 
-                    (exerciseType.equalsIgnoreCase("Статическое") || 
-                     exerciseType.equalsIgnoreCase("Static") ||
-                     exerciseType.toLowerCase().contains("статич") ||
-                     exerciseType.toLowerCase().contains("static") ||
-                     exerciseType.toLowerCase().contains("удержание") ||
-                     exerciseType.toLowerCase().contains("планка"));
-                 
-
-                isWarmupStretching = exerciseType != null &&
-                    (exerciseType.equalsIgnoreCase("разминка") ||
-                     exerciseType.equalsIgnoreCase("warm-up") ||
-                     exerciseType.equalsIgnoreCase("растяжка") ||
-                     exerciseType.equalsIgnoreCase("stretching"));
-                 
-
-                if (isStaticExercise) {
-                    isCardioExercise = true;
-                }
+                isWarmupStretching = exercise.getExerciseType() != null &&
+                    (exercise.getExerciseType().equalsIgnoreCase("разминка") ||
+                     exercise.getExerciseType().equalsIgnoreCase("warm-up") ||
+                     exercise.getExerciseType().equalsIgnoreCase("растяжка") ||
+                     exercise.getExerciseType().equalsIgnoreCase("stretching"));
                 
-                
+
+
             }
             if (workoutExercise != null) {
-                
+
+
             }
 
             if (exercise == null || workoutExercise == null || workoutId == null) {
@@ -178,7 +163,8 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 return;
             }
 
-            
+
+
         } else {
             Log.e(TAG, "onCreate: intent is null");
             finish();
@@ -219,11 +205,12 @@ public class ExerciseSettingsActivity extends BaseActivity {
             if (exercise != null && exercise.getExerciseType() != null && 
                 (exercise.getExerciseType().equals("восстановительное") || 
                  exercise.getExerciseType().equals("реабилитационное") || 
-                 exercise.getExerciseType().equals("функциональное"))) {
+                 exercise.getExerciseType().equals("функциональное") ||
+                 exercise.getExerciseType().equals("с собственным весом"))) {
                 
                 List<ExerciseSet> sets = viewModel.getExerciseSets().getValue();
                 if (sets == null || sets.isEmpty()) {
-                    
+
                     
 
                     
@@ -234,7 +221,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
                             List<ExerciseSet> updatedSets = viewModel.getExerciseSets().getValue();
                             if (updatedSets != null) {
                                 repsOnlyAdapter.updateSets(updatedSets);
-                                
+
                             }
                         }
                     }, 500);
@@ -252,13 +239,13 @@ public class ExerciseSettingsActivity extends BaseActivity {
             
 
             if (isWarmupStretching) {
-                
+
                 
 
                 if (workoutExercise != null && workoutExercise.getSetsCompleted() != null && !workoutExercise.getSetsCompleted().isEmpty()) {
                     for (ExerciseSet set : workoutExercise.getSetsCompleted()) {
                         if (set.isCompleted()) {
-                            
+
                             break;
                         }
                     }
@@ -268,7 +255,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 new Handler().postDelayed(() -> updateUI(), 100);
             }
 
-            
+
         } catch (Exception e) {
             Log.e(TAG, "onCreate: ошибка при инициализации: " + e.getMessage(), e);
             Toast.makeText(this, "Произошла ошибка при загрузке упражнения", Toast.LENGTH_SHORT).show();
@@ -280,11 +267,32 @@ public class ExerciseSettingsActivity extends BaseActivity {
     private void setupToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Настройка упражнения");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(v -> {
             onBackPressed();
         });
+        
+
+        if (getWindow() != null) {
+            getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
+            
+
+            int nightModeFlags = getResources().getConfiguration().uiMode & 
+                                 android.content.res.Configuration.UI_MODE_NIGHT_MASK;
+            
+            View decorView = getWindow().getDecorView();
+            int flags = decorView.getSystemUiVisibility();
+            
+            if (nightModeFlags == android.content.res.Configuration.UI_MODE_NIGHT_YES) {
+
+                flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            } else {
+
+                flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            }
+            
+            decorView.setSystemUiVisibility(flags);
+        }
         
 
         ImageView infoButton = findViewById(R.id.info_button);
@@ -304,7 +312,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
     }
 
     private void initViews() {
-        
+
 
         exerciseNameText = findViewById(R.id.exercise_name);
 
@@ -354,30 +362,12 @@ public class ExerciseSettingsActivity extends BaseActivity {
         
 
         exerciseDescriptionHeader.setOnClickListener(v -> {
+            Intent intent = ExerciseDetailsActivity.newIntent(this, exercise.getId());
 
-            String instructions = exercise.getInstructions();
-            boolean hasInstructions = instructions != null && !instructions.isEmpty();
-            
+            intent.putExtra("hide_add_button", true);
+            startActivity(intent);
 
-            if (!hasInstructions) {
-                return;
-            }
-            
-
-            isDescriptionExpanded = !isDescriptionExpanded;
-            
-
-            if (isDescriptionExpanded) {
-
-                exerciseDescriptionText.setVisibility(View.VISIBLE);
-
-                toggleDescriptionButton.setRotation(0);
-            } else {
-
-                exerciseDescriptionText.setVisibility(View.GONE);
-
-                toggleDescriptionButton.setRotation(180);
-            }
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
 
         if (exerciseNameText == null) Log.e(TAG, "exerciseNameText is null");
@@ -422,7 +412,8 @@ public class ExerciseSettingsActivity extends BaseActivity {
                             
 
                             if (uncompletedSets.size() > 1) {
-                                
+
+
                                 
 
                                 List<ExerciseSet> updatedSets = new ArrayList<>();
@@ -524,7 +515,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 }
             });
             
-            
+
         } catch (Exception e) {
             Log.e(TAG, "setupViewModel: ошибка при инициализации ViewModel: " + e.getMessage(), e);
             Toast.makeText(this, "Ошибка инициализации: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -534,12 +525,12 @@ public class ExerciseSettingsActivity extends BaseActivity {
     private void setupRecyclerView() {
         setsList.setLayoutManager(new LinearLayoutManager(this));
 
-        
+
         
 
         if (isWarmupStretching) {
             setsList.setVisibility(View.GONE);
-            
+
             return;
         }
 
@@ -548,34 +539,22 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
         if (isCardioExercise) {
 
-            
+
             
 
             addCardioSummaryView();
             
             cardioAdapter = new CardioSetAdapter();
+
             cardioAdapter.setOnSetClickListener((set, position, isCompleted) -> {
-                
-                
 
+                set.setCompleted(isCompleted);
+                viewModel.updateSet(set);
+            });
 
-                List<ExerciseSet> sets = viewModel.getExerciseSets().getValue();
-                if (sets != null && position < sets.size()) {
+            cardioAdapter.setOnDeleteClickListener((set, position) -> {
 
-                    ExerciseSet clickedSet = sets.get(position);
-
-                    clickedSet.setCompleted(isCompleted);
-
-                    viewModel.updateSet(clickedSet);
-                    
-                } else if (position == sets.size()) {
-
-                    
-                    addNewSet(set);
-                } else {
-                    Log.e(TAG, "onSetClick: Некорректная позиция или список подходов null");
-                }
-
+                deleteSet(set, position);
             });
             
 
@@ -587,7 +566,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
                     updateCardioTotalTime();
                 } else {
-                    
+
 
                 }
             });
@@ -597,14 +576,14 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
             List<ExerciseSet> sets = viewModel.getExerciseSets().getValue();
             if (sets == null || sets.isEmpty()) {
-                
+
 
                 ExerciseSet newSet = new ExerciseSet(null, null, 0, false);
                 newSet.setDurationSeconds(0);
                 addNewSet(newSet);
             } else if (sets.size() > 1) {
 
-                
+
                 
 
                 List<ExerciseSet> uncompletedSets = new ArrayList<>();
@@ -615,8 +594,8 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 }
                 
                 if (uncompletedSets.size() > 1) {
-                    
-                    
+
+
 
                     List<ExerciseSet> updatedSets = new ArrayList<>();
                     boolean foundFirstUncompleted = false;
@@ -647,74 +626,22 @@ public class ExerciseSettingsActivity extends BaseActivity {
         } else if (exerciseType != null && 
                 (exerciseType.equals("восстановительное") || 
                  exerciseType.equals("реабилитационное") || 
-                 exerciseType.equals("функциональное"))) {
+                 exerciseType.equals("функциональное") ||
+                 exerciseType.equals("с собственным весом"))) {
 
-            
+
             
             repsOnlyAdapter = new RepsOnlySetAdapter();
+
             repsOnlyAdapter.setOnSetClickListener((set, position, isCompleted) -> {
-                
-                
 
+                set.setCompleted(isCompleted);
+                viewModel.updateSet(set);
+            });
 
-                List<ExerciseSet> sets = viewModel.getExerciseSets().getValue();
-                if (sets != null && position < sets.size()) {
+            repsOnlyAdapter.setOnDeleteClickListener((set, position) -> {
 
-                    ExerciseSet clickedSet = sets.get(position);
-
-                    clickedSet.setCompleted(isCompleted);
-
-                    viewModel.updateSet(clickedSet);
-                    
-                } else if (position == sets.size()) {
-
-                    
-                    
-
-                    ExerciseSet newSet = new ExerciseSet();
-                    newSet.setWorkoutExerciseId(workoutExercise.getId());
-                    
-
-                    Integer previousReps = DEFAULT_REPS;
-                    
-
-                    List<ExerciseSet> existingSets = viewModel.getExerciseSets().getValue();
-                    if (existingSets != null && !existingSets.isEmpty()) {
-
-                        ExerciseSet lastSet = existingSets.get(existingSets.size() - 1);
-                        if (lastSet.getReps() != null && lastSet.getReps() > 0) {
-                            previousReps = lastSet.getReps();
-                            
-                        }
-                    } else if (exercise != null && exercise.getId() != null) {
-
-                        Integer lastReps = viewModel.getLastRepsForExercise(exercise.getId());
-                        if (lastReps != null && lastReps > 0) {
-                            previousReps = lastReps;
-                            
-                        } else {
-
-                            String defaultReps = exercise.getDefaultReps();
-                            if (defaultReps != null && !defaultReps.isEmpty()) {
-                                try {
-                                    previousReps = Integer.parseInt(defaultReps.split("-")[0].trim());
-                                    
-                                } catch (Exception e) {
-                                    Log.e(TAG, "onSetClick: Ошибка при парсинге defaultReps: " + e.getMessage());
-                                }
-                            }
-                        }
-                    }
-                    
-                    newSet.setReps(previousReps);
-                    newSet.setWeight(null);
-                    
-                    
-                    addNewSet(newSet);
-                } else {
-                    Log.e(TAG, "onSetClick: Некорректная позиция или список подходов null");
-                }
-
+                deleteSet(set, position);
             });
             
 
@@ -723,7 +650,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
                     viewModel.updateSet(set);
                 } else {
-                    
+
                 }
             });
             
@@ -734,70 +661,25 @@ public class ExerciseSettingsActivity extends BaseActivity {
             List<ExerciseSet> sets = viewModel.getExerciseSets().getValue();
             if (sets == null || sets.isEmpty()) {
 
-                
+
             } else {
-                
+
+
             }
         } else {
 
             adapter = new ExerciseSetAdapter();
+
             adapter.setOnSetClickListener((set, position, isCompleted) -> {
-                
-                
 
 
-                List<ExerciseSet> currentSetsList = viewModel.getExerciseSets().getValue();
-                if (currentSetsList != null && position < currentSetsList.size()) {
+                set.setCompleted(isCompleted);
+                viewModel.updateSet(set);
+            });
 
-                    ExerciseSet clickedSet = currentSetsList.get(position);
+            adapter.setOnDeleteClickListener((set, position) -> {
 
-                    clickedSet.setCompleted(isCompleted);
-
-                    viewModel.updateSet(clickedSet);
-                    
-                } else if (currentSetsList != null && position == currentSetsList.size()) {
-                    
-                    
-
-                    boolean hasUncompletedSets = false;
-                    for (ExerciseSet existingSet : currentSetsList) {
-                        if (!existingSet.isCompleted()) {
-                            hasUncompletedSets = true;
-                            
-                            break;
-                        }
-                    }
-                    
-                    if (hasUncompletedSets) {
-                        
-                        Toast.makeText(ExerciseSettingsActivity.this, "Завершите текущий подход перед добавлением нового", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    
-
-
-
-                    ExerciseSet newActualSet = set; 
-                    newActualSet.setWorkoutExerciseId(workoutExercise.getId());
-
-                    
-
-                    Float previousWeight = 0.0f;
-
-                    if (!currentSetsList.isEmpty()) {
-                        ExerciseSet lastSet = currentSetsList.get(currentSetsList.size() - 1);
-                        if (lastSet.getWeight() != null) {
-                            previousWeight = lastSet.getWeight();
-                        }
-                    }
-                    newActualSet.setWeight(previousWeight);
-                    
-                    
-                    addNewSet(newActualSet);
-                } else {
-                     Log.e(TAG, "onSetClick: Некорректная позиция или список подходов null. Position: " + position + ", Set list size: " + (currentSetsList != null ? currentSetsList.size() : "null"));
-                }
-
+                deleteSet(set, position);
             });
             
 
@@ -807,7 +689,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
                     viewModel.updateSet(set);
                 } else {
-                    
+
 
                 }
             });
@@ -845,7 +727,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
         
 
         cardioSummaryContainer.addView(cardioSummaryView);
-        
+
         
 
         updateCardioTotalTime();
@@ -858,7 +740,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
             ViewGroup parent = (ViewGroup) cardioSummaryView.getParent();
             if (parent != null) {
                 parent.removeView(cardioSummaryView);
-                
+
             }
             cardioSummaryView = null;
             cardioTotalMinutesText = null;
@@ -907,12 +789,13 @@ public class ExerciseSettingsActivity extends BaseActivity {
             }
         }
         
-        
+
     }
 
 
     private void addNewSet(ExerciseSet set) {
-        
+
+
         
 
         boolean isStaticExercise = exercise != null && exercise.getExerciseType() != null && 
@@ -926,7 +809,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
         if (exercise != null && exercise.getId() != null) {
 
             List<ExerciseSet> currentSets = viewModel.getExerciseSets().getValue();
-            
+
             
 
             if (isCardioExercise) {
@@ -942,7 +825,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
                     
 
                     if (hasUncompletedSets) {
-                        
+
                         Toast.makeText(this, "Завершите текущий подход перед добавлением нового", Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -952,7 +835,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 set.setDurationSeconds(0);
                 set.setReps(null);
                 set.setWeight(null);
-                
+
                 
 
                 int nextSetNumber = (currentSets != null && !currentSets.isEmpty()) ? 
@@ -969,7 +852,8 @@ public class ExerciseSettingsActivity extends BaseActivity {
                     cardioAdapter.updateSets(updatedSets);
                 }
                 
-                
+
+
                 
 
                 updateCardioTotalTime();
@@ -977,7 +861,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
 
                 new Handler().postDelayed(() -> {
-                    
+
                     updateUI();
                     
 
@@ -994,7 +878,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 }, 300);
             } else {
 
-                
+
                 
 
                 boolean hasUncompletedSets = false;
@@ -1002,13 +886,13 @@ public class ExerciseSettingsActivity extends BaseActivity {
                     for (ExerciseSet existingSet : currentSets) {
                         if (!existingSet.isCompleted()) {
                             hasUncompletedSets = true;
-                            
+
                             break;
                         }
                     }
                     
                     if (hasUncompletedSets) {
-                        
+
                         Toast.makeText(this, "Завершите текущий подход перед добавлением нового", Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -1020,12 +904,13 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 set.setSetNumber(nextSetNumber);
                 
 
-                
+
+
                 viewModel.addNewSet(set);
                 
 
                 new Handler().postDelayed(() -> {
-                    
+
                     updateUI();
                     
 
@@ -1043,16 +928,69 @@ public class ExerciseSettingsActivity extends BaseActivity {
     }
 
     private void deleteSet(ExerciseSet set, int position) {
-        viewModel.deleteSet(set.getId());
+
+        if (set == null || set.getId() == null) {
+            Log.e(TAG, "deleteSet: set или set.getId() равны null, удаление невозможно");
+            Toast.makeText(this, "Ошибка: не удалось удалить подход (ID не найден)", Toast.LENGTH_SHORT).show();
+            return;
+        }
         
 
-        if (isCardioExercise) {
-            updateCardioTotalTime();
+        List<ExerciseSet> currentSets = viewModel.getExerciseSets().getValue();
+        if (currentSets != null && currentSets.size() <= 1) {
+
+            Toast.makeText(this, "Нельзя удалить последний подход", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        try {
+
+            String setIdToDelete = set.getId();
+            
+
+
+            viewModel.deleteSet(setIdToDelete);
+            
+
+            if (set.equals(activeSet)) {
+                stopActiveSetTimer();
+                activeSet = null;
+                activeSetTimer = null;
+            }
+            
+
+            if (isCardioExercise && cardioAdapter != null) {
+
+                List<ExerciseSet> updatedSets = viewModel.getExerciseSets().getValue();
+                if (updatedSets != null) {
+                    cardioAdapter.updateSets(new ArrayList<>(updatedSets));
+                    updateCardioTotalTime();
+                }
+            } else if (repsOnlyAdapter != null) {
+                List<ExerciseSet> updatedSets = viewModel.getExerciseSets().getValue();
+                if (updatedSets != null) {
+                    repsOnlyAdapter.updateSets(new ArrayList<>(updatedSets));
+                }
+            } else if (adapter != null) {
+                List<ExerciseSet> updatedSets = viewModel.getExerciseSets().getValue();
+                if (updatedSets != null) {
+                    adapter.updateSets(new ArrayList<>(updatedSets));
+                }
+            }
+            
+
+            updateUI();
+            
+
+            Toast.makeText(this, "Подход удален", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Log.e(TAG, "deleteSet: Ошибка при удалении подхода: " + e.getMessage(), e);
+            Toast.makeText(this, "Ошибка при удалении подхода: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
     private void setupClickListeners() {
-        
+
 
 
         startSetButton.setOnClickListener(v -> startActiveSet());
@@ -1061,7 +999,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
         completeSetButton.setOnClickListener(v -> {
             if (isWarmupStretching) {
 
-                
+
                 finishExercise();
             } else {
 
@@ -1089,7 +1027,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
 
         if (isCardioExercise && allCompleted) {
-            
+
 
             ExerciseSet newSet = new ExerciseSet(null, null, 0, false);
             newSet.setDurationSeconds(0);
@@ -1104,7 +1042,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
 
             setToActivate = newSet; 
-            
+
 
         } else {
 
@@ -1112,7 +1050,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 for (ExerciseSet set : currentSets) {
                     if (!set.isCompleted()) {
                         setToActivate = set;
-                        
+
                         break;
                     }
                 }
@@ -1155,11 +1093,11 @@ public class ExerciseSettingsActivity extends BaseActivity {
             int initialSeconds = 0;
             if (setToActivate.getDurationSeconds() != null) {
                 initialSeconds = setToActivate.getDurationSeconds();
-                
+
             }
             
 
-            activeSetStartTime = System.currentTimeMillis() - (initialSeconds * 1000);
+            activeSetStartTime = System.currentTimeMillis() - (initialSeconds * 1000L);
             
 
             startSetButton.setVisibility(View.GONE);
@@ -1175,9 +1113,9 @@ public class ExerciseSettingsActivity extends BaseActivity {
             }
             
             if (isStaticExercise) {
-                
+
             } else {
-                
+
             }
         } else {
 
@@ -1199,7 +1137,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
         }
         
 
-        activeSetTimer = new CountDownTimer(3600000, 1000) {
+        activeSetTimer = new CountDownTimer(3600000, 100) {
             @Override
             public void onTick(long millisUntilFinished) {
                 long elapsedTime = System.currentTimeMillis() - activeSetStartTime;
@@ -1245,12 +1183,22 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 activeSetTimerText.setText(timeFormatted);
             }
             
-            
+
         }
     }
     
 
     private void updateActiveSetTimer(long elapsedTimeMillis) {
+
+        activeSetDuration = elapsedTimeMillis;
+        
+
+        if (activeSet != null && !activeSet.isCompleted()) {
+            int seconds = (int) (elapsedTimeMillis / 1000);
+            activeSet.setDurationSeconds(seconds);
+            viewModel.updateSet(activeSet);
+        }
+        
         long minutes = TimeUnit.MILLISECONDS.toMinutes(elapsedTimeMillis);
         long seconds = TimeUnit.MILLISECONDS.toSeconds(elapsedTimeMillis) - 
                 TimeUnit.MINUTES.toSeconds(minutes);
@@ -1292,9 +1240,11 @@ public class ExerciseSettingsActivity extends BaseActivity {
         }
         
 
+        long elapsedTimeMillis = System.currentTimeMillis() - activeSetStartTime;
+        
+
         if (isCardioExercise) {
 
-            long elapsedTimeMillis = System.currentTimeMillis() - activeSetStartTime;
             int totalSeconds = (int)(elapsedTimeMillis / 1000);
             
 
@@ -1307,19 +1257,13 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
             updateCardioTotalTime();
             
-            
+
             
 
             resetActiveSet();
             
 
-            boolean isStaticExercise = exercise != null && exercise.getExerciseType() != null && 
-                (exercise.getExerciseType().equalsIgnoreCase("Статическое") || 
-                 exercise.getExerciseType().equalsIgnoreCase("Static") ||
-                 exercise.getExerciseType().toLowerCase().contains("статич") ||
-                 exercise.getExerciseType().toLowerCase().contains("static") ||
-                 exercise.getExerciseType().toLowerCase().contains("удержание") ||
-                 exercise.getExerciseType().toLowerCase().contains("планка"));
+            boolean isStaticExercise = exercise != null && exercise.isStaticExercise();
             
 
             if (isStaticExercise) {
@@ -1328,6 +1272,8 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 Toast.makeText(this, "Подход кардио завершен", Toast.LENGTH_SHORT).show();
             }
         } else {
+
+            activeSetDuration = elapsedTimeMillis;
 
             completeSet();
         }
@@ -1354,7 +1300,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
                     
 
                     if (allCompleted) {
-                        
+
 
                         new Handler().postDelayed(() -> {
                             finishExercise();
@@ -1378,7 +1324,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
             List<ExerciseSet> sets = viewModel.getExerciseSets().getValue();
             
             if (sets == null || sets.isEmpty()) {
-                
+
                 return;
             }
                 
@@ -1405,7 +1351,16 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 Integer duration = originalSet.getDurationSeconds();
                 if (activeSetDuration > 0) {
                     duration = (int)(activeSetDuration / 1000);
-                    
+
+                } else if (duration == null || duration <= 0) {
+
+
+                    int reps = originalSet.getReps() != null ? originalSet.getReps() : 12;
+                    duration = reps * 3;
+
+
+                } else {
+
                 }
                 
 
@@ -1415,7 +1370,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
                         if (originalSet.getDurationSeconds() != null && originalSet.getDurationSeconds() > 0) {
                             duration = originalSet.getDurationSeconds();
-                            
+
                         } else {
 
                             int totalMinutes = 0;
@@ -1441,7 +1396,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
                             }
                             
                             duration = totalMinutes * 60 + totalSeconds;
-                            
+
                         }
                     }
                 }
@@ -1458,7 +1413,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
                 updatedSet.setDurationSeconds(duration);
                 
-                
+
                 
 
                 if (updatedSet != null && updatedSet.getId() != null && !updatedSet.getId().isEmpty()) {
@@ -1507,7 +1462,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
                     boolean wasRatedBefore = viewModel.isExerciseRated(workoutExercise.getId());
                     
                     if (!wasRatedBefore) {
-                        
+
                         
 
                         List<ExerciseSet> currentSets = viewModel.getExerciseSets().getValue();
@@ -1517,13 +1472,13 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
                             for (int i = 0; i < currentSets.size(); i++) {
                                 ExerciseSet s = currentSets.get(i);
-                                
+
                             }
                         }
                         
                         finishExercise();
                     } else {
-                        
+
                         
 
                         List<ExerciseSet> currentSets = viewModel.getExerciseSets().getValue();
@@ -1533,7 +1488,8 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
                             for (int i = 0; i < currentSets.size(); i++) {
                                 ExerciseSet s = currentSets.get(i);
-                                
+
+
                             }
                         }
                         
@@ -1547,30 +1503,41 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 } else {
 
                     if (hasMoreUncompleted) {
-                        startRestTimer();
+
+                        boolean restTimerEnabled = WorkoutSettingsManager.getInstance(this).isRestTimerEnabled();
+                        
+                        if (restTimerEnabled) {
+                            startRestTimer();
+                        } else {
+
+
+                            isResting = false;
+                            updateRestTimerUI();
+                            updateUI();
+                        }
                     } else {
 
                         boolean wasRatedBefore = viewModel.isExerciseRated(workoutExercise.getId());
                         
                         if (!wasRatedBefore) {
 
-                            
+
                             finishExercise();
                         } else {
 
-                            
+
                             
 
                             List<ExerciseSet> currentSets = viewModel.getExerciseSets().getValue();
                             if (currentSets != null && !currentSets.isEmpty()) {
 
-                                
+
                                 workoutExercise.setSetsCompleted(new ArrayList<>(currentSets));
                                 
 
                                 for (int i = 0; i < currentSets.size(); i++) {
                                     ExerciseSet set = currentSets.get(i);
-                                    
+
                                 }
                             }
                             
@@ -1584,7 +1551,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
                     }
                 }
             } else {
-                
+
             }
         } catch (Exception e) {
             Log.e(TAG, "completeSet: ошибка при завершении подхода: " + e.getMessage(), e);
@@ -1601,9 +1568,13 @@ public class ExerciseSettingsActivity extends BaseActivity {
             }
             
 
-            viewModel.startRest(REST_TIME_MILLIS);
+            int restTimerSeconds = WorkoutSettingsManager.getInstance(this).getRestTimerSeconds();
+            long restTimeMillis = restTimerSeconds * 1000L;
             
+
+            viewModel.startRest(restTimeMillis);
             
+
         } catch (Exception e) {
             Log.e(TAG, "startRestTimer: ошибка при запуске таймера: " + e.getMessage(), e);
 
@@ -1629,7 +1600,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
             String timeFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
             restTimerText.setText(timeFormatted);
             
-            
+
         } catch (Exception e) {
             Log.e(TAG, "updateRestTimer: ошибка при обновлении времени: " + e.getMessage(), e);
         }
@@ -1688,7 +1659,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
                     (isSetActive ? View.VISIBLE : View.GONE));
             }
             
-            
+
         } catch (Exception e) {
             Log.e(TAG, "updateRestTimerUI: ошибка при обновлении UI таймера: " + e.getMessage(), e);
         }
@@ -1696,7 +1667,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
     private void updateUI() {
         if (exercise == null) return;
-        
+
 
 
         exerciseNameText.setText(exercise.getName());
@@ -1724,7 +1695,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
 
         if (isWarmupStretching) {
-            
+
             setsList.setVisibility(View.GONE);
             if (warmupStretchingMessageText != null) {
                 warmupStretchingMessageText.setVisibility(View.VISIBLE);
@@ -1771,19 +1742,19 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 completeSetButton.setIconTint(ColorStateList.valueOf(Color.WHITE));
                 completeSetButton.setIconGravity(MaterialButton.ICON_GRAVITY_START);
                 completeSetButton.setIconPadding(16);
-                
+
             } else {
 
                 completeSetButton.setText("ЗАВЕРШИТЬ УПРАЖНЕНИЕ");
                 completeSetButton.setClickable(true);
                 completeSetButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.orange_500)));
                 completeSetButton.setIcon(null);
-                
+
             }
             
             completeSetButton.setVisibility(View.VISIBLE);
 
-            
+
             return;
         }
         
@@ -1799,7 +1770,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
         List<ExerciseSet> sets = viewModel.getExerciseSets().getValue();
         if (sets != null) {
-            
+
             if (isCardioExercise && cardioAdapter != null) {
                 cardioAdapter.updateSets(sets);
                 updateCardioTotalTime();
@@ -1842,10 +1813,10 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
             if (!isCardioExercise && allSetsCompleted) {
                 startSetButton.setVisibility(View.GONE);
-                
+
             } else {
                 startSetButton.setVisibility(View.VISIBLE);
-                
+
                 
 
                 if (isCardioExercise) {
@@ -1872,7 +1843,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
     private void finishExercise() {
 
         if (isWarmupStretching) {
-            
+
             
 
             List<ExerciseSet> existingSets = viewModel.getExerciseSets().getValue();
@@ -1905,9 +1876,9 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 }
                 workoutExercise.getSetsCompleted().add(dummySet);
                 
-                
+
             } else {
-                
+
             }
             
 
@@ -1933,8 +1904,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
             new Handler().postDelayed(() -> {
 
-                
-                
+
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("completed_exercise", workoutExercise);
                 setResult(RESULT_OK, resultIntent);
@@ -1951,7 +1921,8 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
             for (ExerciseSet set : currentSets) {
                 if (!set.isCompleted()) {
-                    
+
+
 
                     set.setCompleted(true);
                     
@@ -1983,11 +1954,12 @@ public class ExerciseSettingsActivity extends BaseActivity {
                         int duration = totalMinutes * 60 + totalSeconds;
                         if (duration > 0) {
                             set.setDurationSeconds(duration);
-                            
+
+
                         } else {
 
                             set.setDurationSeconds(60);
-                            
+
                         }
                     }
                     
@@ -2000,15 +1972,20 @@ public class ExerciseSettingsActivity extends BaseActivity {
             currentSets = viewModel.getExerciseSets().getValue();
             
 
-            
+
             workoutExercise.setSetsCompleted(new ArrayList<>(currentSets));
             
 
             for (int i = 0; i < currentSets.size(); i++) {
                 ExerciseSet set = currentSets.get(i);
-                
+
+
             }
         }
+        
+
+        boolean enableAutoNextExercise = WorkoutSettingsManager.getInstance(this).isAutoNextExerciseEnabled();
+
         
 
 
@@ -2022,15 +1999,24 @@ public class ExerciseSettingsActivity extends BaseActivity {
         Intent resultIntent = new Intent();
         
 
-        
+
+
         if (workoutExercise.getSetsCompleted() != null) {
             for (int i = 0; i < workoutExercise.getSetsCompleted().size(); i++) {
                 ExerciseSet set = workoutExercise.getSetsCompleted().get(i);
-                
+
             }
         }
                 
         resultIntent.putExtra("completed_exercise", workoutExercise);
+        
+
+        if (enableAutoNextExercise) {
+
+            resultIntent.putExtra("auto_next_exercise", true);
+
+        }
+        
         setResult(RESULT_OK, resultIntent);
         finish();
     }
@@ -2053,7 +2039,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
             
 
             if (hasCompletedSet) {
-                
+
                 workoutExercise.setRated(true);
                 workoutExercise.setCompleted(true);
                 
@@ -2070,7 +2056,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
         if (isCardioExercise) {
             boolean autoCompleted = autoCompleteCardioSets();
             if (autoCompleted) {
-                
+
 
                 try {
                     Thread.sleep(300);
@@ -2095,13 +2081,13 @@ public class ExerciseSettingsActivity extends BaseActivity {
         List<ExerciseSet> currentSets = viewModel.getExerciseSets().getValue();
         if (currentSets != null && !currentSets.isEmpty()) {
 
-            
+
             workoutExercise.setSetsCompleted(new ArrayList<>(currentSets));
             
 
             for (int i = 0; i < currentSets.size(); i++) {
                 ExerciseSet set = currentSets.get(i);
-                
+
             }
         }
         
@@ -2114,19 +2100,19 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
 
                 if (wasRatedBefore) {
-                    
+
                 } else {
-                    
+
                 }
                 
                 Intent resultIntent = new Intent();
                 
 
-                
+
                 if (workoutExercise.getSetsCompleted() != null) {
                     for (int i = 0; i < workoutExercise.getSetsCompleted().size(); i++) {
                         ExerciseSet set = workoutExercise.getSetsCompleted().get(i);
-                        
+
                     }
                 }
                 
@@ -2136,7 +2122,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
         } else {
 
-            
+
             setResult(RESULT_CANCELED);
             finish();
         }
@@ -2160,12 +2146,12 @@ public class ExerciseSettingsActivity extends BaseActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        
+
 
 
         if (adapter != null) {
             adapter.savePendingChangesIfAny();
-            
+
         }
 
         if (cardioAdapter != null) {
@@ -2203,7 +2189,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 long elapsedTime = currentTime - activeSetStartTime;
                 editor.putLong(KEY_ACTIVE_SET_DURATION + workoutExercise.getId(), elapsedTime);
                 editor.putLong(KEY_ACTIVE_SET_START_TIME + workoutExercise.getId(), activeSetStartTime);
-                
+
             }
             
 
@@ -2215,12 +2201,12 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 Long remainingTime = viewModel.getRestTimeRemaining().getValue();
                 if (remainingTime != null && remainingTime > 0) {
                     editor.putLong(KEY_REST_TIME + workoutExercise.getId(), remainingTime);
-                    
+
                 }
             }
             
             editor.apply();
-            
+
         } catch (Exception e) {
             Log.e(TAG, "onPause: ошибка при сохранении состояния: " + e.getMessage(), e);
         }
@@ -2233,7 +2219,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
         try {
 
             if (isWarmupStretching) {
-                
+
                 
 
                 boolean wasCompleted = workoutExercise.isCompleted() || workoutExercise.isRated();
@@ -2250,7 +2236,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 
 
                 if (wasCompleted) {
-                    
+
                     
 
                     workoutExercise.setCompleted(true);
@@ -2273,7 +2259,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
             
 
             if (isCardioExercise) {
-                
+
                 
 
                 List<ExerciseSet> sets = viewModel.getExerciseSets().getValue();
@@ -2289,7 +2275,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 
 
                 if (hasUncompletedSets && !isSetActive && !isResting) {
-                    
+
                     
 
                     new Handler().postDelayed(() -> {
@@ -2306,10 +2292,10 @@ public class ExerciseSettingsActivity extends BaseActivity {
                             
                             if (isStaticExercise) {
                                 startSetButton.setText("НАЧАТЬ УДЕРЖАНИЕ");
-                                
+
                             } else {
                                 startSetButton.setText("НАЧАТЬ КАРДИО");
-                                
+
                             }
                             startSetButton.invalidate();
                         }
@@ -2320,7 +2306,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 List<ExerciseSet> currentSets = workoutExercise.getSetsCompleted();
                 
                 if (currentSets != null && !currentSets.isEmpty()) {
-                    
+
                     
 
                     List<ExerciseSet> viewModelSets = viewModel.getExerciseSets().getValue();
@@ -2337,13 +2323,13 @@ public class ExerciseSettingsActivity extends BaseActivity {
                             (vmDuration != null && savedDuration == null) ||
                             (vmDuration != null && savedDuration != null && !vmDuration.equals(savedDuration))) {
                             needsUpdate = true;
-                            
+
                         }
                     }
                     
                     if (needsUpdate) {
 
-                        
+
                         viewModel.setSets(new ArrayList<>(currentSets));
                         
 
@@ -2355,7 +2341,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
                         updateCardioTotalTime();
                     }
                 } else {
-                    
+
                 }
             }
             
@@ -2371,11 +2357,11 @@ public class ExerciseSettingsActivity extends BaseActivity {
                 if (remainingTime > 1000) {
 
                     viewModel.startRest(remainingTime);
-                    
+
                 } else {
 
                     viewModel.endRest();
-                    
+
                 }
             } else {
 
@@ -2395,7 +2381,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
                         updateActiveSetTimer(savedDuration);
                         startActiveSetTimer();
                         
-                        
+
                     }
                 }
             }
@@ -2403,7 +2389,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
             updateUI();
             
-            
+
         } catch (Exception e) {
             Log.e(TAG, "onResume: ошибка при восстановлении состояния: " + e.getMessage(), e);
 
@@ -2431,7 +2417,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
             updateRestTimerUI();
             updateUI();
             
-            
+
         } catch (Exception e) {
             Log.e(TAG, "resetState: ошибка при сбросе состояния: " + e.getMessage(), e);
         }
@@ -2460,7 +2446,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
         List<String> muscleGroupRussianNames = exercise.getMuscleGroupRussianNames();
         if (muscleGroupRussianNames == null || muscleGroupRussianNames.isEmpty()) {
-            
+
             chipGroup.removeAllViews();
             
 
@@ -2474,7 +2460,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
             return;
         }
 
-        
+
         
 
         chipGroup.removeAllViews();
@@ -2618,13 +2604,13 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
         executor.execute(() -> {
             try {
-                
+
 
                 Exercise fullExercise = exerciseManager.getExerciseById(exerciseId);
                 
                 mainHandler.post(() -> {
                     if (fullExercise != null) {
-                        
+
 
                         this.exercise = fullExercise;
 
@@ -2676,9 +2662,9 @@ public class ExerciseSettingsActivity extends BaseActivity {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("rutube://search?query=" + query));
             intent.setPackage(rutubeAppPackage);
             startActivity(intent);
-            
+
         } catch (ActivityNotFoundException e) {
-            
+
 
             try {
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(rutubeSearchUrl));
@@ -2724,7 +2710,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
             boolean isWorkoutActive = prefs.getBoolean("is_workout_active", false);
             
             if (!isWorkoutActive) {
-                
+
                 
 
                 long workoutStartTime = System.currentTimeMillis();
@@ -2746,23 +2732,8 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
 
     public void deleteSet(ExerciseSet set) {
-        if (viewModel != null) {
-            viewModel.deleteSet(set.getId());
-            
 
-            if (set.equals(activeSet)) {
-                stopActiveSetTimer();
-                activeSet = null;
-                activeSetTimer = null;
-            }
-            updateUI();
-
-            if (isCardioExercise) {
-                updateCardioTotalTime();
-            }
-            
-            
-        }
+        deleteSet(set, -1);
     }
 
 
@@ -2797,7 +2768,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
         if (rootView instanceof ViewGroup) {
 
             findAndRemoveCircleViews((ViewGroup) rootView);
-            
+
         }
     }
     
@@ -2827,7 +2798,7 @@ public class ExerciseSettingsActivity extends BaseActivity {
 
                 if (!set.isCompleted() && set.getDurationSeconds() != null && set.getDurationSeconds() > 0) {
 
-                    
+
                     
 
                     set.setCompleted(true);

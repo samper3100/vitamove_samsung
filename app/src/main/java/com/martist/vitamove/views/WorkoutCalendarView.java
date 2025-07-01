@@ -5,8 +5,11 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.widget.CalendarView;
+
 import androidx.core.content.ContextCompat;
+
 import com.martist.vitamove.R;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,12 +54,12 @@ public class WorkoutCalendarView extends CalendarView {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         
-
+        
         for (Map.Entry<Long, Integer> entry : dateMarkers.entrySet()) {
             long date = entry.getKey();
             int markerType = entry.getValue();
             
-
+            
             int color;
             switch (markerType) {
                 case MARKER_COMPLETED:
@@ -71,9 +74,9 @@ public class WorkoutCalendarView extends CalendarView {
             
             markerPaint.setColor(color);
             
-
-
-
+            
+            
+            
         }
     }
 } 

@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
@@ -33,6 +34,7 @@ import com.martist.vitamove.adapters.HeightRulerAdapter;
 import com.martist.vitamove.adapters.WeightRulerAdapter;
 import com.martist.vitamove.utils.BMICalculator;
 import com.martist.vitamove.utils.SupabaseClient;
+import com.martist.vitamove.viewmodels.UserWeightViewModel;
 
 
 public class SurveyActivity extends BaseActivity {
@@ -49,7 +51,7 @@ public class SurveyActivity extends BaseActivity {
     private float currentWeight = 0f;
     private float targetWeight = 0f;
     private String fitnessLevel = "";
-    private boolean isMetric = true;
+    private final boolean isMetric = true;
     
     private LinearProgressIndicator progressIndicator;
     private TextView tvStepCounter;
@@ -59,6 +61,8 @@ public class SurveyActivity extends BaseActivity {
     
 
     private SupabaseClient supabaseClient;
+    
+    private UserWeightViewModel userWeightViewModel;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +88,9 @@ public class SurveyActivity extends BaseActivity {
 
         btnNext.setOnClickListener(v -> nextStep());
         btnBack.setOnClickListener(v -> previousStep());
+        
+
+        userWeightViewModel = new ViewModelProvider(this).get(UserWeightViewModel.class);
         
 
         showStep(currentStep);
@@ -710,14 +717,17 @@ public class SurveyActivity extends BaseActivity {
         RadioButton rbBeginner = view.findViewById(R.id.rbBeginner);
         RadioButton rbIntermediate = view.findViewById(R.id.rbIntermediate);
         RadioButton rbAdvanced = view.findViewById(R.id.rbAdvanced);
+        RadioButton rbExpert = view.findViewById(R.id.rbExpert);
         
         MaterialCardView cardBeginner = view.findViewById(R.id.cardBeginner);
         MaterialCardView cardIntermediate = view.findViewById(R.id.cardIntermediate);
         MaterialCardView cardAdvanced = view.findViewById(R.id.cardAdvanced);
+        MaterialCardView cardExpert = view.findViewById(R.id.cardExpert);
         
         ImageView ivBeginnerSelected = view.findViewById(R.id.ivBeginnerSelected);
         ImageView ivIntermediateSelected = view.findViewById(R.id.ivIntermediateSelected);
         ImageView ivAdvancedSelected = view.findViewById(R.id.ivAdvancedSelected);
+        ImageView ivExpertSelected = view.findViewById(R.id.ivExpertSelected);
         
 
         if (!fitnessLevel.isEmpty()) {
@@ -737,6 +747,11 @@ public class SurveyActivity extends BaseActivity {
                     cardAdvanced.setChecked(true);
                     ivAdvancedSelected.setVisibility(View.VISIBLE);
                     break;
+                case "expert":
+                    rbExpert.setChecked(true);
+                    cardExpert.setChecked(true);
+                    ivExpertSelected.setVisibility(View.VISIBLE);
+                    break;
             }
         }
         
@@ -746,6 +761,7 @@ public class SurveyActivity extends BaseActivity {
             rbBeginner.setChecked(true);
             rbIntermediate.setChecked(false);
             rbAdvanced.setChecked(false);
+            rbExpert.setChecked(false);
             
 
             fitnessLevel = "beginner";
@@ -754,11 +770,13 @@ public class SurveyActivity extends BaseActivity {
             ivBeginnerSelected.setVisibility(View.VISIBLE);
             ivIntermediateSelected.setVisibility(View.GONE);
             ivAdvancedSelected.setVisibility(View.GONE);
+            ivExpertSelected.setVisibility(View.GONE);
             
 
             cardBeginner.setChecked(true);
             cardIntermediate.setChecked(false);
             cardAdvanced.setChecked(false);
+            cardExpert.setChecked(false);
         });
         
 
@@ -767,6 +785,7 @@ public class SurveyActivity extends BaseActivity {
             rbIntermediate.setChecked(true);
             rbBeginner.setChecked(false);
             rbAdvanced.setChecked(false);
+            rbExpert.setChecked(false);
             
 
             fitnessLevel = "intermediate";
@@ -775,11 +794,13 @@ public class SurveyActivity extends BaseActivity {
             ivIntermediateSelected.setVisibility(View.VISIBLE);
             ivBeginnerSelected.setVisibility(View.GONE);
             ivAdvancedSelected.setVisibility(View.GONE);
+            ivExpertSelected.setVisibility(View.GONE);
             
 
             cardIntermediate.setChecked(true);
             cardBeginner.setChecked(false);
             cardAdvanced.setChecked(false);
+            cardExpert.setChecked(false);
         });
         
 
@@ -788,6 +809,7 @@ public class SurveyActivity extends BaseActivity {
             rbAdvanced.setChecked(true);
             rbBeginner.setChecked(false);
             rbIntermediate.setChecked(false);
+            rbExpert.setChecked(false);
             
 
             fitnessLevel = "advanced";
@@ -796,11 +818,37 @@ public class SurveyActivity extends BaseActivity {
             ivAdvancedSelected.setVisibility(View.VISIBLE);
             ivBeginnerSelected.setVisibility(View.GONE);
             ivIntermediateSelected.setVisibility(View.GONE);
+            ivExpertSelected.setVisibility(View.GONE);
             
 
             cardAdvanced.setChecked(true);
             cardBeginner.setChecked(false);
             cardIntermediate.setChecked(false);
+            cardExpert.setChecked(false);
+        });
+        
+
+        cardExpert.setOnClickListener(v -> {
+
+            rbExpert.setChecked(true);
+            rbBeginner.setChecked(false);
+            rbIntermediate.setChecked(false);
+            rbAdvanced.setChecked(false);
+            
+
+            fitnessLevel = "expert";
+            
+
+            ivExpertSelected.setVisibility(View.VISIBLE);
+            ivBeginnerSelected.setVisibility(View.GONE);
+            ivIntermediateSelected.setVisibility(View.GONE);
+            ivAdvancedSelected.setVisibility(View.GONE);
+            
+
+            cardExpert.setChecked(true);
+            cardBeginner.setChecked(false);
+            cardIntermediate.setChecked(false);
+            cardAdvanced.setChecked(false);
         });
         
 
@@ -811,6 +859,8 @@ public class SurveyActivity extends BaseActivity {
                 fitnessLevel = "intermediate";
             } else if (checkedId == R.id.rbAdvanced) {
                 fitnessLevel = "advanced";
+            } else if (checkedId == R.id.rbExpert) {
+                fitnessLevel = "expert";
             }
         });
     }
@@ -904,17 +954,11 @@ public class SurveyActivity extends BaseActivity {
     }
     
     private boolean validateName() {
-        if (name.trim().isEmpty()) {
-            return false;
-        }
-        return true;
+        return !name.trim().isEmpty();
     }
     
     private boolean validateAge() {
-        if (age <= 0 || age > 120) {
-            return false;
-        }
-        return true;
+        return age > 0 && age <= 120;
     }
     
     private boolean validateGender() {
@@ -1009,7 +1053,7 @@ public class SurveyActivity extends BaseActivity {
         appPrefsEditor.apply();
         
 
-        
+
         
 
         String userId = prefs.getString("userId", null);
@@ -1042,7 +1086,7 @@ public class SurveyActivity extends BaseActivity {
 
                         runOnUiThread(() -> {
                             if (success) {
-                                
+
 
                                 SharedPreferences.Editor syncEditor = prefs.edit();
                                 syncEditor.putBoolean("user_data_synced", true);
@@ -1060,7 +1104,7 @@ public class SurveyActivity extends BaseActivity {
                 }
             }).start();
         } else {
-            
+
         }
     }
 

@@ -30,21 +30,14 @@
             android:letterSpacing="0.02"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/text_control_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Контролируйте свой прогресс"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="18sp"
-            android:alpha="0.9" />
+
 
         <!-- Карточка с основным изображением -->
         <androidx.cardview.widget.CardView
             android:id="@+id/card_image"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+
             android:layout_weight="1"
             android:layout_marginTop="30dp"
             android:layout_marginBottom="36dp"
@@ -76,7 +69,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_marginBottom="30dp"
-            android:text="Следите за питанием и тренировками с помощью удобного трекера"
+            android:text="Мы поможем вам заботиться о здоровье и достигать результатов"
             android:textColor="?android:attr/textColorSecondary"
             android:textSize="16sp"
             android:lineSpacingExtra="4dp" />
@@ -86,7 +79,7 @@
             android:id="@+id/container_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="10dp"
             android:layout_marginHorizontal="8dp"
             android:text="НАЧАТЬ"
             style="@style/Widget.VitaMove.Button.Onboarding"
@@ -98,12 +91,11 @@
             android:id="@+id/container_button1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="Уже есть аккаунт? Войти"
+            android:layout_marginBottom="14dp"
+            android:text="Уже есть аккаунт?  Войти"
             android:textColor="?android:attr/textColorSecondary"
             android:textSize="16sp"
             android:padding="12dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:elevation="2dp" />
 
         <!-- Текст политики конфиденциальности -->

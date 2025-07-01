@@ -12,28 +12,7 @@
         android:background="?android:attr/colorBackground"
         android:paddingBottom="16dp">
 
-        <!-- Карточка для логотипа с эффектом тени -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/logo_card"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="@dimen/margin_top_adaptive"
-            android:layout_marginHorizontal="40dp"
-            app:cardCornerRadius="1000dp"
-            app:cardElevation="8dp"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintWidth_percent="0.5"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/register_image"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/register_image" />
-        </androidx.cardview.widget.CardView>
 
         <!-- Заголовок с улучшенной типографикой -->
         <TextView
@@ -42,15 +21,15 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:paddingHorizontal="16dp"
-            android:text="Начните путь к своим целям уже сегодня!"
+            android:text="Регистрация"
             android:textColor="?android:attr/textColorPrimary"
-            android:textSize="20sp"
-            android:textStyle="bold"
+            android:textSize="30sp"
             android:fontFamily="@font/montserrat"
             android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/logo_card" />
+         />
 
         <!-- Карточка контейнер для полей ввода -->
         <androidx.cardview.widget.CardView
@@ -61,10 +40,11 @@
             android:layout_marginTop="16dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="4dp"
-            app:cardBackgroundColor="@color/colorSurface"
+            app:cardBackgroundColor="@color/card_background"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/register_heaader">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -154,54 +134,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/inputs_card" />
 
-        <!-- Разделитель с текстом "или" -->
-        <LinearLayout
-            android:id="@+id/divider_container"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/register_button">
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1"
-                android:background="?android:attr/textColorSecondary" />
-
-            <TextView
-                android:id="@+id/register_or"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:text="или"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textSize="14sp" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1"
-                android:background="?android:attr/textColorSecondary" />
-        </LinearLayout>
-
-        <!-- Кнопка Google с улучшенным дизайном -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/register_google_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="16dp"
-            android:paddingVertical="14dp"
-            android:text="Продолжить через Google"
-            style="@style/Widget.VitaMove.Button.GoogleRegister"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/divider_container" />
+<!---->
 
         <!-- Ссылка на вход для существующих пользователей -->
         <TextView
@@ -215,7 +148,7 @@
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/register_google_button" />
+            app:layout_constraintTop_toBottomOf="@id/register_button" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

@@ -50,7 +50,7 @@ public class ProgramInfoBottomSheet extends BottomSheetDialogFragment {
             return;
         }
         
-
+        
         TextView titleTextView = view.findViewById(R.id.bottom_sheet_title);
         TextView typeTextView = view.findViewById(R.id.program_type);
         TextView durationTextView = view.findViewById(R.id.bottom_sheet_duration);
@@ -60,7 +60,7 @@ public class ProgramInfoBottomSheet extends BottomSheetDialogFragment {
         
         titleTextView.setText(mProgram.getName());
         
-
+        
         String type = "Тип: " + (mProgram.getProgramType() != null && !mProgram.getProgramType().isEmpty() ?
                                  mProgram.getProgramType() : "Не указан");
         typeTextView.setText(type);

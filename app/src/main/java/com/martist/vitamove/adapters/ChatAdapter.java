@@ -20,8 +20,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_TYPE_USER = 1;
     private static final int VIEW_TYPE_ASSISTANT = 2;
     
-    private List<ChatMessage> messages = new ArrayList<>();
-    private Markwon markwon;
+    private final List<ChatMessage> messages = new ArrayList<>();
+    private final Markwon markwon;
 
     public ChatAdapter(Markwon markwon) {
         this.markwon = markwon;
@@ -69,6 +69,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
 
+    public void setMessagesEnabled(boolean enabled) {
+
+    }
 
 
     public void clearMessages() {
@@ -103,6 +106,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         void bind(ChatMessage message) {
             messageText.setText(message.getText());
+
         }
     }
 
@@ -119,6 +123,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void bind(ChatMessage message) {
 
             markwon.setMarkdown(messageText, message.getText());
+
         }
     }
 } 

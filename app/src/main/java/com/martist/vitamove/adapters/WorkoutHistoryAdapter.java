@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 public class WorkoutHistoryAdapter extends RecyclerView.Adapter<WorkoutHistoryAdapter.WorkoutViewHolder> {
     private List<UserWorkout> workouts;
-    private OnWorkoutClickListener listener;
+    private final OnWorkoutClickListener listener;
     private final SimpleDateFormat dateFormat;
 
     public interface OnWorkoutClickListener {
@@ -57,7 +57,7 @@ public class WorkoutHistoryAdapter extends RecyclerView.Adapter<WorkoutHistoryAd
         notifyDataSetChanged();
     }
 
-
+    
     public List<UserWorkout> getWorkouts() {
         return workouts;
     }
@@ -66,7 +66,7 @@ public class WorkoutHistoryAdapter extends RecyclerView.Adapter<WorkoutHistoryAd
         private final TextView dateText;
         private final TextView durationText;
         private final TextView exercisesCountText;
-        private final TextView setsCountText;
+        private final TextView caloriesCountText;
         private final MaterialButton detailsButton;
 
         WorkoutViewHolder(@NonNull View itemView) {
@@ -74,15 +74,15 @@ public class WorkoutHistoryAdapter extends RecyclerView.Adapter<WorkoutHistoryAd
             dateText = itemView.findViewById(R.id.workout_date);
             durationText = itemView.findViewById(R.id.workout_duration);
             exercisesCountText = itemView.findViewById(R.id.exercises_count);
-            setsCountText = itemView.findViewById(R.id.sets_count);
+            caloriesCountText = itemView.findViewById(R.id.calories_count);
             detailsButton = itemView.findViewById(R.id.details_button);
         }
 
         void bind(UserWorkout workout) {
-
+            
             dateText.setText(dateFormat.format(workout.getStartTime()));
 
-
+            
             if (workout.getEndTime() != null) {
                 long duration = workout.getEndTime() - workout.getStartTime();
                 long hours = TimeUnit.MILLISECONDS.toHours(duration);
@@ -92,17 +92,15 @@ public class WorkoutHistoryAdapter extends RecyclerView.Adapter<WorkoutHistoryAd
                 durationText.setText("-");
             }
 
-
+            
             int exercisesCount = workout.getExercises().size();
             exercisesCountText.setText(String.format(Locale.getDefault(), "%d", exercisesCount));
+            
+            
+            int calories = workout.getTotalCalories();
+            caloriesCountText.setText(String.format(Locale.getDefault(), "%d", calories));
 
-
-            int totalSets = workout.getExercises().stream()
-                    .mapToInt(exercise -> exercise.getSetsCompleted().size())
-                    .sum();
-            setsCountText.setText(String.format(Locale.getDefault(), "%d", totalSets));
-
-
+            
             detailsButton.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onWorkoutClick(workout);

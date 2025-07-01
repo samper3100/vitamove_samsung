@@ -38,15 +38,15 @@ public class NutrientSelectionBottomSheet extends BottomSheetDialogFragment
     private SharedPreferences prefs;
     private Set<String> selectedNutrients = new HashSet<>();
     
+
+    private final ArrayList<String> vitaminIds = new ArrayList<>();
+    private final ArrayList<String> vitaminNames = new ArrayList<>();
     
-    private ArrayList<String> vitaminIds = new ArrayList<>();
-    private ArrayList<String> vitaminNames = new ArrayList<>();
+    private final ArrayList<String> mineralIds = new ArrayList<>();
+    private final ArrayList<String> mineralNames = new ArrayList<>();
     
-    private ArrayList<String> mineralIds = new ArrayList<>();
-    private ArrayList<String> mineralNames = new ArrayList<>();
-    
-    private ArrayList<String> otherNutrientIds = new ArrayList<>();
-    private ArrayList<String> otherNutrientNames = new ArrayList<>();
+    private final ArrayList<String> otherNutrientIds = new ArrayList<>();
+    private final ArrayList<String> otherNutrientNames = new ArrayList<>();
     
     private NutrientCategoryAdapter adapter;
     private ViewPager2 viewPager;
@@ -54,15 +54,15 @@ public class NutrientSelectionBottomSheet extends BottomSheetDialogFragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         setStyle(BottomSheetDialogFragment.STYLE_NORMAL, R.style.CustomBottomSheetStyle);
         
         prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         
-        
+
         initializeNutrientLists();
         
-        
+
         selectedNutrients = new HashSet<>(prefs.getStringSet(TRACKED_NUTRIENTS_KEY, new HashSet<>()));
     }
     
@@ -76,14 +76,14 @@ public class NutrientSelectionBottomSheet extends BottomSheetDialogFragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
-        
+
         viewPager = view.findViewById(R.id.view_pager);
         TabLayout tabLayout = view.findViewById(R.id.tab_layout);
         
-        
+
         adapter = new NutrientCategoryAdapter(this);
         
-        
+
         NutrientCategoryFragment vitaminsFragment = NutrientCategoryFragment.newInstance(
                 "Витамины", vitaminIds, vitaminNames, new ArrayList<>(selectedNutrients));
         
@@ -99,15 +99,15 @@ public class NutrientSelectionBottomSheet extends BottomSheetDialogFragment
         
         viewPager.setAdapter(adapter);
         
-        
+
         viewPager.getLayoutParams().height = getResources().getDisplayMetrics().heightPixels / 3;
         
-        
+
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
             tab.setText(adapter.getTitle(position));
         }).attach();
         
-        
+
         Button saveButton = view.findViewById(R.id.save_button);
         Button cancelButton = view.findViewById(R.id.cancel_button);
         
@@ -119,11 +119,11 @@ public class NutrientSelectionBottomSheet extends BottomSheetDialogFragment
         cancelButton.setOnClickListener(v -> dismiss());
     }
 
-    
+
     @Override
     public void onStart() {
         super.onStart();
-        
+
         if (getDialog() != null) {
             View bottomSheet = getDialog().findViewById(com.google.android.material.R.id.design_bottom_sheet);
             if (bottomSheet != null) {
@@ -133,9 +133,9 @@ public class NutrientSelectionBottomSheet extends BottomSheetDialogFragment
         }
     }
     
-    
+
     private void initializeNutrientLists() {
-        
+
         vitaminIds.addAll(Arrays.asList(
             "vitamin_a", "vitamin_b1", "vitamin_b2", "vitamin_b3", "vitamin_b5", 
             "vitamin_b6", "vitamin_b9", "vitamin_b12", "vitamin_c", "vitamin_d", 
@@ -147,7 +147,7 @@ public class NutrientSelectionBottomSheet extends BottomSheetDialogFragment
             "Витамин E", "Витамин K"
         ));
         
-        
+
         mineralIds.addAll(Arrays.asList(
             "calcium", "iron", "magnesium", "phosphorus", "potassium", "sodium", "zinc"
         ));
@@ -155,7 +155,7 @@ public class NutrientSelectionBottomSheet extends BottomSheetDialogFragment
             "Кальций", "Железо", "Магний", "Фосфор", "Калий", "Натрий", "Цинк"
         ));
         
-        
+
         otherNutrientIds.addAll(Arrays.asList(
             "fiber", "sugar", "cholesterol", "saturated_fats", "trans_fats"
         ));
@@ -164,11 +164,11 @@ public class NutrientSelectionBottomSheet extends BottomSheetDialogFragment
         ));
     }
     
-    
+
     @Override
     public boolean onNutrientSelectionChanged(String nutrientId, boolean isChecked) {
         if (isChecked) {
-            
+
             if (selectedNutrients.size() >= MAX_SELECTIONS) {
                 Toast.makeText(requireContext(), 
                     "Можно выбрать не более " + MAX_SELECTIONS + " нутриентов", 
@@ -184,14 +184,14 @@ public class NutrientSelectionBottomSheet extends BottomSheetDialogFragment
         return true;
     }
     
-    
+
     private void saveSelectedNutrients() {
+
         
-        
-        
+
         prefs.edit().putStringSet(TRACKED_NUTRIENTS_KEY, selectedNutrients).apply();
         
-        
+
         List<String> selectedNames = new ArrayList<>();
         for (String id : selectedNutrients) {
             int vIndex = vitaminIds.indexOf(id);
@@ -212,10 +212,10 @@ public class NutrientSelectionBottomSheet extends BottomSheetDialogFragment
             }
         }
         
-        
+
         EventBus.getDefault().post(new TrackedNutrientsChangedEvent(new ArrayList<>(selectedNutrients)));
         
-        
+
         String message;
         if (selectedNutrients.isEmpty()) {
             message = "Отслеживание нутриентов отключено";
@@ -223,16 +223,16 @@ public class NutrientSelectionBottomSheet extends BottomSheetDialogFragment
             message = "Отслеживаемые нутриенты: " + String.join(", ", selectedNames);
         }
         
-        
+
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
     
-    
+
     public static List<String> getTrackedNutrients(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         Set<String> nutrients = prefs.getStringSet(TRACKED_NUTRIENTS_KEY, new HashSet<>());
         
-        
+
         return new ArrayList<>(nutrients);
     }
 } 

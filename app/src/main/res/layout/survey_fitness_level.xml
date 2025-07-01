@@ -12,13 +12,17 @@
         android:textSize="22sp"
         android:textStyle="bold"
         android:textColor="@color/black"
-        android:layout_marginBottom="24dp" />
+        android:layout_marginBottom="12dp" />
 
+
+        
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Выберите уровень вашей обычной физической активности в течение недели"
+        android:text="Без учета тренировок - мы учитываем их отдельно."
         android:textSize="14sp"
+        android:textStyle="italic"
+        android:textColor="@color/gray_600"
         android:layout_marginBottom="16dp" />
 
     <RadioGroup
@@ -45,9 +49,15 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:visibility="gone" />
+            
+        <RadioButton
+            android:id="@+id/rbExpert"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
     </RadioGroup>
 
-    <!-- Малоактивный -->
+    <!-- Не очень подвижный -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardBeginner"
         android:layout_width="match_parent"
@@ -73,7 +83,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Малоактивный (сидячая работа, минимум физической активности)"
+                android:text="Не очень подвижный\nБольшую часть дня провожу сидя (банковский служащий, работник офиса и т.п.)"
                 android:textSize="16sp"
                 android:textColor="@color/black" />
                 
@@ -87,7 +97,7 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Умеренно активный -->
+    <!-- Малоподвижный -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardIntermediate"
         android:layout_width="match_parent"
@@ -113,7 +123,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Умеренно активный (сидячая работа + 1-3 тренировки в неделю)"
+                android:text="Малоподвижный\nБольшую часть дня провожу на ногах (учитель, продавец и т. п.)"
                 android:textSize="16sp"
                 android:textColor="@color/black" />
                 
@@ -127,7 +137,7 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Активный -->
+    <!-- Подвижный -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardAdvanced"
         android:layout_width="match_parent"
@@ -153,12 +163,52 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Активный (активная работа или 4-6 тренировок в неделю)"
+                android:text="Подвижный\nФизические нагрузки большую часть дня (официант, курьер и т. п.)"
                 android:textSize="16sp"
                 android:textColor="@color/black" />
                 
             <ImageView
                 android:id="@+id/ivAdvancedSelected"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_check_circle_orange"
+                android:visibility="gone"
+                android:contentDescription="Выбрано" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+    
+    <!-- Очень подвижный -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardExpert"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="2dp"
+        app:strokeWidth="2dp"
+        app:strokeColor="@color/card_stroke_color"
+        android:clickable="true"
+        android:focusable="true"
+        android:checkable="true"
+        app:checkedIcon="@null">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+            
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Очень подвижный\nТяжелые физические нагрузки большую часть дня (спортсмен, плотник и т.п.)"
+                android:textSize="16sp"
+                android:textColor="@color/black" />
+                
+            <ImageView
+                android:id="@+id/ivExpertSelected"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_check_circle_orange"

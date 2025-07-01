@@ -24,8 +24,8 @@ public class CustomCalendarDialog extends DialogFragment {
         void onDateSelected(CalendarDay date);
     }
 
-    private OnDateSelectedListener listener;
-    private CalendarDay initialDate;
+    private final OnDateSelectedListener listener;
+    private final CalendarDay initialDate;
 
     public CustomCalendarDialog(CalendarDay initialDate, OnDateSelectedListener listener) {
         this.initialDate = initialDate;
@@ -40,14 +40,14 @@ public class CustomCalendarDialog extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_custom_calendar, null);
         MaterialCalendarView calendarView = view.findViewById(R.id.calendarView);
 
-        
+
         String[] monthsArray = {"Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
         String[] weekDaysArray = {"Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"};
         calendarView.setTitleFormatter(new MonthArrayTitleFormatter(monthsArray));
         calendarView.setWeekDayFormatter(new ArrayWeekDayFormatter(weekDaysArray));
         calendarView.state().edit().setFirstDayOfWeek(DayOfWeek.of(1)).commit();
 
-        
+
         if (initialDate != null) {
             calendarView.setSelectedDate(initialDate);
             calendarView.setCurrentDate(initialDate);

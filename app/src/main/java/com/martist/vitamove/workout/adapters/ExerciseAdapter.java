@@ -18,23 +18,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExerciseViewHolder> {
-    private Context context;
+    private final Context context;
     private List<Exercise> exercises;
-    private OnExerciseClickListener listener;
+    private final OnExerciseClickListener listener;
 
     public interface OnExerciseClickListener {
         void onExerciseClick(Exercise exercise);
         void onAddExerciseClick(Exercise exercise);
     }
 
-
+    
     public ExerciseAdapter(Context context, OnExerciseClickListener listener) {
         this.context = context;
         this.exercises = new ArrayList<>();
         this.listener = listener;
     }
 
-
+    
     public void setExercises(List<Exercise> exercises) {
         this.exercises = exercises;
         notifyDataSetChanged();
@@ -58,7 +58,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         return exercises.size();
     }
 
-
+    
     public void updateExercises(List<Exercise> newExercises) {
         this.exercises = newExercises;
         notifyDataSetChanged();
@@ -81,19 +81,19 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         void bind(Exercise exercise) {
             nameText.setText(exercise.getName());
             
-
+            
             List<String> muscleGroupNames = exercise.getMuscleGroupRussianNames();
             String muscleGroups = String.join(", ", muscleGroupNames);
             muscleGroupText.setText(muscleGroups);
             
-
+            
             cardView.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onExerciseClick(exercise);
                 }
             });
             
-
+            
             addButton.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onAddExerciseClick(exercise);

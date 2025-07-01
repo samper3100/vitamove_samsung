@@ -14,7 +14,7 @@ import com.martist.vitamove.models.Food;
 import java.util.List;
 
 public class FoodSelectionAdapter extends RecyclerView.Adapter<FoodSelectionAdapter.ViewHolder> {
-    private List<Food> foods;
+    private final List<Food> foods;
     private final OnFoodClickListener listener;
 
     public interface OnFoodClickListener {

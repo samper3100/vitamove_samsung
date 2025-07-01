@@ -16,6 +16,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.martist.vitamove.R;
 import com.martist.vitamove.events.FoodAddedEvent;
 import com.martist.vitamove.managers.FoodManager;
@@ -49,6 +50,7 @@ public class PortionSizeActivity extends BaseActivity {
     private TextView proteinsValue;
     private TextView fatsValue;
     private TextView carbsValue;
+    private TextInputLayout portionSizeInputLayout;
     
     
     private TextView usefulnessIndexValue;
@@ -134,7 +136,7 @@ public class PortionSizeActivity extends BaseActivity {
         
         try {
             Food.ensureClassLoaded();
-            
+
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при загрузке класса Food: " + e.getMessage());
         }
@@ -142,7 +144,7 @@ public class PortionSizeActivity extends BaseActivity {
         foodManager = FoodManager.getInstance(this);
         
         
-        
+
         selectedFood = getIntent().getParcelableExtra(Constants.EXTRA_FOOD);
         mealType = getIntent().getStringExtra(Constants.EXTRA_MEAL_TYPE);
         barcode = getIntent().getStringExtra(Constants.EXTRA_BARCODE);
@@ -159,7 +161,7 @@ public class PortionSizeActivity extends BaseActivity {
                 if (selectedDate != null) {
                     
                     foodManager.setSelectedDateForView(selectedDate);
-                    
+
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при парсинге даты: " + e.getMessage());
@@ -167,14 +169,15 @@ public class PortionSizeActivity extends BaseActivity {
         }
         
         
-        
-        
-        
-        
-        
+
+
+
+
+
         
         if (selectedFood != null) {
-            
+
+
         }
         
         if (mealType == null) {
@@ -200,6 +203,7 @@ public class PortionSizeActivity extends BaseActivity {
     private void initViews() {
         
         portionSizeInput = findViewById(R.id.custom_portion_input);
+        portionSizeInputLayout = findViewById(R.id.portion_size_input_layout);
         caloriesText = findViewById(R.id.calories_text);
         foodCategoryText = findViewById(R.id.food_category_text);
         
@@ -270,8 +274,8 @@ public class PortionSizeActivity extends BaseActivity {
                         return;
                     }
                     
-                    
-                    
+
+
                     
                     
                     Meal currentMeal = foodManager.getMeal(mealType);
@@ -280,7 +284,7 @@ public class PortionSizeActivity extends BaseActivity {
                     if (currentMeal == null) {
                         
                         foodManager.addFoodToMeal(mealType, selectedFood, portionSize);
-                        
+
                         
                         
                         EventBus.getDefault().post(new FoodAddedEvent(selectedFood, portionSize, mealType));
@@ -294,7 +298,7 @@ public class PortionSizeActivity extends BaseActivity {
                         boolean foundExisting = false;
                         
                         
-                        
+
                         
                         
                         int existingFoodIndex = -1;
@@ -302,23 +306,22 @@ public class PortionSizeActivity extends BaseActivity {
                             Meal.FoodPortion currentPortion = currentMeal.getFoods().get(i);
                             Food currentFood = currentPortion.getFood();
                             
-                            
-                            
-                            
+
                             
                             
                             boolean sameId = currentFood.getId() == selectedFood.getId();
                             boolean sameName = currentFood.getName().equals(selectedFood.getName());
                             
                             
-                            
+
                             
                             
                             
                             if (sameId && sameName) {
                                 foundExisting = true;
                                 existingFoodIndex = i;
-                                
+
+
                                 break;
                             }
                         }
@@ -331,18 +334,19 @@ public class PortionSizeActivity extends BaseActivity {
                             if (i == existingFoodIndex) {
                                 
                                 newMeal.addFood(selectedFood, portionSize);
-                                
+
+
                             } else {
                                 
                                 newMeal.addFood(currentFood, currentPortion.getPortionSize());
-                                
+
                             }
                         }
                         
                         
                         if (!foundExisting) {
                             newMeal.addFood(selectedFood, portionSize);
-                            
+
                         }
                         
                         
@@ -351,12 +355,12 @@ public class PortionSizeActivity extends BaseActivity {
                         
                         if (foundExisting) {
                             Toast.makeText(this, "Размер порции обновлен", Toast.LENGTH_SHORT).show();
-                            
+
                         } else {
                             
                             EventBus.getDefault().post(new FoodAddedEvent(selectedFood, portionSize, mealType));
                             Toast.makeText(this, "Продукт добавлен", Toast.LENGTH_SHORT).show();
-                            
+
                         }
                     }
                     
@@ -364,7 +368,7 @@ public class PortionSizeActivity extends BaseActivity {
                     if (barcode != null && !barcode.isEmpty() && selectedFood != null) {
                         
                         new Thread(() -> {
-                            
+
                             
                             try {
                                 SupabaseBarcodeRepository barcodeRepository = foodManager.getBarcodeRepository();
@@ -378,7 +382,8 @@ public class PortionSizeActivity extends BaseActivity {
                                 
                                 Food existingFoodByBarcode = barcodeRepository.findFoodByBarcode(barcode);
                                 if (existingFoodByBarcode != null) {
-                                    
+
+
                                     
                                     return;
                                 }
@@ -388,7 +393,7 @@ public class PortionSizeActivity extends BaseActivity {
                                 
                                 
                                 if (uuid == null || uuid.isEmpty()) {
-                                    
+
                                     
                                     
                                     Food existingFood = foodRepository.getFoodByName(selectedFood.getName());
@@ -396,7 +401,7 @@ public class PortionSizeActivity extends BaseActivity {
                                     if (existingFood != null) {
                                         
                                         uuid = existingFood.getIdUUID();
-                                        
+
                                     } else {
                                         
                                         uuid = foodRepository.addFood(selectedFood);
@@ -406,10 +411,10 @@ public class PortionSizeActivity extends BaseActivity {
                                             return;
                                         }
                                         
-                                        
+
                                     }
                                 } else {
-                                    
+
                                 }
                                 
                                 
@@ -436,7 +441,7 @@ public class PortionSizeActivity extends BaseActivity {
                                 boolean saved = barcodeRepository.addBarcode(barcode, foodWithUUID);
                                 
                                 if (saved) {
-                                    
+
                                 } else {
                                     Log.e(TAG, "Не удалось сохранить штрихкод в базе данных");
                                 }
@@ -445,7 +450,8 @@ public class PortionSizeActivity extends BaseActivity {
                             }
                         }).start();
                     } else {
-                        
+
+
                     }
                     
                     finish();
@@ -487,6 +493,20 @@ public class PortionSizeActivity extends BaseActivity {
             
             
             updateUsefulnessIndex(selectedFood.getUsefulnessIndex());
+            
+            
+            String unitSuffix;
+            if (selectedFood.isLiquid()) {
+                unitSuffix = " мл";
+            } else {
+                unitSuffix = " грамм";
+            }
+            
+            
+            portionSizeInputLayout.setSuffixText(unitSuffix);
+            
+            portionSizeInputLayout.setSuffixTextColor(getColorStateList(R.color.textColorSecondary));
+            portionSizeInputLayout.setSuffixTextAppearance(R.style.SuffixTextAppearance);
             
             
             boolean isFromGigaChat = selectedFood.getId() == 0 && 
@@ -745,25 +765,25 @@ public class PortionSizeActivity extends BaseActivity {
         
         
         
-        setRowVisibility((TableRow)findViewById(R.id.fiber_row), View.GONE);
-        setRowVisibility((TableRow)findViewById(R.id.sugar_row), View.GONE);
-        setRowVisibility((TableRow)findViewById(R.id.cholesterol_row), View.GONE);
-        setRowVisibility((TableRow)findViewById(R.id.saturated_fats_row), View.GONE);
-        setRowVisibility((TableRow)findViewById(R.id.trans_fats_row), View.GONE);
+        setRowVisibility(findViewById(R.id.fiber_row), View.GONE);
+        setRowVisibility(findViewById(R.id.sugar_row), View.GONE);
+        setRowVisibility(findViewById(R.id.cholesterol_row), View.GONE);
+        setRowVisibility(findViewById(R.id.saturated_fats_row), View.GONE);
+        setRowVisibility(findViewById(R.id.trans_fats_row), View.GONE);
         
         
-        setRowVisibility((TableRow)findViewById(R.id.vitamin_a_row), View.GONE);
-        setRowVisibility((TableRow)findViewById(R.id.vitamin_b1_row), View.GONE);
-        setRowVisibility((TableRow)findViewById(R.id.vitamin_b2_row), View.GONE);
-        setRowVisibility((TableRow)findViewById(R.id.vitamin_b3_row), View.GONE);
-        setRowVisibility((TableRow)findViewById(R.id.vitamin_b5_row), View.GONE);
-        setRowVisibility((TableRow)findViewById(R.id.vitamin_b6_row), View.GONE);
-        setRowVisibility((TableRow)findViewById(R.id.vitamin_b9_row), View.GONE);
-        setRowVisibility((TableRow)findViewById(R.id.vitamin_b12_row), View.GONE);
-        setRowVisibility((TableRow)findViewById(R.id.vitamin_c_row), View.GONE);
-        setRowVisibility((TableRow)findViewById(R.id.vitamin_d_row), View.GONE);
-        setRowVisibility((TableRow)findViewById(R.id.vitamin_e_row), View.GONE);
-        setRowVisibility((TableRow)findViewById(R.id.vitamin_k_row), View.GONE);
+        setRowVisibility(findViewById(R.id.vitamin_a_row), View.GONE);
+        setRowVisibility(findViewById(R.id.vitamin_b1_row), View.GONE);
+        setRowVisibility(findViewById(R.id.vitamin_b2_row), View.GONE);
+        setRowVisibility(findViewById(R.id.vitamin_b3_row), View.GONE);
+        setRowVisibility(findViewById(R.id.vitamin_b5_row), View.GONE);
+        setRowVisibility(findViewById(R.id.vitamin_b6_row), View.GONE);
+        setRowVisibility(findViewById(R.id.vitamin_b9_row), View.GONE);
+        setRowVisibility(findViewById(R.id.vitamin_b12_row), View.GONE);
+        setRowVisibility(findViewById(R.id.vitamin_c_row), View.GONE);
+        setRowVisibility(findViewById(R.id.vitamin_d_row), View.GONE);
+        setRowVisibility(findViewById(R.id.vitamin_e_row), View.GONE);
+        setRowVisibility(findViewById(R.id.vitamin_k_row), View.GONE);
         
         
         LinearLayout mineralsContent = findViewById(R.id.minerals_content);

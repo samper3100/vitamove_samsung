@@ -9,6 +9,7 @@
     <string name="title_workouts">Тренировки</string>
     <string name="title_profile">Профиль</string>
     <string name="title_settings">Настройки</string>
+    <string name="edit">Редактировать</string>
 
     <!-- Ключ для работы с Supabase -->
     <string name="supabase_key">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqb3BiZGlhZmdiYnN0a3dtaHB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2MjE1NTAwMDAsImV4cCI6MTkzNzEyNjAwMH0.pNZS9fIMNrH-H9EqwUJVJ3NxXCjR-XG9bh5r7MBdnqo</string>
@@ -249,4 +250,6 @@
     <string name="create_program_button_next_week">Следующая неделя</string>
     <string name="default_program_name">Моя программа</string>
     <string name="program_type_user_created_description">Программа создана пользователем и видна только ему</string>
+
+    <string name="back_button_description">Вернуться назад</string>
 </resources>

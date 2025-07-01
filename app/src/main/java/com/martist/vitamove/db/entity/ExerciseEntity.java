@@ -7,7 +7,6 @@ import androidx.room.TypeConverters;
 
 import com.martist.vitamove.db.converters.ListConverter;
 import com.martist.vitamove.workout.data.models.Exercise;
-import com.martist.vitamove.workout.data.models.ExerciseMedia;
 
 import java.util.List;
 
@@ -24,6 +23,9 @@ public class ExerciseEntity {
     private float met;
     
     @TypeConverters(ListConverter.class)
+    private List<String> categories;
+    
+    @TypeConverters(ListConverter.class)
     private List<String> muscleGroups;
     
     @TypeConverters(ListConverter.class)
@@ -31,6 +33,9 @@ public class ExerciseEntity {
     
     @TypeConverters(ListConverter.class)
     private List<String> equipmentRequired;
+    
+
+    private String instructions;
 
 
     public ExerciseEntity() {
@@ -47,6 +52,8 @@ public class ExerciseEntity {
         this.muscleGroupRussianNames = exercise.getMuscleGroupRussianNames();
         this.equipmentRequired = exercise.getEquipmentRequired();
         this.met = exercise.getMet();
+        this.categories = exercise.getCategories();
+        this.instructions = exercise.getInstructionsText();
     }
 
 
@@ -59,7 +66,9 @@ public class ExerciseEntity {
                .exerciseType(exerciseType)
                .muscleGroups(muscleGroups)
                .equipmentRequired(equipmentRequired)
-               .met(this.met);
+               .met(this.met)
+               .categories(this.categories)
+               .instructions(this.instructions);
                
         return builder.build();
     }
@@ -135,5 +144,30 @@ public class ExerciseEntity {
 
     public void setMet(float met) {
         this.met = met;
+    }
+
+    public List<String> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<String> categories) {
+        this.categories = categories;
+    }
+    
+
+    public String getCategory() {
+        if (categories != null && !categories.isEmpty()) {
+            return categories.get(0);
+        }
+        return "";
+    }
+
+
+    public String getInstructions() {
+        return instructions;
+    }
+    
+    public void setInstructions(String instructions) {
+        this.instructions = instructions;
     }
 } 

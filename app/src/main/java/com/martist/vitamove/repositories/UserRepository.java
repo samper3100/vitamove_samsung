@@ -1,7 +1,6 @@
 package com.martist.vitamove.repositories;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.martist.vitamove.models.UserProfile;
 
@@ -47,7 +46,7 @@ public class UserRepository {
         }
         
 
-        
+
         
         return userProfile;
     }

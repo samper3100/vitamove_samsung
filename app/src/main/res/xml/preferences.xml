@@ -44,23 +44,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="Приложение"
-        android:iconSpaceReserved="false">
 
-        <Preference
-            android:key="app_version"
-            android:title="Версия приложения"
-            android:summary="1.0.0"
-            android:iconSpaceReserved="false" />
-
-        <Preference
-            android:key="feedback"
-            android:title="Обратная связь"
-            android:summary="Отправить отзыв разработчикам"
-            android:iconSpaceReserved="false" />
-
-    </PreferenceCategory>
 
     <PreferenceCategory
         android:title="Аккаунт"

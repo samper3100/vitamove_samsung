@@ -7,9 +7,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.martist.vitamove.utils.SupabaseClient;
-import com.martist.vitamove.workout.data.models.DifficultyConverter;
 import com.martist.vitamove.workout.data.models.Exercise;
-import com.martist.vitamove.workout.data.models.MuscleGroupConverter;
 import com.martist.vitamove.workout.data.repository.SupabaseWorkoutRepository;
 import com.martist.vitamove.workout.data.repository.WorkoutRepository;
 
@@ -52,25 +50,8 @@ public class ExerciseManager {
         this.mainHandler = new Handler(Looper.getMainLooper());
         
 
-        initializeConverters();
     }
-    
 
-    private void initializeConverters() {
-        executor.execute(() -> {
-            try {
-
-                MuscleGroupConverter.getInstance().getAllMuscleGroups(supabaseClient);
-                
-
-                DifficultyConverter.getInstance().getAllDifficulties(supabaseClient);
-                
-                
-            } catch (Exception e) {
-                Log.e(TAG, "Ошибка при инициализации конвертеров: " + e.getMessage(), e);
-            }
-        });
-    }
 
 
     public Exercise getExerciseById(String id) throws Exception {

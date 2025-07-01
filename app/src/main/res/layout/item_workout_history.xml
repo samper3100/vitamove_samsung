@@ -65,7 +65,7 @@
             android:background="?attr/dividerColor"
             android:layout_marginVertical="12dp"/>
 
-        <!-- Статистика тренировки в виде карточек -->
+        <!-- Статистика тренировки - две карточки: упражнения и калории -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -101,11 +101,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Упражнения"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:singleLine="true"
                     android:textAppearance="?attr/textAppearanceCaption"
                     android:textColor="?android:attr/textColorSecondary" />
             </LinearLayout>
 
-            <!-- Карточка количества подходов -->
+            <!-- Карточка сожженных калорий -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -119,11 +122,11 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_repeat"
+                    android:src="@drawable/ic_fire"
                     app:tint="@color/accent_color" />
 
                 <TextView
-                    android:id="@+id/sets_count"
+                    android:id="@+id/calories_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?attr/textAppearanceBody1"
@@ -134,7 +137,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Подходы"
+                    android:text="Калории"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:singleLine="true"
                     android:textAppearance="?attr/textAppearanceCaption"
                     android:textColor="?android:attr/textColorSecondary" />
             </LinearLayout>

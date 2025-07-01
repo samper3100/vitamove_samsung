@@ -9,11 +9,9 @@ import android.util.Log;
 import com.martist.vitamove.VitaMoveApplication;
 import com.martist.vitamove.utils.DateUtils;
 import com.martist.vitamove.utils.SupabaseClient;
-import com.martist.vitamove.workout.data.models.Equipment;
 import com.martist.vitamove.workout.data.models.Exercise;
 import com.martist.vitamove.workout.data.models.ExerciseMedia;
 import com.martist.vitamove.workout.data.models.ExerciseType;
-import com.martist.vitamove.workout.data.models.MuscleGroupConverter;
 import com.martist.vitamove.workout.data.models.ProgramDay;
 import com.martist.vitamove.workout.data.models.ProgramExercise;
 import com.martist.vitamove.workout.data.models.ProgramType;
@@ -43,90 +41,90 @@ import java.util.UUID;
 public class SupabaseProgramRepository implements ProgramRepository {
     private static final String TAG = "SupabaseProgramRepo";
     private final SupabaseClient supabaseClient;
-    private Context context; 
+    private Context context;
     
-    
+
     public interface AsyncCallback<T> {
-        
+
         void onSuccess(T result);
         
-        
+
         void onFailure(Exception error);
     }
     
-    
+
     public SupabaseProgramRepository(SupabaseClient supabaseClient) {
         this.supabaseClient = supabaseClient;
     }
     
-    
+
     public void setContext(Context context) {
         this.context = context;
     }
     
     @Override
     public List<WorkoutProgram> getAllPrograms() {
+
         
-        
-        
+
         String userId = null;
         if (context != null) {
             userId = ((VitaMoveApplication) context.getApplicationContext()).getCurrentUserId();
         }
         
-        
+
         List<WorkoutProgram> allPrograms = new ArrayList<>();
         
-        
+
         List<WorkoutProgram> publicPrograms = getPublicPrograms();
         if (publicPrograms != null && !publicPrograms.isEmpty()) {
             allPrograms.addAll(publicPrograms);
-            
+
         }
         
-        
+
         if (userId != null && !userId.isEmpty()) {
             try {
                 List<WorkoutProgram> userPrograms = getUserPrograms(userId);
                 if (userPrograms != null && !userPrograms.isEmpty()) {
                     allPrograms.addAll(userPrograms);
-                    
+
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при получении программ пользователя: " + e.getMessage(), e);
-                
+
             }
         }
         
-        
+
         return allPrograms;
     }
     
-    
+
     private List<WorkoutProgram> getPublicPrograms() {
-        
+
         
         Map<String, WorkoutProgram> uniquePrograms = new HashMap<>();
         
         try {
-            
+
             JSONArray results = supabaseClient.from("program_templates")
                 .eq("is_public", true)
                 .executeAndGetArray();
             
             if (results != null) {
-                
+
                 
                 for (int i = 0; i < results.length(); i++) {
                     JSONObject programJson = results.getJSONObject(i);
                     WorkoutProgram program = parseTemplateToProgram(programJson);
                     
-                    
+
                     if (program != null) {
-                        
+
                         String key = program.getId();
                         
-                        
+
                         if (!uniquePrograms.containsKey(key)) {
                             uniquePrograms.put(key, program);
                         }
@@ -134,7 +132,7 @@ public class SupabaseProgramRepository implements ProgramRepository {
                 }
             }
             
-            
+
             return new ArrayList<>(uniquePrograms.values());
             
         } catch (Exception e) {
@@ -143,7 +141,7 @@ public class SupabaseProgramRepository implements ProgramRepository {
         }
     }
     
-    
+
     @Override
     public List<WorkoutProgram> getUserPrograms(String userId) throws Exception {
         if (userId == null || userId.isEmpty()) {
@@ -151,33 +149,33 @@ public class SupabaseProgramRepository implements ProgramRepository {
             return new ArrayList<>();
         }
         
-        
+
         Map<String, WorkoutProgram> uniquePrograms = new HashMap<>();
         
         try {
-            
+
             JSONArray authorPrograms = supabaseClient.from("program_templates")
                     .eq("author_id", userId)
                     .select("*")
                     .executeAndGetArray();
             
-            
+
             if (authorPrograms != null) {
-                
+
                 
                 for (int i = 0; i < authorPrograms.length(); i++) {
                     try {
                         JSONObject programJson = authorPrograms.getJSONObject(i);
                         WorkoutProgram program = parseTemplateToProgram(programJson);
                         
-                        
+
                         if (program != null) {
-                            
+
                             String key = program.getId();
                             if (!uniquePrograms.containsKey(key)) {
-                                
+
                                 program.setType(ProgramType.USER_CREATED);
-                                
+
                                 program.setUserId(userId);
                                 uniquePrograms.put(key, program);
                             }
@@ -188,24 +186,24 @@ public class SupabaseProgramRepository implements ProgramRepository {
                 }
             }
             
-            
+
             JSONArray userPrograms = supabaseClient.from("programs")
                     .eq("user_id", userId)
                     .select("*")
                     .executeAndGetArray();
             
-            
+
             if (userPrograms != null) {
-                
+
                 
                 for (int i = 0; i < userPrograms.length(); i++) {
                     try {
                         JSONObject programJson = userPrograms.getJSONObject(i);
                         
-                        
+
                         String templateId = programJson.optString("template_id", null);
                         if (templateId != null && !templateId.isEmpty()) {
-                            
+
                             JSONArray templateResults = supabaseClient.from("program_templates")
                                 .eq("id", templateId)
                                 .executeAndGetArray();
@@ -215,12 +213,12 @@ public class SupabaseProgramRepository implements ProgramRepository {
                                 WorkoutProgram program = parseTemplateToProgram(templateJson);
                                 
                                 if (program != null) {
-                                    
+
                                     program.setId(programJson.optString("id", program.getId()));
                                     program.setUserId(userId);
                                     program.setType(ProgramType.USER_CREATED);
                                     
-                                    
+
                                     String key = program.getId();
                                     if (!uniquePrograms.containsKey(key)) {
                                         uniquePrograms.put(key, program);
@@ -228,7 +226,7 @@ public class SupabaseProgramRepository implements ProgramRepository {
                                 }
                             }
                         } else {
-                            
+
                             WorkoutProgram program = new WorkoutProgram();
                             program.setId(programJson.optString("id", UUID.randomUUID().toString()));
                             program.setName(programJson.optString("name", "Программа без названия"));
@@ -238,7 +236,7 @@ public class SupabaseProgramRepository implements ProgramRepository {
                             program.setType(ProgramType.USER_CREATED);
                             program.setUserId(userId);
                             
-                            
+
                             String key = program.getId();
                             if (!uniquePrograms.containsKey(key)) {
                                 uniquePrograms.put(key, program);
@@ -250,9 +248,9 @@ public class SupabaseProgramRepository implements ProgramRepository {
                 }
             }
             
-            
+
             List<WorkoutProgram> result = new ArrayList<>(uniquePrograms.values());
-            
+
             return result;
             
         } catch (Exception e) {
@@ -263,12 +261,12 @@ public class SupabaseProgramRepository implements ProgramRepository {
     
 
     
-    
+
     public void getAllProgramsAsync(com.martist.vitamove.utils.AsyncCallback<List<WorkoutProgram>> callback) {
         new Thread(() -> {
             try {
                 List<WorkoutProgram> programs = getAllPrograms();
-                
+
                 new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(programs));
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при асинхронном получении программ", e);
@@ -277,7 +275,7 @@ public class SupabaseProgramRepository implements ProgramRepository {
         }).start();
     }
     
-    
+
     private WorkoutProgram parseTemplateToProgram(JSONObject json) {
         try {
             WorkoutProgram program = new WorkoutProgram();
@@ -286,7 +284,7 @@ public class SupabaseProgramRepository implements ProgramRepository {
             program.setName(json.optString("name", "Программа без названия"));
             program.setDescription(json.optString("description", ""));
             
-            
+
             String imageUrl = "";
             if (json.has("image")) {
                 imageUrl = json.optString("image", "");
@@ -301,43 +299,43 @@ public class SupabaseProgramRepository implements ProgramRepository {
             }
             program.setImageUrl(imageUrl);
             
-            
+
             String difficultyStr = json.optString("difficulty", "начинающий");
-            program.setLevel(difficultyStr); 
+            program.setLevel(difficultyStr);
             
-            
+
             String categoryStr = json.optString("category", "общая подготовка");
             program.setGoal(categoryStr);
             
             program.setDurationWeeks(json.optInt("duration_weeks", 4));
             program.setDaysPerWeek(json.optInt("days_per_week", 3));
             
-            
+
             String programTypeStr = json.optString("type", "");
             program.setProgramType(programTypeStr);
             
-            
+
             if (json.optBoolean("is_public", true)) {
                 program.setType(ProgramType.OFFICIAL);
             } else {
                 program.setType(ProgramType.USER_CREATED);
             }
             
-            
+
             program.setAuthor(json.optString("author_id", ""));
             
-            
+
             String createdAtStr = json.optString("created_at", "");
             String updatedAtStr = json.optString("updated_at", "");
             
             if (!createdAtStr.isEmpty()) {
                 try {
-                    
+
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
                     Date date = format.parse(createdAtStr);
                     program.setCreatedAt(date.getTime());
                 } catch (Exception e) {
-                    
+
                 }
             }
             
@@ -347,41 +345,41 @@ public class SupabaseProgramRepository implements ProgramRepository {
                     Date date = format.parse(updatedAtStr);
                     program.setUpdatedAt(date.getTime());
                 } catch (Exception e) {
-                    
+
                 }
             }
             
-            
+
             try {
-                
+
                 List<Integer> workoutDays = new ArrayList<>();
                 
                 if (json.has("workout_days") && !json.isNull("workout_days")) {
                     try {
-                        
+
                         JSONArray workoutDaysArray = json.getJSONArray("workout_days");
                         for (int i = 0; i < workoutDaysArray.length(); i++) {
                             workoutDays.add(workoutDaysArray.getInt(i));
                         }
+
                         
-                        
-                        
-                        
+
+
                         if (!workoutDays.isEmpty()) {
-                            
+
                             program.setDaysPerWeek(workoutDays.size());
-                            
+
                         }
                     } catch (Exception e) {
-                        
-                        
+
+
                         workoutDays = getDefaultWorkoutDays(program.getDaysPerWeek());
-                        
+
                     }
                 } else {
-                    
+
                     workoutDays = getDefaultWorkoutDays(program.getDaysPerWeek());
-                    
+
                 }
                 
                 program.setWorkoutDays(workoutDays);
@@ -398,43 +396,43 @@ public class SupabaseProgramRepository implements ProgramRepository {
     
     @Override
     public List<WorkoutProgram> filterPrograms(String goal, String level, int maxDuration) {
-        
+
         
         List<WorkoutProgram> programs = new ArrayList<>();
         
         try {
-            
+
             SupabaseClient.QueryBuilder queryBuilder = supabaseClient.from("program_templates");
             
-            
-            
+
+
             if (goal != null && !goal.isEmpty() && !goal.equalsIgnoreCase("все")) {
                 queryBuilder.eq("category", goal);
-                
+
             }
             
-            
+
             if (level != null && !level.isEmpty() && !level.equalsIgnoreCase("все")) {
                 queryBuilder.eq("difficulty", level);
-                
+
             }
             
-            
+
             if (maxDuration > 0) {
                 queryBuilder.lte("duration_weeks", maxDuration);
-                
+
             }
             
-            
+
             JSONArray results = queryBuilder.executeAndGetArray();
             
-            
+
             if (results != null && results.length() > 0) {
                 for (int i = 0; i < results.length(); i++) {
                     JSONObject json = results.getJSONObject(i);
                     WorkoutProgram program = parseTemplateToProgram(json);
                     
-                    
+
                     boolean isDuplicate = false;
                     for (WorkoutProgram existingProgram : programs) {
                         if (existingProgram.getId().equals(program.getId())) {
@@ -448,13 +446,13 @@ public class SupabaseProgramRepository implements ProgramRepository {
                         }
                     }
                     
-                
+
                 } else {
-                
+
             }
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при фильтрации шаблонов программ: " + e.getMessage(), e);
-            
+
             return new ArrayList<>();
         }
         
@@ -468,10 +466,10 @@ public class SupabaseProgramRepository implements ProgramRepository {
             return null;
         }
         
-        
+
         
         try {
-            
+
             JSONObject result = supabaseClient.from("program_templates")
                 .eq("id", programId)
                 .executeAndGetSingle();
@@ -481,7 +479,7 @@ public class SupabaseProgramRepository implements ProgramRepository {
                 
                 return program;
             } else {
-                
+
                 return null;
             }
         } catch (Exception e) {
@@ -492,17 +490,17 @@ public class SupabaseProgramRepository implements ProgramRepository {
     
     @Override
     public WorkoutProgram getActiveProgram(String userId) {
-        
+
         
         try {
-            
+
             String realUserId = getRealUserId(userId);
             if (realUserId == null) {
                 Log.e(TAG, "Не удалось получить реальный ID пользователя");
                 return null;
             }
             
-            
+
             JSONArray results = supabaseClient.from("programs")
                 .eq("user_id", realUserId)
                 .eq("is_active", true)
@@ -511,28 +509,28 @@ public class SupabaseProgramRepository implements ProgramRepository {
             if (results != null && results.length() > 0) {
                 JSONObject programJson = results.getJSONObject(0);
                 
-                
-                WorkoutProgram program = parseTemplateToProgram(programJson);
-                program.setActive(true); 
-                
 
-                
+                WorkoutProgram program = parseTemplateToProgram(programJson);
+                program.setActive(true);
+
+
+
                 List<Integer> savedWorkoutDays = loadWorkoutDaysFromPrefs(program.getId());
                 if (savedWorkoutDays != null && !savedWorkoutDays.isEmpty()) {
                     program.setWorkoutDays(savedWorkoutDays);
-                    
+
                     program.setDaysPerWeek(savedWorkoutDays.size());
-                    
+
                 } else {
-                    
-                    
-                    
+
+
+
                 }
 
                 return program;
             }
             
-            
+
             return null;
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при получении активной программы: " + e.getMessage(), e);
@@ -542,47 +540,47 @@ public class SupabaseProgramRepository implements ProgramRepository {
     
     @Override
     public String startProgram(String userId, String programId, long startDate) {
-        
+
         
         try {
-            
+
             WorkoutProgram template = getProgramById(programId);
             if (template == null) {
                 Log.e(TAG, "Ошибка при запуске программы: шаблон не найден (ID: " + programId + ")");
                 return null;
             }
             
-            
+
             String realUserId = getRealUserId(userId);
             if (realUserId == null) {
                 Log.e(TAG, "Ошибка при запуске программы: не удалось получить реальный ID пользователя");
                 return null;
             }
             
-            
+
+
+
+            List<Integer> userSelectedDays = loadWorkoutDaysFromPrefs(programId);
 
             
-            List<Integer> userSelectedDays = loadWorkoutDaysFromPrefs(programId);
-            
-            
-            
+
             if (userSelectedDays.isEmpty()) {
                 userSelectedDays = template.getWorkoutDays();
-                
+
             }
             
-            
+
             JSONArray daysArray = new JSONArray();
             for (Integer day : userSelectedDays) {
                 daysArray.put(day);
             }
             
-            
+
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
             Date date = new Date(startDate);
             
-            
-            
+
+
             JSONObject result = supabaseClient.rpc("create_program_from_template")
                 .param("p_template_id", programId)
                 .param("p_user_id", realUserId)
@@ -592,9 +590,9 @@ public class SupabaseProgramRepository implements ProgramRepository {
                 .executeAndGetSingle();
             
             String newProgramId = result.getString("program_id");
+
             
-            
-            
+
             saveWorkoutDaysToPrefs(newProgramId, userSelectedDays);
             
             return newProgramId;
@@ -604,16 +602,16 @@ public class SupabaseProgramRepository implements ProgramRepository {
         }
     }
     
-    
+
     public void saveWorkoutDaysToPrefs(String programId, List<Integer> workoutDays) {
-        
+
         
         try {
-            
+
             SharedPreferences prefs = context.getSharedPreferences("program_config_prefs", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
             
-            
+
             StringBuilder daysBuilder = new StringBuilder();
             for (int i = 0; i < workoutDays.size(); i++) {
                 daysBuilder.append(workoutDays.get(i));
@@ -623,19 +621,19 @@ public class SupabaseProgramRepository implements ProgramRepository {
             }
             
             String daysString = daysBuilder.toString();
-            
+
             
             editor.putString("config_workout_days_" + programId, daysString);
             editor.apply();
             
-            
+
         } catch (Exception e) {
             Log.e(TAG, "!!! VITAMOVE_DEBUG: [SAVE WORKOUT DAYS] Ошибка при сохранении дней тренировок: " + e.getMessage(), e);
         }
     }
 
 
-    
+
     private String parseDifficulty(String difficultyStr) {
         switch (difficultyStr.toLowerCase()) {
             case "intermediate": return "intermediate";
@@ -646,29 +644,29 @@ public class SupabaseProgramRepository implements ProgramRepository {
     
 
     
-    
+
     private String getRealUserId(String defaultUserId) {
         try {
-            
+
             VitaMoveApplication app = 
                 (VitaMoveApplication) VitaMoveApplication.getContext();
             
-            
+
             String appUserId = app.getCurrentUserId();
             
             if (appUserId != null && !appUserId.trim().isEmpty()) {
-                
-                
+
+
                 return appUserId;
             } else {
-                
+
                 String hardcodedUserId = "fb5e69f1-c2dc-4572-95a8-cb54e155a3c9";
-                
+
                 return hardcodedUserId;
             }
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при получении ID пользователя: " + e.getMessage(), e);
-            
+
             return "fb5e69f1-c2dc-4572-95a8-cb54e155a3c9";
         }
     }
@@ -681,12 +679,12 @@ public class SupabaseProgramRepository implements ProgramRepository {
             return new ArrayList<>();
         }
         
-        
+
         
         List<ProgramDay> days = new ArrayList<>();
         
         try {
-            
+
             JSONArray templateResults = supabaseClient.from("program_templates")
                 .eq("id", programId)
                 .executeAndGetArray();
@@ -694,8 +692,8 @@ public class SupabaseProgramRepository implements ProgramRepository {
             boolean isTemplate = templateResults != null && templateResults.length() > 0;
             
             if (isTemplate) {
-                
-                
+
+
                 JSONArray templateDaysResults = supabaseClient.from("program_template_days")
                     .eq("template_id", programId)
                     .order("day_number", true)
@@ -708,13 +706,13 @@ public class SupabaseProgramRepository implements ProgramRepository {
                             days.add(day);
                         }
                     
-                    
+
                 } else {
-                    
+
                     }
                 } else {
-                
-                
+
+
                 JSONArray programDaysResults = supabaseClient.from("program_days")
                     .eq("program_id", programId)
                     .order("day_number", true)
@@ -727,17 +725,17 @@ public class SupabaseProgramRepository implements ProgramRepository {
                         days.add(day);
                     }
                     
-                    
+
             } else {
-                    
+
                 }
             }
             
             if (isTemplate) {
-                
+
             }
             
-            
+
 
             
         } catch (Exception e) {
@@ -747,7 +745,7 @@ public class SupabaseProgramRepository implements ProgramRepository {
         return days;
     }
     
-    
+
     private ProgramDay parseProgramTemplateDay(JSONObject json) {
         try {
             ProgramDay day = new ProgramDay();
@@ -763,22 +761,22 @@ public class SupabaseProgramRepository implements ProgramRepository {
         }
     }
     
-    
+
     private ProgramDay parseProgramDay(JSONObject json) {
         try {
             ProgramDay day = new ProgramDay();
             
             day.setId(json.getString("id"));
             
-            
+
             if (json.has("program_id")) {
             day.setProgramId(json.getString("program_id"));
             } else if (json.has("template_id")) {
                 day.setProgramId(json.getString("template_id"));
             } else {
-                
-                
-                
+
+
+
                 day.setProgramId("");
             }
             
@@ -786,22 +784,22 @@ public class SupabaseProgramRepository implements ProgramRepository {
             day.setName(json.getString("name"));
             day.setDescription(json.optString("description", ""));
             
-            
+
             String focusArea = json.optString("focus_area", "");
             day.setFocusArea(focusArea);
             
             day.setEstimatedDurationMinutes(json.optInt("estimated_duration", 0));
             
-            
+
             if (json.has("template_day_id") && !json.isNull("template_day_id")) {
                 day.setTemplateDayId(json.getString("template_day_id"));
             }
             
-            
+
             day.setRestBetweenExercisesSec(60);
             day.setCompleted(false);
             
-            
+
             List<ProgramExercise> exercises = getProgramDayExercises(day.getId());
             day.setExercises(exercises);
             
@@ -814,10 +812,10 @@ public class SupabaseProgramRepository implements ProgramRepository {
     
 
     
-    
+
     @Override
     public List<ProgramExercise> getProgramDayExercises(String dayId) {
-        
+
         
         if (dayId == null || dayId.isEmpty()) {
             Log.e(TAG, "ID дня программы пустой, невозможно получить упражнения");
@@ -827,10 +825,10 @@ public class SupabaseProgramRepository implements ProgramRepository {
         List<ProgramExercise> exercises = new ArrayList<>();
         
         try {
-            
+
             boolean isTemplateDay = false;
             
-            
+
             try {
                 JSONArray templateDayCheck = supabaseClient.from("program_template_days")
                     .eq("id", dayId)
@@ -838,28 +836,28 @@ public class SupabaseProgramRepository implements ProgramRepository {
                     .executeAndGetArray();
                 
                 isTemplateDay = templateDayCheck != null && templateDayCheck.length() > 0;
-                
+
             } catch (Exception e) {
-                
-                
+
+
             }
             
             String tableName;
             String idFieldName;
             
             if (isTemplateDay) {
-                
+
                 tableName = "program_template_exercises";
-                idFieldName = "day_id"; 
-                
+                idFieldName = "day_id";
+
             } else {
-                
+
                 tableName = "program_exercises";
                 idFieldName = "day_id";
-                
+
             }
             
-            
+
             JSONArray results = supabaseClient.from(tableName)
                 .eq(idFieldName, dayId)
                 .order("order_number", true)
@@ -870,10 +868,10 @@ public class SupabaseProgramRepository implements ProgramRepository {
                     JSONObject exerciseJson = results.getJSONObject(i);
                     ProgramExercise exercise = parseProgramExercise(exerciseJson, isTemplateDay);
                     
-                    
+
                     if (exercise != null && exercise.getExerciseId() != null && !exercise.getExerciseId().isEmpty()) {
                         try {
-                            
+
                             JSONArray exerciseData = supabaseClient.from("exercises")
                                 .select("*")
                                 .eq("id", exercise.getExerciseId())
@@ -881,10 +879,10 @@ public class SupabaseProgramRepository implements ProgramRepository {
                             
                             if (exerciseData != null && exerciseData.length() > 0) {
                                 Exercise baseExercise = parseExercise(exerciseData.getJSONObject(0));
-                                exercise.setExercise(baseExercise); 
-                                
+                                exercise.setExercise(baseExercise);
+
                             } else {
-                                
+
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "Ошибка при загрузке деталей упражнения: " + e.getMessage(), e);
@@ -894,9 +892,9 @@ public class SupabaseProgramRepository implements ProgramRepository {
                     exercises.add(exercise);
                 }
                 
-                
+
             } else {
-                
+
             }
             
         } catch (Exception e) {
@@ -906,23 +904,23 @@ public class SupabaseProgramRepository implements ProgramRepository {
         return exercises;
     }
     
-    
+
     private ProgramExercise parseProgramExercise(JSONObject json, boolean isTemplateExercise) {
         try {
             ProgramExercise exercise = new ProgramExercise();
             
             exercise.setId(json.getString("id"));
             
-            
+
             if (isTemplateExercise) {
-                
+
                 if (json.has("template_day_id")) {
                     exercise.setProgramDayId(json.getString("template_day_id"));
                 } else if (json.has("day_id")) {
                     exercise.setProgramDayId(json.getString("day_id"));
                 }
             } else {
-                
+
                 if (json.has("day_id")) {
                     exercise.setProgramDayId(json.getString("day_id"));
                 } else if (json.has("template_day_id")) {
@@ -930,21 +928,21 @@ public class SupabaseProgramRepository implements ProgramRepository {
                 }
             }
             
-            
+
             if (exercise.getProgramDayId() == null || exercise.getProgramDayId().isEmpty()) {
-                
+
             }
             
             exercise.setExerciseId(json.optString("exercise_id", ""));
             
-            
+
             if (json.has("order_index")) {
                 exercise.setOrderNumber(json.optInt("order_index", 0));
             } else {
                 exercise.setOrderNumber(json.optInt("order_number", 0));
             }
             
-            
+
             String repsRange = json.optString("reps_range", json.optString("target_reps", "10"));
             try {
                 exercise.setTargetReps(Integer.parseInt(repsRange.split("-")[0].trim()));
@@ -963,15 +961,15 @@ public class SupabaseProgramRepository implements ProgramRepository {
             
             exercise.setNotes(json.optString("notes", ""));
             
-            
+
             if (json.has("template_exercise_id") && !json.isNull("template_exercise_id")) {
                 exercise.setTemplateExerciseId(json.getString("template_exercise_id"));
             } else {
                 exercise.setTemplateExerciseId(null);
             }
             
-            
-            int restTime = 60; 
+
+            int restTime = 60;
             if (json.has("rest_seconds")) {
                 restTime = json.optInt("rest_seconds", 60);
             } else if (json.has("rest_between_sets_sec")) {
@@ -979,7 +977,7 @@ public class SupabaseProgramRepository implements ProgramRepository {
             }
             exercise.setRestBetweenSetsSec(restTime);
             
-            
+
 
 
 
@@ -993,10 +991,10 @@ public class SupabaseProgramRepository implements ProgramRepository {
 
     @Override
     public String createProgramExercise(String dayId, ProgramExercise exercise) {
-        
+
         
         try {
-            
+
             JSONObject exerciseData = new JSONObject();
             exerciseData.put("id", exercise.getId());
             exerciseData.put("day_id", dayId);
@@ -1008,26 +1006,26 @@ public class SupabaseProgramRepository implements ProgramRepository {
             exerciseData.put("rest_seconds", exercise.getRestBetweenSetsSec());
             exerciseData.put("notes", exercise.getNotes() != null ? exercise.getNotes() : "");
             
-            
-            
+
+
             String templateExerciseId = exercise.getTemplateExerciseId();
             
-            
-            
-            
+
+
+
             if (templateExerciseId != null && !templateExerciseId.isEmpty()) {
                 exerciseData.put("template_exercise_id", templateExerciseId);
-                
+
             } else {
-                
+
                 exerciseData.put("template_exercise_id", JSONObject.NULL);
-                
+
             }
             
+
+
             
-            
-            
-            
+
             JSONObject checkResponse = null;
             try {
                 checkResponse = supabaseClient.from("program_exercises")
@@ -1035,55 +1033,55 @@ public class SupabaseProgramRepository implements ProgramRepository {
                     .eq("id", exercise.getId())
                     .executeAndGetSingle();
             } catch (Exception e) {
-                
-                
+
+
             }
             
             JSONObject response;
             if (checkResponse != null && checkResponse.has("id")) {
-                
-                
+
+
                 response = supabaseClient.from("program_exercises")
                     .update(exerciseData)
                     .eq("id", exercise.getId())
                     .executeAndGetSingle();
                     
-                
+
                 if (response == null) {
-                    
-                    
+
+
                     response = new JSONObject();
                     response.put("id", exercise.getId());
                 }
             } else {
-                
+
                 try {
                     response = supabaseClient.insertRecord("program_exercises", exerciseData);
                 } catch (IOException e) {
                     if (e.getMessage() != null && e.getMessage().contains("409")) {
-                        
-                        
+
+
                         response = supabaseClient.from("program_exercises")
                             .update(exerciseData)
                             .eq("id", exercise.getId())
                             .executeAndGetSingle();
                         
-                        
+
                         if (response == null) {
-                            
-                            
+
+
                             response = new JSONObject();
                             response.put("id", exercise.getId());
                         }
                     } else {
-                        
+
                         throw e;
                     }
                 }
             }
             
             if (response != null) {
-                
+
                 return exercise.getId();
             } else {
                 Log.e(TAG, "Ошибка при создании упражнения в Supabase: ответ null");
@@ -1099,68 +1097,68 @@ public class SupabaseProgramRepository implements ProgramRepository {
     
     @Override
     public boolean updateProgram(WorkoutProgram program) {
-        
+
         
         try {
-            
+
             JSONObject programData = new JSONObject();
             programData.put("name", program.getName());
             programData.put("description", program.getDescription());
             
-            
+
             List<Integer> workoutDays = program.getWorkoutDays();
             if (workoutDays != null && !workoutDays.isEmpty()) {
-                
+
                 programData.put("days_per_week", workoutDays.size());
-                
+
             } else {
-                
+
                 programData.put("days_per_week", program.getDaysPerWeek());
-                
+
             }
             
-            
+
             programData.put("type", program.getType().toString());
             
+
+
+
             
-            
-            
-            
-            
+
             supabaseClient.from("programs")
                 .update(programData)
                 .eq("id", program.getId())
                 .executeUpdate();
             
-            
+
             try {
                 JSONArray results = supabaseClient.from("program_templates")
                     .eq("id", program.getId())
                     .executeAndGetArray();
                 
                 if (results != null && results.length() > 0) {
-                    
+
                     JSONObject templateData = new JSONObject();
                     templateData.put("name", program.getName());
                     templateData.put("description", program.getDescription());
                     templateData.put("days_per_week", programData.getInt("days_per_week"));
                     templateData.put("type", program.getType().toString());
                     
-                    
+
                     templateData.put("difficulty", program.getLevel());
                     
-                    
+
                     supabaseClient.from("program_templates")
                         .update(templateData)
                         .eq("id", program.getId())
                         .executeUpdate();
-                    
+
                 }
             } catch (Exception e) {
-                
+
             }
             
-            
+
             return true;
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при обновлении программы: " + e.getMessage(), e);
@@ -1173,7 +1171,7 @@ public class SupabaseProgramRepository implements ProgramRepository {
 
     @Override
     public ProgramDay getProgramDayById(String dayId) {
-        
+
         
         if (dayId == null || dayId.isEmpty()) {
             Log.e(TAG, "ID дня программы пустой, невозможно получить день программы");
@@ -1181,40 +1179,40 @@ public class SupabaseProgramRepository implements ProgramRepository {
         }
         
         try {
-            
+
             JSONArray templateResults = supabaseClient.from("program_template_days")
                 .eq("id", dayId)
                 .executeAndGetArray();
                 
             if (templateResults != null && templateResults.length() > 0) {
-                
+
                 JSONObject dayJson = templateResults.getJSONObject(0);
                 return parseProgramTemplateDay(dayJson);
             }
             
-            
+
             JSONArray dayResults = supabaseClient.from("program_days")
                 .eq("id", dayId)
                 .executeAndGetArray();
                 
             if (dayResults != null && dayResults.length() > 0) {
-                
+
                 JSONObject dayJson = dayResults.getJSONObject(0);
                 return parseProgramDay(dayJson);
             }
             
+
             
-            
-            
-            
+
+
             for (WorkoutProgram program : getAllPrograms()) {
-                
+
                 List<ProgramDay> days = getProgramDays(program.getId());
                 
-                
+
                 for (ProgramDay day : days) {
                     if (day.getId().equals(dayId)) {
-                        
+
                         return day;
                     }
                 }
@@ -1224,16 +1222,16 @@ public class SupabaseProgramRepository implements ProgramRepository {
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при получении дня программы по ID: " + e.getMessage(), e);
             
-            
-            
+
+
             for (WorkoutProgram program : getAllPrograms()) {
-                
+
                 List<ProgramDay> days = getProgramDays(program.getId());
                 
-                
+
                 for (ProgramDay day : days) {
                     if (day.getId().equals(dayId)) {
-                        
+
                         return day;
                     }
                 }
@@ -1252,42 +1250,42 @@ public class SupabaseProgramRepository implements ProgramRepository {
             throw new IllegalArgumentException("ID программы не может быть пустым");
         }
         
-        
+
             
         try {
-            
+
             JSONArray checkResults = supabaseClient.from("programs")
                 .eq("id", programId)
                 .executeAndGetArray();
                 
             if (checkResults == null || checkResults.length() == 0) {
-                
-                return; 
+
+                return;
             }
             
-            
+
             JSONObject programJson = checkResults.getJSONObject(0);
             String userId = programJson.optString("user_id", null);
             boolean isActive = programJson.optBoolean("is_active", false);
             
-            
+
             
             if (!isActive) {
-                
+
                 return;
             }
             
-            
+
             JSONObject updateData = new JSONObject();
             updateData.put("is_active", false);
             
-            
+
             supabaseClient.from("programs")
                 .eq("id", programId)
                 .update(updateData)
                 .executeUpdate();
                 
-            
+
             
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при деактивации программы: " + e.getMessage(), e);
@@ -1297,80 +1295,32 @@ public class SupabaseProgramRepository implements ProgramRepository {
 
 
 
-    
+
     private Exercise parseExercise(JSONObject json) {
         try {
             String id = json.getString("id");
             String name = json.getString("name");
             String description = json.optString("description", "");
             
+
+
+
+
             
-            List<String> muscleGroups = new ArrayList<>();
-            JSONArray muscleGroupsArray = null;
-            
-            
-            if (json.has("primary_muscles") && !json.isNull("primary_muscles")) {
-                muscleGroupsArray = json.getJSONArray("primary_muscles");
-                for (int i = 0; i < muscleGroupsArray.length(); i++) {
-                    String muscleGroupStr = muscleGroupsArray.getString(i);
-                    String muscleGroupId = MuscleGroupConverter.getInstance().getNameByRussianName(muscleGroupStr);
-                    muscleGroups.add(muscleGroupId);
-                }
-            } 
-            
-            else if (json.has("muscle_groups") && !json.isNull("muscle_groups")) {
-                if (json.get("muscle_groups") instanceof JSONArray) {
-                    muscleGroupsArray = json.getJSONArray("muscle_groups");
-                    for (int i = 0; i < muscleGroupsArray.length(); i++) {
-                        
-                        String muscleGroupStr;
-                        try {
-                            muscleGroupStr = muscleGroupsArray.getString(i);
-                        } catch (JSONException e) {
-                            
-                            JSONObject muscleObj = muscleGroupsArray.getJSONObject(i);
-                            muscleGroupStr = muscleObj.optString("name", muscleObj.optString("id", ""));
-                        }
-                        
-                        if (!muscleGroupStr.isEmpty()) {
-                            String muscleGroupId = MuscleGroupConverter.getInstance().getNameByRussianName(muscleGroupStr);
-                            muscleGroups.add(muscleGroupId);
-                        }
-                    }
-                } 
-            }
-            
-            
-            List<Equipment> equipment = new ArrayList<>();
-            JSONArray equipmentArray = null;
-            
-            
-            if (json.has("equipment_required") && !json.isNull("equipment_required")) {
-                equipmentArray = json.getJSONArray("equipment_required");
-                for (int i = 0; i < equipmentArray.length(); i++) {
-                    try {
-                        String equipmentStr = equipmentArray.getString(i);
-                        equipment.add(Equipment.valueOf(equipmentStr.toLowerCase()));
-                    } catch (Exception e) {
-                        
-                    }
-                }
-            }
-            
-            
+
             String difficultyStr = json.optString("difficulty", "beginner");
             String difficulty = parseDifficulty(difficultyStr);
             
-            
+
             String typeStr = json.optString("type", "strength");
             ExerciseType exerciseType = ExerciseType.strength;
             try {
                 exerciseType = ExerciseType.valueOf(typeStr.toLowerCase());
             } catch (Exception e) {
-                
+
             }
             
-            
+
             ExerciseMedia media = new ExerciseMedia();
             if (json.has("image_url") && !json.isNull("image_url")) {
                 media.setPreviewImage(json.getString("image_url"));
@@ -1379,19 +1329,17 @@ public class SupabaseProgramRepository implements ProgramRepository {
                 media.setAnimationUrl(json.getString("video_url"));
             }
             
-            
+
             int defaultSets = json.optInt("default_sets", 3);
             String defaultReps = json.optString("default_reps", "12");
             int defaultRestSeconds = json.optInt("default_rest_seconds", 60);
             float met = (float) json.optDouble("met", 5.0);
             
-            
+
             return new Exercise.Builder()
                 .id(id)
                 .name(name)
                 .description(description)
-                .muscleGroups(muscleGroups)
-                .equipmentRequiredFromEnum(equipment)
                 .difficulty(difficulty)
                 .exerciseType(String.valueOf(exerciseType))
                 .media(media)
@@ -1406,10 +1354,10 @@ public class SupabaseProgramRepository implements ProgramRepository {
         }
     }
 
-    
+
     @Override
     public ProgramExercise getProgramExerciseById(String exerciseId) {
-        
+
         
         if (exerciseId == null || exerciseId.isEmpty()) {
             Log.e(TAG, "ID упражнения не может быть пустым");
@@ -1417,7 +1365,7 @@ public class SupabaseProgramRepository implements ProgramRepository {
         }
         
         try {
-            
+
             boolean isTemplateExercise = false;
             
             try {
@@ -1427,17 +1375,17 @@ public class SupabaseProgramRepository implements ProgramRepository {
                     .executeAndGetArray();
                     
                 isTemplateExercise = templateExerciseCheck != null && templateExerciseCheck.length() > 0;
-                
+
             } catch (Exception e) {
-                
-                
+
+
             }
             
-            
+
             String tableName = isTemplateExercise ? "program_template_exercises" : "program_exercises";
+
             
-            
-            
+
             JSONArray results = supabaseClient.from(tableName)
                 .eq("id", exerciseId)
                 .executeAndGetArray();
@@ -1446,7 +1394,7 @@ public class SupabaseProgramRepository implements ProgramRepository {
                 JSONObject exerciseJson = results.getJSONObject(0);
                 ProgramExercise exercise = parseProgramExercise(exerciseJson, isTemplateExercise);
                 
-                
+
                 if (exercise != null && exercise.getExerciseId() != null && !exercise.getExerciseId().isEmpty()) {
                     try {
                         JSONArray exerciseData = supabaseClient.from("exercises")
@@ -1458,13 +1406,13 @@ public class SupabaseProgramRepository implements ProgramRepository {
                             exercise.setExercise(baseExercise);
                         }
                     } catch (Exception e) {
-                        
+
                     }
                 }
                 
                 return exercise;
             } else {
-                
+
                 return null;
             }
         } catch (Exception e) {
@@ -1473,27 +1421,27 @@ public class SupabaseProgramRepository implements ProgramRepository {
         }
     }
 
-    
+
     private List<Integer> getDefaultWorkoutDays(int daysPerWeek) {
         List<Integer> workoutDays = new ArrayList<>();
-        
+
         if (daysPerWeek == 3) {
-            workoutDays.add(0); 
-            workoutDays.add(2); 
-            workoutDays.add(4); 
+            workoutDays.add(0);
+            workoutDays.add(2);
+            workoutDays.add(4);
         } else if (daysPerWeek == 4) {
-            workoutDays.add(0); 
-            workoutDays.add(1); 
-            workoutDays.add(3); 
-            workoutDays.add(5); 
+            workoutDays.add(0);
+            workoutDays.add(1);
+            workoutDays.add(3);
+            workoutDays.add(5);
         } else if (daysPerWeek == 5) {
-            workoutDays.add(0); 
-            workoutDays.add(1); 
-            workoutDays.add(2); 
-            workoutDays.add(3); 
-            workoutDays.add(4); 
+            workoutDays.add(0);
+            workoutDays.add(1);
+            workoutDays.add(2);
+            workoutDays.add(3);
+            workoutDays.add(4);
         } else {
-            
+
             for (int i = 0; i < daysPerWeek && i < 7; i++) {
                 workoutDays.add(i);
             }
@@ -1501,19 +1449,19 @@ public class SupabaseProgramRepository implements ProgramRepository {
         return workoutDays;
     }
 
-    
+
     public List<Integer> loadWorkoutDaysFromPrefs(String programId) {
-        
+
         
         try {
-            
+
             SharedPreferences prefs = context.getSharedPreferences("program_config_prefs", Context.MODE_PRIVATE);
             String daysString = prefs.getString("config_workout_days_" + programId, null);
             
-            
+
             
             if (daysString != null && !daysString.isEmpty()) {
-                
+
                 String[] daysArray = daysString.split(",");
                 List<Integer> workoutDays = new ArrayList<>();
                 
@@ -1521,80 +1469,80 @@ public class SupabaseProgramRepository implements ProgramRepository {
                     workoutDays.add(Integer.parseInt(day.trim()));
                 }
                 
-                
+
                 return workoutDays;
             } else {
-                
+
             }
             
-            
-            
+
+
             
             try {
-                
+
                 JSONArray plansResult = supabaseClient
                     .from("workout_plans")
                     .eq("program_id", programId)
-                    .limit(30)  
+                    .limit(30)
                     .executeAndGetArray();
                 
                 if (plansResult != null && plansResult.length() > 0) {
+
                     
-                    
-                    
+
                     Set<Integer> workoutDaysSet = new HashSet<>();
                     
-                    
+
                     for (int i = 0; i < plansResult.length(); i++) {
                         JSONObject plan = plansResult.getJSONObject(i);
                         
-                        
+
                         String plannedDateStr = plan.getString("planned_date");
                         long plannedDateMillis = parseIsoDateTime(plannedDateStr);
                         
-                        
+
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTimeInMillis(plannedDateMillis);
                         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
                         
-                        
-                        int dayIndex = (dayOfWeek + 5) % 7;  
+
+                        int dayIndex = (dayOfWeek + 5) % 7;
                         
                         workoutDaysSet.add(dayIndex);
                     }
                     
-                    
+
                     if (!workoutDaysSet.isEmpty()) {
                         List<Integer> workoutDays = new ArrayList<>(workoutDaysSet);
-                        Collections.sort(workoutDays);  
+                        Collections.sort(workoutDays);
                         
+
                         
-                        
-                        
+
                         saveWorkoutDaysToPrefs(programId, workoutDays);
                         
                         return workoutDays;
                     }
                 }
                 
-                
+
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при попытке загрузить дни тренировок из workout_plans: " + e.getMessage(), e);
             }
             
-            
+
             List<Integer> defaultDays = getDefaultWorkoutDays(3);
-            
+
             return defaultDays;
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при загрузке дней тренировок: " + e.getMessage(), e);
             List<Integer> defaultDays = getDefaultWorkoutDays(3);
-            
+
             return defaultDays;
         }
     }
     
-    
+
     private long parseIsoDateTime(String isoDateTimeString) throws Exception {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
@@ -1602,12 +1550,12 @@ public class SupabaseProgramRepository implements ProgramRepository {
             return date.getTime();
         } catch (Exception e) {
             try {
-                
+
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
                 Date date = format.parse(isoDateTimeString);
                 return date.getTime();
             } catch (Exception e2) {
-                
+
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                 Date date = format.parse(isoDateTimeString);
                 return date.getTime();
@@ -1615,73 +1563,78 @@ public class SupabaseProgramRepository implements ProgramRepository {
         }
     }
     
-    
+
     public void getFullProgramAsync(String programId, com.martist.vitamove.utils.AsyncCallback<JSONObject> callback) {
+
         
-        
-        
+
         if (programId == null || programId.isEmpty()) {
             Log.e(TAG, "getFullProgramAsync: Invalid programId");
-            
+
             new Handler(Looper.getMainLooper()).post(() -> 
                 callback.onFailure(new IllegalArgumentException("Invalid programId"))
             );
                 return;
             }
             
-        
+
         new Thread(() -> {
             try {
-                
+
                 JSONObject programJson = supabaseClient.rpc("get_full_program")
                     .param("program_uuid", programId)
-                    .executeAndGetSingle(); 
+                    .executeAndGetSingle();
 
-                
+
                 if (programJson == null || programJson.length() == 0) {
-                    
+
                     throw new Exception("Программа не найдена или пуста.");
                 }
+                
 
-                final JSONObject finalResult = programJson; 
+
+                
+
+
+                final JSONObject finalResult = programJson;
                 new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(finalResult));
 
             } catch (Exception e) {
                 Log.e(TAG, "getFullProgramAsync: Ошибка выполнения RPC get_full_program или обработки ответа", e);
-                
+
                  new Handler(Looper.getMainLooper()).post(() -> callback.onFailure(e));
             }
         }).start();
     }
 
 
-    
+
     public List<WorkoutPlan> getWorkoutPlansForProgram(String programId) throws Exception {
-        
+
         List<WorkoutPlan> workoutPlans = new ArrayList<>();
 
         try {
             JSONArray results = supabaseClient.from("workout_plans")
                     .eq("program_id", programId)
-                    
-                    
+
+
                     .executeAndGetArray();
 
             if (results != null) {
-                
-                
-                int logLimit = Math.min(results.length(), 3); 
+
+
+                int logLimit = Math.min(results.length(), 3);
                 if (results.length() > 0) {
-                    
+
                     for (int i = 0; i < logLimit; i++) {
                         try {
-                              
+
                         } catch (Exception jsonEx) {
-                             
+
                         }
                     }
                  } else {
-                     
+
                  }
 
                 for (int i = 0; i < results.length(); i++) {
@@ -1694,13 +1647,13 @@ public class SupabaseProgramRepository implements ProgramRepository {
             }
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при получении планов тренировок из Supabase для программы ID: " + programId, e);
-            throw e; 
+            throw e;
         }
 
         return workoutPlans;
     }
 
-    
+
     private WorkoutPlan parseWorkoutPlanFromJson(JSONObject jsonObject) {
         if (jsonObject == null) return null;
         WorkoutPlan plan = new WorkoutPlan();
@@ -1713,7 +1666,7 @@ public class SupabaseProgramRepository implements ProgramRepository {
             plan.setStatus(jsonObject.optString("status"));
             plan.setNotes(jsonObject.optString("notes"));
 
-            
+
             String plannedDateStr = jsonObject.optString("planned_date");
             String createdAtStr = jsonObject.optString("created_at");
             String updatedAtStr = jsonObject.optString("updated_at");
@@ -1722,13 +1675,13 @@ public class SupabaseProgramRepository implements ProgramRepository {
             plan.setCreatedAt(DateUtils.parseIsoDate(createdAtStr));
             plan.setUpdatedAt(DateUtils.parseIsoDate(updatedAtStr));
 
-            
-            
+
+
 
             return plan;
         } catch (ParseException e) {
             Log.e(TAG, "Ошибка парсинга даты в parseWorkoutPlanFromJson: " + e.getMessage(), e);
-            return null; 
+            return null;
         } catch (Exception e) {
              Log.e(TAG, "Ошибка парсинга WorkoutPlan из JSON: " + e.getMessage(), e);
              return null;

@@ -15,7 +15,7 @@ public class WorkoutPlan implements Parcelable {
     private long plannedDate;
     private String programId;
     private String programDayId;
-    private String status;
+    private String status; 
     private String notes;
     private long createdAt;
     private long updatedAt;
@@ -23,7 +23,7 @@ public class WorkoutPlan implements Parcelable {
     private boolean isCompleted;
     private boolean isMissed;
 
-
+    
     private WorkoutProgram program;
     private ProgramDay programDay;
 
@@ -44,7 +44,7 @@ public class WorkoutPlan implements Parcelable {
         this.notes = notes;
     }
 
-
+    
     public String getId() { return id; }
     public String getUserId() { return userId; }
     public String getName() { return name; }
@@ -64,7 +64,7 @@ public class WorkoutPlan implements Parcelable {
     public Date getCreatedAtDate() { return new Date(createdAt); }
     public Date getUpdatedAtDate() { return new Date(updatedAt); }
 
-
+    
     public void setId(String id) { this.id = id; }
     public void setUserId(String userId) { this.userId = userId; }
     public void setName(String name) { this.name = name; }
@@ -84,7 +84,7 @@ public class WorkoutPlan implements Parcelable {
 
 
 
-
+    
     protected WorkoutPlan(Parcel in) {
         id = in.readString();
         userId = in.readString();
@@ -140,7 +140,7 @@ public class WorkoutPlan implements Parcelable {
         }
     };
 
-
+    
     public static class Builder {
         private String id;
         private String userId;
@@ -197,8 +197,8 @@ public class WorkoutPlan implements Parcelable {
         }
     }
 
-
+    
     public String getTitle() {
-        return name;
+        return name; 
     }
 } 

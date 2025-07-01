@@ -21,7 +21,7 @@ public class AuthManager {
     private static AuthManager instance;
     private final SupabaseClient supabaseClient;
     private final ReadWriteLock tokenLock = new ReentrantReadWriteLock();
-    private AtomicBoolean isRefreshing = new AtomicBoolean(false);
+    private final AtomicBoolean isRefreshing = new AtomicBoolean(false);
     private static final String PREFS_NAME = "VitaMovePrefs";
 
     private AuthManager(SupabaseClient supabaseClient) {
@@ -52,7 +52,7 @@ public class AuthManager {
     public boolean refreshToken() {
         
         if (isRefreshing.getAndSet(true)) {
-            
+
             
             
             try {
@@ -70,7 +70,7 @@ public class AuthManager {
         try {
             
             supabaseClient.refreshAccessToken();
-            
+
             return true;
         } catch (SupabaseClient.TokenInvalidatedException e) {
             
@@ -145,7 +145,7 @@ public class AuthManager {
             supabaseClient.setUserToken(null);
             supabaseClient.setRefreshToken(null);
             
-            
+
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при очистке данных аутентификации", e);
         }
@@ -160,26 +160,11 @@ public class AuthManager {
                 loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 context.startActivity(loginIntent);
                 
-                
+
             }
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при перенаправлении на экран входа", e);
         }
     }
-    
-    
-    public boolean handleAuthException(Exception exception) {
-        if (exception instanceof SupabaseClient.TokenRefreshedException) {
-            
-            
-            return true;
-        } else if (exception instanceof SupabaseClient.TokenInvalidatedException 
-                || exception instanceof SupabaseClient.AuthException) {
-            Log.e(TAG, "Критическая ошибка аутентификации: " + exception.getMessage());
-            clearAuthData();
-            redirectToLogin();
-            return false;
-        }
-        return false;
-    }
+
 } 

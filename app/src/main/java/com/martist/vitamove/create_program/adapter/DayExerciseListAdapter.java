@@ -18,7 +18,7 @@ import java.util.List;
 public class DayExerciseListAdapter extends RecyclerView.Adapter<DayExerciseListAdapter.ExerciseViewHolder> {
 
     private List<Exercise> exercises = new ArrayList<>();
-    private OnExerciseActionListener listener; 
+    private final OnExerciseActionListener listener; 
 
     
     public interface OnExerciseActionListener {

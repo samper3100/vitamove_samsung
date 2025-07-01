@@ -169,7 +169,7 @@ public class UserProfile {
             activityLevel = "intermediate";
         }
         
-        
+
         
         
         switch (activityLevel) {
@@ -179,11 +179,15 @@ public class UserProfile {
                 break;
             case "intermediate":
                 
-                activityFactor = 1.4f;
+                activityFactor = 1.375f;
                 break;
             case "advanced":
                 
-                activityFactor = 1.7f;
+                activityFactor = 1.55f;
+                break;
+            case "expert":
+                
+                activityFactor = 1.725f;
                 break;
         }
         
@@ -217,7 +221,7 @@ public class UserProfile {
             fitnessGoal = "weight_loss";
         }
         
-        
+
         
         
         float weightDifference = Math.abs(this.currentWeight - this.targetWeight);
@@ -227,38 +231,23 @@ public class UserProfile {
         switch (fitnessGoal) {
             case "weight_loss":
                 
-                if (weightDifference > 20) {
-                    
-                    adjustmentFactor = 0.75f; 
-                } else if (weightDifference > 10) {
-                    adjustmentFactor = 0.8f; 
-                } else {
-                    adjustmentFactor = 0.85f; 
-                }
+                dailyCalories -= 500;
                 break;
             case "muscle_gain":
                 
-                if (activityLevel.equals("beginner")) {
-                    adjustmentFactor = 1.15f; 
-                } else if (activityLevel.equals("intermediate")) {
-                    adjustmentFactor = 1.2f; 
-                } else {
-                    adjustmentFactor = 1.25f; 
-                }
+                dailyCalories += 500;
                 break;
             case "endurance":
                 
-                adjustmentFactor = 1.1f + (activityFactor - 1.2f) * 0.1f; 
+                
+                dailyCalories += 250;
                 break;
             case "general_fitness":
             default:
                 
-                adjustmentFactor = 1.05f; 
+                
                 break;
         }
-        
-        
-        dailyCalories *= adjustmentFactor;
         
         
         if (isMale) {
@@ -268,7 +257,7 @@ public class UserProfile {
         }
         
         
-        
+
         
         return Math.round(dailyCalories);
     }
@@ -337,7 +326,7 @@ public class UserProfile {
             fitnessLevel = "intermediate";
         }
         
-        
+
         
         
         switch (fitnessLevel) {
@@ -373,7 +362,7 @@ public class UserProfile {
             fitnessGoal = "weight_loss";
         }
         
-        
+
         
         float goalFactor = 1.0f;
         switch (fitnessGoal) {

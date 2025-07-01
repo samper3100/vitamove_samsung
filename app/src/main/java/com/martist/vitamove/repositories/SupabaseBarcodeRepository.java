@@ -22,25 +22,25 @@ public class SupabaseBarcodeRepository {
         this.context = context;
     }
 
-
+    
     public Food findFoodByBarcode(String barcode) {
         try {
-            
-            
 
+            
+            
             JSONArray results = null;
             int maxRetries = 3;
             int currentRetry = 0;
             
-
+            
             while (currentRetry < maxRetries && results == null) {
                 try {
                     results = supabaseClient.rpc("get_food_by_barcode")
                             .param("barcode_param", barcode)
                             .executeAndGetArray();
                 } catch (SupabaseClient.TokenRefreshedException e) {
-
                     
+
                     currentRetry++;
                     
                     if (currentRetry >= maxRetries) {
@@ -55,14 +55,14 @@ public class SupabaseBarcodeRepository {
                 return null;
             }
             
-
+            
             if (results.length() > 0) {
                 JSONObject foodJson = results.getJSONObject(0);
                 Food food = parseFoodFromJson(foodJson);
-                
+
                 return food;
             } else {
-                
+
                 return null;
             }
         } catch (Exception e) {
@@ -71,7 +71,7 @@ public class SupabaseBarcodeRepository {
         }
     }
     
-
+    
     public boolean addBarcode(String barcode, Food food) {
         try {
             if (barcode == null || barcode.trim().isEmpty()) {
@@ -90,15 +90,15 @@ public class SupabaseBarcodeRepository {
                 return false;
             }
             
-            
-            
 
+            
+            
             if (existsBarcode(barcode)) {
-                
+
                 return false;
             }
             
-
+            
             JSONObject data = new JSONObject();
             data.put("barcode", barcode);
             data.put("food_id", foodId);
@@ -109,7 +109,7 @@ public class SupabaseBarcodeRepository {
             
             boolean success = result != null && result.length() > 0;
             if (success) {
-                
+
             } else {
                 Log.e(TAG, "Не удалось добавить штрихкод: " + barcode);
             }
@@ -121,7 +121,7 @@ public class SupabaseBarcodeRepository {
         }
     }
     
-
+    
     private boolean isUUID(String str) {
         if (str == null || str.isEmpty()) {
             return false;
@@ -134,65 +134,65 @@ public class SupabaseBarcodeRepository {
         }
     }
     
-
+    
     private String generateUuidFromFoodId(String foodId) {
         try {
-            
-            
 
+            
+            
             if (isUUID(foodId)) {
-                
+
                 return foodId;
             }
             
-
+            
             try {
                 long numericId = Long.parseLong(foodId);
                 
-
+                
                 String seedBaseName = "vitamove.food.";
                 String seedName = seedBaseName + numericId;
                 
-
+                
                 UUID uuid = UUID.nameUUIDFromBytes(seedName.getBytes());
                 String uuidString = uuid.toString();
                 
-                
+
                 return uuidString;
                 
             } catch (NumberFormatException e) {
+                
 
                 
                 
-
                 String seedName = "vitamove.food.string." + foodId;
                 
-
+                
                 UUID uuid = UUID.nameUUIDFromBytes(seedName.getBytes());
                 String uuidString = uuid.toString();
                 
-                
+
                 return uuidString;
             }
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при генерации UUID из foodId: " + e.getMessage(), e);
-
-            String randomUuid = UUID.randomUUID().toString();
             
+            String randomUuid = UUID.randomUUID().toString();
+
             return randomUuid;
         }
     }
     
-
+    
     private boolean checkFoodExists(String uuid) {
         try {
-            
+
             
             JSONArray foodsArray = null;
             int maxRetries = 3;
             int currentRetry = 0;
             
-
+            
             while (currentRetry < maxRetries && foodsArray == null) {
                 try {
                     foodsArray = supabaseClient.from("foods")
@@ -200,7 +200,7 @@ public class SupabaseBarcodeRepository {
                         .eq("id", uuid)
                         .executeAndGetArray();
                 } catch (SupabaseClient.TokenRefreshedException e) {
-                    
+
                     currentRetry++;
                     
                     if (currentRetry >= maxRetries) {
@@ -216,7 +216,7 @@ public class SupabaseBarcodeRepository {
             }
             
             boolean exists = foodsArray.length() > 0;
-            
+
             return exists;
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при проверке существования продукта: " + e.getMessage(), e);
@@ -224,7 +224,7 @@ public class SupabaseBarcodeRepository {
         }
     }
     
-
+    
     private Food parseFoodFromJson(JSONObject json) {
         try {
             Food.Builder builder = new Food.Builder();
@@ -232,20 +232,20 @@ public class SupabaseBarcodeRepository {
             if (json.has("id")) {
                 String idStr = json.getString("id");
                 try {
-
-
+                    
+                    
                     if (!isUUID(idStr)) {
                         builder.id(Long.parseLong(idStr));
                     } else {
-
-
-                        builder.idUUID(idStr);
                         
+                        
+                        builder.idUUID(idStr);
+
                     }
                 } catch (NumberFormatException e) {
-
-                    builder.idUUID(idStr);
                     
+                    builder.idUUID(idStr);
+
                 }
             }
             
@@ -290,22 +290,22 @@ public class SupabaseBarcodeRepository {
         }
     }
 
-
+    
     public boolean existsBarcode(String barcode) {
         try {
-            
+
             
             if (barcode == null || barcode.trim().isEmpty()) {
                 Log.e(TAG, "Штрихкод пустой");
                 return false;
             }
 
-
+            
             JSONArray barcodeArray = null;
             int maxRetries = 3;
             int currentRetry = 0;
             
-
+            
             while (currentRetry < maxRetries && barcodeArray == null) {
                 try {
                     barcodeArray = supabaseClient.from("barcodes")
@@ -313,7 +313,7 @@ public class SupabaseBarcodeRepository {
                         .eq("barcode", barcode)
                         .executeAndGetArray();
                 } catch (SupabaseClient.TokenRefreshedException e) {
-                    
+
                     currentRetry++;
                     
                     if (currentRetry >= maxRetries) {
@@ -328,9 +328,9 @@ public class SupabaseBarcodeRepository {
                 return false;
             }
             
-
-            boolean exists = barcodeArray.length() > 0;
             
+            boolean exists = barcodeArray.length() > 0;
+
             return exists;
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при проверке существования штрихкода: " + e.getMessage(), e);

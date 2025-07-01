@@ -1,7 +1,9 @@
 package com.martist.vitamove.fragments;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -21,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -32,11 +35,14 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.martist.vitamove.R;
 import com.martist.vitamove.activities.NutritionAnalyticsActivity;
+import com.martist.vitamove.activities.WeightHistoryActivity;
+import com.martist.vitamove.fragments.workout.AnalyticsFragment;
 import com.martist.vitamove.managers.CaloriesManager;
 import com.martist.vitamove.managers.DashboardManager;
 import com.martist.vitamove.managers.WaterHistoryManager;
 import com.martist.vitamove.models.DashboardData;
 import com.martist.vitamove.models.UserProfile;
+import com.martist.vitamove.viewmodels.UserWeightViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -65,6 +71,7 @@ public class HomeFragment extends Fragment {
     private ProgressBar caloriesCircularProgress;
     private TextView caloriesProgressText;
     private CardView potreb_calories;
+    private CardView burned_calories;
     
 
     private TextView waterAmount;
@@ -72,6 +79,13 @@ public class HomeFragment extends Fragment {
     private ProgressBar waterCircularProgress;
     private View btnAddWater200;
     private View btnAddWater500;
+    
+
+    private TextView initialWeightCardView;
+    private TextView currentWeightCardView;
+    private TextView targetWeightCardView;
+    private CardView weightCard;
+    private UserWeightViewModel weightViewModel;
     
 
     private DashboardManager dashboardManager;
@@ -98,12 +112,53 @@ public class HomeFragment extends Fragment {
                     stepsCount.setText(String.format(Locale.getDefault(), "%,d", dashboardData.getStepsToday()));
                     stepsCircularProgress.setProgress(dashboardData.getStepsProgress());
                     
-                    
+
                 }
                 
 
                 updateHandler.postDelayed(this, UPDATE_INTERVAL_MS);
             }
+        }
+    };
+
+
+    private final BroadcastReceiver dashboardUpdateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            
+
+            SharedPreferences prefs = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE);
+            int targetCalories = prefs.getInt("target_calories", 0);
+            if (targetCalories > 0 && caloriesManager != null) {
+                caloriesManager.setTargetCalories(targetCalories);
+
+            }
+            
+
+            initializeCorrectCaloriesGoal();
+            
+
+            dashboardData = dashboardManager.getDashboardData();
+            
+
+            int burnedCalories = caloriesManager.getTotalBurnedCalories();
+            int consumedCalories = caloriesManager.getConsumedCalories();
+            
+
+            dashboardData.setCaloriesBurned(burnedCalories);
+            dashboardData.setCaloriesConsumed(consumedCalories);
+            
+
+            updateCaloriesUI(burnedCalories, consumedCalories);
+            
+
+            setupStepsCard();
+            setupWaterCard();
+            setupWeightCard();
+            
+
+
         }
     };
 
@@ -135,6 +190,9 @@ public class HomeFragment extends Fragment {
         updateHandler = new Handler(Looper.getMainLooper());
         
 
+        weightViewModel = new ViewModelProvider(this).get(UserWeightViewModel.class);
+        
+
         initializeCorrectCaloriesGoal();
         
 
@@ -148,6 +206,7 @@ public class HomeFragment extends Fragment {
         setupStepsCard();
         setupCaloriesCard();
         setupWaterCard();
+        setupWeightCard();
         
 
         setupButtonListeners();
@@ -183,7 +242,14 @@ public class HomeFragment extends Fragment {
         btnAddWater500 = view.findViewById(R.id.btn_add_water_500);
         
 
+        initialWeightCardView = view.findViewById(R.id.initial_weight_card);
+        currentWeightCardView = view.findViewById(R.id.current_weight_card);
+        targetWeightCardView = view.findViewById(R.id.target_weight_card);
+        weightCard = view.findViewById(R.id.card_weight);
+        
+
         potreb_calories = view.findViewById(R.id.home_calories_potreb);
+        burned_calories = view.findViewById(R.id.home_calories_burned);
         
 
         setupButtonListeners();
@@ -270,7 +336,7 @@ public class HomeFragment extends Fragment {
         caloriesManager.getBurnedCaloriesLiveData().observe(getViewLifecycleOwner(), burnedCalories -> {
 
             updateCaloriesUI(burnedCalories, dashboardData.getCaloriesConsumed());
-            
+
         });
         
 
@@ -280,7 +346,7 @@ public class HomeFragment extends Fragment {
             
 
             updateCaloriesUI(dashboardData.getCaloriesBurned(), consumedCalories);
-            
+
         });
     }
     
@@ -312,7 +378,7 @@ public class HomeFragment extends Fragment {
 
             if (caloriesGoalValue <= 0) {
                 caloriesGoalValue = 2000;
-                
+
             }
         }
         
@@ -335,7 +401,7 @@ public class HomeFragment extends Fragment {
             (int) (((float) consumedCalories / totalAvailableCalories) * 100) : 0;
         consumedPercent = Math.min(consumedPercent, 100);
         
-        
+
               
         caloriesCircularProgress.setProgress(consumedPercent);
     }
@@ -417,6 +483,13 @@ public class HomeFragment extends Fragment {
         
 
         potreb_calories.setOnClickListener(v->startActivity(new Intent(getContext(), NutritionAnalyticsActivity.class)));
+        burned_calories.setOnClickListener(v->getParentFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container,new AnalyticsFragment())
+                .addToBackStack(null)
+                .commit()
+
+        );
         
 
         float[] waterPortions = loadWaterPortions();
@@ -447,7 +520,15 @@ public class HomeFragment extends Fragment {
                 .addToBackStack(null)
                 .commit();
             
-            
+
+        });
+        
+
+        weightCard.setOnClickListener(v -> {
+
+            Intent intent = new Intent(getActivity(), WeightHistoryActivity.class);
+            startActivity(intent);
+
         });
     }
     
@@ -523,9 +604,7 @@ public class HomeFragment extends Fragment {
         
 
         waterCircularProgress.setProgress(Math.min(waterPercent, 100));
-        
 
-        
     }
     
 
@@ -547,9 +626,97 @@ public class HomeFragment extends Fragment {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
     
+
+    private void setupWeightCard() {
+
+        SharedPreferences prefs = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE);
+        final float targetWeightPref = prefs.getFloat("target_weight", 0f);
+        final float initialWeightPref = prefs.getFloat("initial_weight", 0f);
+        final float currentWeightPref = prefs.getFloat("current_weight", 0f);
+        
+
+        final float initialWeight;
+        if (initialWeightPref <= 0) {
+            initialWeight = currentWeightPref;
+
+            if (initialWeight > 0) {
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putFloat("initial_weight", initialWeight);
+                editor.apply();
+            }
+        } else {
+            initialWeight = initialWeightPref;
+        }
+        
+        final float targetWeight = targetWeightPref;
+        
+
+        if (initialWeight > 0) {
+            initialWeightCardView.setText(String.format(Locale.getDefault(), "%.1f кг", initialWeight));
+        } else {
+            initialWeightCardView.setText("–");
+        }
+        
+        if (targetWeight > 0) {
+            targetWeightCardView.setText(String.format(Locale.getDefault(), "%.1f кг", targetWeight));
+        } else {
+            targetWeightCardView.setText("–");
+        }
+
+
+        if (currentWeightPref > 0) {
+            currentWeightCardView.setText(String.format(Locale.getDefault(), "%.1f кг", currentWeightPref));
+
+        } else {
+            currentWeightCardView.setText("–");
+        }
+
+
+        weightViewModel.getLatestWeightRecord().observe(getViewLifecycleOwner(), weightRecord -> {
+            if (weightRecord != null) {
+                float weightFromDb = weightRecord.getWeight();
+                
+
+                if (currentWeightPref > 0 && Math.abs(currentWeightPref - weightFromDb) > 5) {
+
+
+
+                    
+
+                    currentWeightCardView.setText(String.format(Locale.getDefault(), "%.1f кг", currentWeightPref));
+                } else {
+
+                    currentWeightCardView.setText(String.format(Locale.getDefault(), "%.1f кг", weightFromDb));
+                    
+
+                    if (Math.abs(currentWeightPref - weightFromDb) > 0.1) {
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putFloat("current_weight", weightFromDb);
+                        editor.apply();
+
+                    }
+                }
+                
+
+
+            } else {
+
+                if (currentWeightPref > 0) {
+                    currentWeightCardView.setText(String.format(Locale.getDefault(), "%.1f кг", currentWeightPref));
+                } else {
+                    currentWeightCardView.setText("–");
+                }
+            }
+        });
+    }
+    
     @Override
     public void onResume() {
         super.onResume();
+        
+
+        IntentFilter filter = new IntentFilter("com.martist.vitamove.UPDATE_DASHBOARD");
+        requireContext().registerReceiver(dashboardUpdateReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
         
 
         if (dashboardManager != null) {
@@ -578,6 +745,7 @@ public class HomeFragment extends Fragment {
             setupStepsCard();
             setupCaloriesCard();
             setupWaterCard();
+            setupWeightCard();
             
 
             startPeriodicUpdates();
@@ -589,6 +757,14 @@ public class HomeFragment extends Fragment {
         super.onPause();
         
 
+        try {
+            requireContext().unregisterReceiver(dashboardUpdateReceiver);
+        } catch (IllegalArgumentException e) {
+
+            Log.e("HomeFragment", "Ошибка при отмене регистрации приемника: " + e.getMessage());
+        }
+        
+
         stopPeriodicUpdates();
     }
     
@@ -597,7 +773,7 @@ public class HomeFragment extends Fragment {
         if (!isUpdateActive) {
             isUpdateActive = true;
             updateHandler.postDelayed(updateRunnable, UPDATE_INTERVAL_MS);
-            
+
         }
     }
     
@@ -605,7 +781,7 @@ public class HomeFragment extends Fragment {
     private void stopPeriodicUpdates() {
         isUpdateActive = false;
         updateHandler.removeCallbacks(updateRunnable);
-        
+
     }
 
 
@@ -622,9 +798,9 @@ public class HomeFragment extends Fragment {
             setupStepsCard();
             setupCaloriesCard();
             setupWaterCard();
+            setupWeightCard();
             
 
-            
         }
     }
 
@@ -640,7 +816,7 @@ public class HomeFragment extends Fragment {
 
 
             if (targetCalories <= 0 || targetCalories == 3178) {
-                
+
                 
 
                 String name = prefs.getString("name", "Пользователь");
@@ -671,9 +847,9 @@ public class HomeFragment extends Fragment {
 
                 caloriesManager.setTargetCalories(targetCalories);
                 
-                
+
             } else {
-                
+
             }
         } catch (Exception e) {
             Log.e("HomeFragment", "Ошибка при инициализации целевых калорий", e);

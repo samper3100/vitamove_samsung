@@ -2,8 +2,9 @@ package com.martist.vitamove.models;
 
 public class ChatMessage {
     private String text;
-    private boolean isFromUser;
+    private final boolean isFromUser;
     private long timestamp;
+    private boolean isActive = true;
 
     public ChatMessage(String text, boolean isFromUser) {
         this.text = text;
@@ -23,12 +24,19 @@ public class ChatMessage {
         return isFromUser;
     }
 
-
     public long getTimestamp() {
         return timestamp;
     }
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+    
+    public boolean isActive() {
+        return isActive;
+    }
+    
+    public void setActive(boolean active) {
+        isActive = active;
     }
 } 

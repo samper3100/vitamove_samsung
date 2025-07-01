@@ -29,7 +29,7 @@ public class Product {
     }
     
     public String getProductName() {
-        
+
         if (productNameRu != null && !productNameRu.isEmpty()) {
             return productNameRu;
         }

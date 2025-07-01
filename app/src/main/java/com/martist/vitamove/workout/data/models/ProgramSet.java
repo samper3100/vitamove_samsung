@@ -11,9 +11,9 @@ public class ProgramSet implements Parcelable {
     private float targetWeight;
     private int targetReps;
     private int targetDurationSec;
-    private String setType; 
+    private String setType;
     
-    
+
     private int reps;
     private float weight;
     private boolean completed;
@@ -26,12 +26,12 @@ public class ProgramSet implements Parcelable {
         this.targetReps = targetReps;
         this.targetDurationSec = targetDurationSec;
         this.setType = "standard";
-        this.reps = targetReps; 
+        this.reps = targetReps;
         this.weight = targetWeight;
         this.completed = false;
     }
 
-    
+
     public String getId() { return id; }
     public String getProgramExerciseId() { return programExerciseId; }
     public int getSetNumber() { return setNumber; }
@@ -40,12 +40,12 @@ public class ProgramSet implements Parcelable {
     public int getTargetDurationSec() { return targetDurationSec; }
     public String getSetType() { return setType; }
     
-    
+
     public int getReps() { return reps; }
     public float getWeight() { return weight; }
     public boolean isCompleted() { return completed; }
 
-    
+
     public void setId(String id) { this.id = id; }
     public void setProgramExerciseId(String programExerciseId) { this.programExerciseId = programExerciseId; }
     public void setSetNumber(int setNumber) { this.setNumber = setNumber; }
@@ -54,12 +54,12 @@ public class ProgramSet implements Parcelable {
     public void setTargetDurationSec(int targetDurationSec) { this.targetDurationSec = targetDurationSec; }
     public void setSetType(String setType) { this.setType = setType; }
     
-    
+
     public void setReps(int reps) { this.reps = reps; }
     public void setWeight(float weight) { this.weight = weight; }
     public void setCompleted(boolean completed) { this.completed = completed; }
 
-    
+
     protected ProgramSet(Parcel in) {
         id = in.readString();
         programExerciseId = in.readString();
@@ -104,7 +104,7 @@ public class ProgramSet implements Parcelable {
         }
     };
     
-    
+
     public static class Builder {
         private final ProgramSet programSet = new ProgramSet();
         

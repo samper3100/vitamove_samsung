@@ -51,7 +51,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -147,7 +146,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
             
             if (emptyIcon != null) {
                 emptyIcon.setVisibility(View.GONE);
-                
+
             }
         }
         
@@ -161,7 +160,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
     
     
     private void initViews(View view) {
-        
+
         programsRecyclerView = view.findViewById(R.id.programs_recycler_view);
 
         emptyView = view.findViewById(R.id.empty_view);
@@ -417,7 +416,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
     public void loadPrograms(boolean loadActiveProgram) {
         showLoading(true);
         
-        
+
         
         
         allPrograms.clear();
@@ -429,7 +428,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
         programManager.getAllProgramsAsync(new AsyncCallback<List<WorkoutProgram>>() {
             @Override
             public void onSuccess(List<WorkoutProgram> result) {
-                
+
                 
                 
                 if (getActivity() != null) {
@@ -525,7 +524,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
     
     
     private void loadActiveProgram() {
-        
+
         showLoading(true);
         programManager.getActiveProgramAsync(new AsyncCallback<WorkoutProgram>() {
             @Override
@@ -535,7 +534,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                     showLoading(false);
                     activeProgram = program;
                     if (activeProgram != null) {
-                        
+
                         updateActiveWorkoutCard();
                         
                         
@@ -546,11 +545,11 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                         if (!isProgramDataLoaded) {
                             
                             
-                            
+
                             programManager.fetchAndCacheFullProgramAsync(activeProgram.getId(), new AsyncCallback<Void>() {
                                 @Override
                                 public void onSuccess(Void result) {
-                                    
+
                                     
                                     prefs.edit().putBoolean(programDataKey, true).apply();
                                     loadAndDisplayActiveProgramDetails();
@@ -565,11 +564,11 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                             });
                         } else {
                             
-                            
+
                             loadAndDisplayActiveProgramDetails();
                         }
                     } else {
-                        
+
                         activeWorkoutCard.setVisibility(View.GONE);
                         hideActiveProgramDays(); 
                     }
@@ -599,18 +598,18 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
         }
 
         final String programId = activeProgram.getId();
-        
+
         showLoading(true); 
 
         
         com.martist.vitamove.workout.data.cache.ProgramRoomCache.getProgramAsync(programId, new AsyncCallback<com.martist.vitamove.workout.data.models.Program>() {
             @Override
             public void onSuccess(com.martist.vitamove.workout.data.models.Program cachedProgram) {
-                
+
                 List<ProgramDay> programDays = cachedProgram.getDays();
 
                 if (programDays != null && !programDays.isEmpty()) {
-                     
+
                      
                      fetchAndCombineWorkoutPlans(programId, programDays);
                     
@@ -620,18 +619,18 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                      }
                 } else {
                     
-                    
+
                      if (getActivity() != null) {
                          getActivity().runOnUiThread(() -> {
                              hideActiveProgramDays();
                              showLoading(false);
                              
-                             
+
                              
                              programManager.fetchAndCacheFullProgramAsync(programId, new AsyncCallback<Void>() {
                                  @Override
                                  public void onSuccess(Void result) {
-                                     
+
                                      loadAndDisplayActiveProgramDetails(); 
                                  }
                                  
@@ -656,12 +655,12 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                 
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
-                        
+
                         
                         programManager.fetchAndCacheFullProgramAsync(programId, new AsyncCallback<Void>() {
                             @Override
                             public void onSuccess(Void result) {
-                                
+
                                 loadAndDisplayActiveProgramDetails(); 
                             }
                             
@@ -685,11 +684,11 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
 
     
     private void fetchAndCombineWorkoutPlans(String programId, List<ProgramDay> programDays) {
-        
+
         programManager.getCachedWorkoutPlansAsync(programId, new AsyncCallback<List<WorkoutPlan>>() {
             @Override
             public void onSuccess(List<WorkoutPlan> workoutPlans) {
-                
+
                 combineAndDisplayDaysAndPlans(programDays, workoutPlans);
             }
 
@@ -704,21 +703,22 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
 
     
     private void combineAndDisplayDaysAndPlans(List<ProgramDay> programDays, @Nullable List<WorkoutPlan> workoutPlans) {
-        
+
         
         Map<String, WorkoutPlan> planMap = new HashMap<>();
         
         
         if (workoutPlans != null) {
-            
+
             for (WorkoutPlan plan : workoutPlans) {
-                
+
+
                 if (plan.getProgramDayId() != null) {
                     planMap.put(plan.getProgramDayId(), plan);
                 }
             }
         } else {
-            
+
         }
 
         
@@ -728,26 +728,26 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                 day.setPlannedTimestamp(correspondingPlan.getPlannedDate());
                 
                 
-                
+
                 
                 
                 if ("completed".equals(correspondingPlan.getStatus())) {
                     day.setCompleted(true);
                     day.setStatus("completed");
-                    
+
                 } else if ("skipped".equals(correspondingPlan.getStatus())) {
                     day.setStatus("skipped");
-                    
+
                 } else {
                     day.setStatus(correspondingPlan.getStatus());
-                    
+
                 }
                 
-                
+
             } else {
                  day.setPlannedTimestamp(0); 
                  day.setStatus("planned");  
-                 
+
             }
         }
 
@@ -755,16 +755,13 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
         if (getActivity() != null) {
             getActivity().runOnUiThread(() -> {
                 if (!programDays.isEmpty()) {
-                    
-                    
-                    for (ProgramDay day : programDays) {
-                        
-                    }
+
+
                     programDayAdapter.updateDays(programDays);
                     activeProgramDaysTitle.setVisibility(View.VISIBLE);
                     activeProgramDaysRecyclerView.setVisibility(View.VISIBLE);
                 } else {
-                    
+
                     hideActiveProgramDays();
                 }
                 showLoading(false); 
@@ -813,7 +810,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                 daysList.sort(Comparator.comparingInt(ProgramDay::getDayNumber));
                 return daysList;
             } else {
-                
+
                 return null;
             }
         } catch (JSONException e) {
@@ -824,7 +821,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
     
     
     private void updateActiveWorkoutCard() {
-        
+
         
         if (activeWorkoutCard == null) {
             Log.e(TAG, "activeWorkoutCard is null, не удается обновить UI");
@@ -836,14 +833,12 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
             View filtersContainer = null;
             RecyclerView programsRecyclerView = null;
             TextView programsTitle = null;
-            TextView programsSubtitle = null;
             com.google.android.material.textfield.TextInputLayout searchLayoutRef = null;
 
             try {
 
                 programsRecyclerView = requireView().findViewById(R.id.programs_recycler_view);
                 
-                programsSubtitle = requireView().findViewById(R.id.programs_subtitle);
                 searchLayoutRef = requireView().findViewById(R.id.search_layout);
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при получении ссылок на UI компоненты: " + e.getMessage(), e);
@@ -854,40 +849,37 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
 
 
 
-                
-                if (programsSubtitle != null) {
-                    programsSubtitle.setVisibility(View.GONE);
-                }
+
                 
                 
                 if (searchLayoutRef != null) {
                     searchLayoutRef.setVisibility(View.GONE);
-                    
+
                 }
                 
                 
                 if (userProgramsTitle != null) {
                     userProgramsTitle.setVisibility(View.GONE);
-                    
+
                 }
                 
                 if (userProgramsRecyclerView != null) {
                     userProgramsRecyclerView.setVisibility(View.GONE);
-                    
+
                 }
                 
-                
-                TextView recommendedProgramsTitle = requireView().findViewById(R.id.recommended_programs_title);
-                if (recommendedProgramsTitle != null) {
-                    recommendedProgramsTitle.setVisibility(View.GONE);
-                    
-                }
+
+
+
+
+
+
                 
                 
                 FloatingActionButton fab = requireView().findViewById(R.id.fab_create_program);
                 if (fab != null) {
                     fab.setVisibility(View.GONE);
-                    
+
                 }
                 
                 
@@ -961,12 +953,12 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                 
                 if (filtersContainer != null) {
                     filtersContainer.setVisibility(View.GONE);
-                    
+
                 }
                 
                 if (programsRecyclerView != null) {
                     programsRecyclerView.setVisibility(View.GONE);
-                    
+
                 }
                 
                 
@@ -974,57 +966,55 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
             } else {
                 
                 activeWorkoutCard.setVisibility(View.GONE);
-                
+
                 
                 
                 if (programsTitle != null) {
                     programsTitle.setVisibility(View.VISIBLE);
                 }
                 
-                if (programsSubtitle != null) {
-                    programsSubtitle.setVisibility(View.VISIBLE);
-                }
+
                 
                 
                 if (searchLayoutRef != null) {
                     searchLayoutRef.setVisibility(View.VISIBLE);
-                    
+
                 }
                 
                 
                 if (userProgramsTitle != null && !userPrograms.isEmpty()) {
                     userProgramsTitle.setVisibility(View.VISIBLE);
-                    
+
                 }
                 
                 if (userProgramsRecyclerView != null && !userPrograms.isEmpty()) {
                     userProgramsRecyclerView.setVisibility(View.VISIBLE);
-                    
+
                 }
                 
                 
                 if (filtersContainer != null) {
                     filtersContainer.setVisibility(View.VISIBLE);
-                    
+
                 }
                 
                 if (programsRecyclerView != null) {
                     programsRecyclerView.setVisibility(View.VISIBLE);
-                    
+
                 }
                 
-                
-                TextView recommendedProgramsTitle = requireView().findViewById(R.id.recommended_programs_title);
-                if (recommendedProgramsTitle != null) {
-                    recommendedProgramsTitle.setVisibility(View.VISIBLE);
-                    
-                }
+
+
+
+
+
+
                 
                 
                 FloatingActionButton fab = requireView().findViewById(R.id.fab_create_program);
                 if (fab != null) {
                     fab.setVisibility(View.VISIBLE);
-                    
+
                 }
             }
         } catch (Exception e) {
@@ -1156,7 +1146,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
         
         
         String programId = program.getId();
-        
+
         
         executorService.execute(() -> {
             try {
@@ -1203,12 +1193,12 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                     return;
                 }
                 
-                
+
                 
                 
                 for (WorkoutPlan plan : workoutPlans) {
                     if ("in_progress".equals(plan.getStatus())) {
-                        
+
                         
                         if (getActivity() != null) {
                             getActivity().runOnUiThread(() -> {
@@ -1221,7 +1211,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                 }
                 
                 
-                
+
 
                 
                 Collections.sort(workoutPlans, (p1, p2) -> Long.compare(p1.getPlannedDate(), p2.getPlannedDate()));
@@ -1230,7 +1220,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                 boolean allPlansAreTrulyCompleted = true; 
 
                 if (workoutPlans.isEmpty()) { 
-                    
+
                     if (getActivity() != null) {
                         getActivity().runOnUiThread(() -> {
                             showLoading(false);
@@ -1250,7 +1240,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                 }
 
                 if (allPlansAreTrulyCompleted) {
-                    
+
                     if (getActivity() != null) {
                         getActivity().runOnUiThread(() -> {
                             showLoading(false);
@@ -1261,7 +1251,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                 }
 
                 if (planToPropose == null) {
-                    
+
                     if (getActivity() != null) {
                         getActivity().runOnUiThread(() -> {
                             showLoading(false);
@@ -1272,7 +1262,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                 }
                 
                 
-                
+
                 
                 final WorkoutPlan planToStartDialog = planToPropose;
 
@@ -1290,12 +1280,12 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                             .setNegativeButton("Отмена", (dialog, which) -> {
                                 
                                 showLoading(false);
-                                
+
                             })
                             .setOnCancelListener(dialog -> {
                                 
                                 showLoading(false);
-                                
+
                             })
                             .show();
                     });
@@ -1330,7 +1320,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
             View workoutsTab = requireActivity().findViewById(R.id.nav_workouts);
             if (workoutsTab != null) {
                 workoutsTab.performClick();
-                
+
             } else {
                 Log.e(TAG, "Не удалось найти кнопку навигации тренировок");
                 
@@ -1374,6 +1364,12 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
 
     
     private void navigateToProgramDetails(String programId) {
+        
+        requireActivity().getSharedPreferences("VitaMovePrefs", 0)
+            .edit()
+            .putInt("workout_tab_index", 2) 
+            .apply();
+            
         ProgramDetailsFragment detailsFragment = ProgramDetailsFragment.newInstance(programId);
         requireActivity().getSupportFragmentManager()
             .beginTransaction()
@@ -1423,14 +1419,14 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                             programManager.fetchAndCacheWorkoutPlansAsync(program.getId(), new AsyncCallback<Void>() {
                                 @Override
                                 public void onSuccess(Void ignored) {
-                                    
+
                                     
                                     
                                     programManager.getActiveProgramAsync(new AsyncCallback<WorkoutProgram>() {
                                         @Override
                                         public void onSuccess(WorkoutProgram activatedProgram) {
                                             if (activatedProgram != null) {
-                                                
+
                                                 activeProgram = activatedProgram;
                                                 
                                                 
@@ -1533,7 +1529,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
             return;
         }
         
-        
+
         
         
         new AlertDialog.Builder(requireContext())
@@ -1545,7 +1541,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                     
                     
                     String programId = program.getId();
-                    
+
                     
                     
                     String userId = ((VitaMoveApplication) requireActivity().getApplication()).getCurrentUserId();
@@ -1573,13 +1569,13 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                             .executeAsync(new SupabaseCallback<String>() {
                                 @Override
                                 public void onSuccess(String responseBody) {
-                                    
+
                                     
                                     
                                     Activity activity = getActivity();
                                     if (activity != null) {
                                         activity.runOnUiThread(() -> {
-                                            
+
                                             
                                             
                                             programManager.clearProgramCache();
@@ -1609,7 +1605,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                                                 
                                                 if (programsRecyclerView != null) {
                                                     programsRecyclerView.setVisibility(View.VISIBLE);
-                                                    
+
                                                 }
                                             } catch (Exception e) {
                                                 Log.e(TAG, "Ошибка при отображении компонентов после смены программы: " + e.getMessage(), e);
@@ -1680,7 +1676,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
     @Override
     public void onResume() {
         super.onResume();
-        
+
         
         
         
@@ -1699,14 +1695,14 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
             return;
         }
         
-        
+
         
         
         
         programManager.fetchAndCacheWorkoutPlansAsync(programId, new AsyncCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
-                
+
                 
                 
                 loadAndDisplayActiveProgramDetails();
@@ -1725,7 +1721,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
     
     private void navigateToActiveProgramDetails() {
         if (activeProgram != null) {
-            
+
             
             
             try {
@@ -1735,7 +1731,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                 
                 if (searchLayoutRef != null) {
                     searchLayoutRef.setVisibility(View.GONE);
-                    
+
                 }
 
 
@@ -1743,7 +1739,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
 
                 if (programsRecyclerView != null) {
                     programsRecyclerView.setVisibility(View.GONE);
-                    
+
                 }
             } catch (Exception e) {
                 Log.e(TAG, "(Навигация) Ошибка при скрытии элементов перед переходом: " + e.getMessage(), e);
@@ -1761,7 +1757,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
     private void setupActiveProgramDaysRecyclerView() {
         programDayAdapter = new ProgramDayAdapter(new ArrayList<>(), programDay -> {
             
-            
+
             navigateToProgramDayDetails(programDay.getId());
         });
         activeProgramDaysRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -1787,7 +1783,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                 .addToBackStack(null)
                 .commit();
                 
-            
+
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при переходе к деталям дня программы: " + e.getMessage(), e);
             showError("Не удалось открыть детали дня программы");
@@ -1797,7 +1793,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
     
     private void showActiveProgramInfo(WorkoutProgram program) {
         if (program != null) {
-            
+
             ActiveProgramInfoBottomSheet bottomSheet = ActiveProgramInfoBottomSheet.newInstance(program);
             bottomSheet.show(getChildFragmentManager(), "ActiveProgramInfoBottomSheet");
         } else {
@@ -1883,7 +1879,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                 );
                 
                 
-                
+
                 
                 
                 supabaseClient.from("program_templates")
@@ -1923,7 +1919,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
         }
 
         String programId = program.getId();
-        
+
         
         
         TextView programProgressTextView = activeWorkoutCard.findViewById(R.id.active_program_progress_text);
@@ -1934,7 +1930,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
         programManager.fetchAndCacheWorkoutPlansAsync(programId, new AsyncCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
-                
+
                 loadWorkoutPlansAndUpdateProgress(programId, programProgressTextView, progressBar, nextDayTextView);
             }
 
@@ -1956,13 +1952,13 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                 List<WorkoutPlan> workoutPlans = programManager.getWorkoutPlansByProgramId(programId);
                 
                 if (workoutPlans == null || workoutPlans.isEmpty()) {
-                    
+
                     
                     updateProgressUI(0, programProgressTextView, progressBar, "Программа загружается...", nextDayTextView);
                     return;
                 }
                 
-                
+
                 
                 
                 int totalPlans = workoutPlans.size();
@@ -1983,7 +1979,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                     }
                 }
                 
-                
+
                 
                 
                 final float progressPercentage = totalPlans > 0 ? 
@@ -1993,13 +1989,13 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
                 final String nextDayName;
                 if (nextDay != null) {
                     nextDayName = nextDay.getName();
-                    
+
                 } else if (completedPlans == totalPlans && totalPlans > 0) {
                     nextDayName = null; 
-                    
+
                 } else {
                     nextDayName = "Следующая тренировка";
-                    
+
                 }
                 
                 
@@ -2030,21 +2026,21 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
         if (progressTextView != null) {
             String progressText = String.format("%.0f%% завершено", progressPercentage);
             progressTextView.setText(progressText);
-            
+
         }
         
         if (progressBar != null) {
             progressBar.setProgress((int)progressPercentage);
-            
+
         }
         
         if (nextDayTextView != null) {
             if (nextDayName != null) {
                 nextDayTextView.setText(nextDayName);
-                
+
             } else {
                 nextDayTextView.setText("Программа завершена");
-                
+
             }
         }
     }
@@ -2059,7 +2055,7 @@ public class ProgramsFragment extends Fragment implements ProgramAdapter.OnProgr
             String workoutId = workoutRepository.createWorkoutFromPlan(planToStart);
             
             if (workoutId != null && !workoutId.isEmpty()) {
-                
+
                 
                 
                 com.martist.vitamove.events.WorkoutStartedEvent event = 

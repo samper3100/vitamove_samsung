@@ -44,20 +44,32 @@ public class StepHistoryRepository {
     
 
     public void saveStepsForToday(int stepCount) {
+
+        final int MAX_REASONABLE_STEPS = 100000;
+        
+
+        int validatedStepCount = Math.min(stepCount, MAX_REASONABLE_STEPS);
+        
+
+        if (stepCount > MAX_REASONABLE_STEPS) {
+            Log.e(TAG, "Попытка сохранить аномально большое количество шагов: " + 
+                  stepCount + ". Ограничено до " + MAX_REASONABLE_STEPS);
+        }
+        
         String today = formatDate(new Date());
         executor.execute(() -> {
             try {
                 StepHistoryEntity entity = stepHistoryDao.getStepHistoryForDate(today);
                 if (entity == null) {
 
-                    entity = new StepHistoryEntity(today, stepCount);
+                    entity = new StepHistoryEntity(today, validatedStepCount);
                     stepHistoryDao.insert(entity);
-                    
+
                 } else {
 
-                    entity.setStepCount(stepCount);
+                    entity.setStepCount(validatedStepCount);
                     stepHistoryDao.update(entity);
-                    
+
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при сохранении истории шагов: " + e.getMessage(), e);
@@ -71,6 +83,9 @@ public class StepHistoryRepository {
         List<Integer> weeklySteps = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0));
 
         try {
+
+            final int MAX_REASONABLE_STEPS = 100000;
+            
 
             Calendar startOfWeek = Calendar.getInstance();
             int dayOfWeek = startOfWeek.get(Calendar.DAY_OF_WEEK);
@@ -91,7 +106,7 @@ public class StepHistoryRepository {
             String startDate = formatDate(startOfWeek.getTime());
             String endDate = formatDate(endOfWeek.getTime());
 
-            
+
 
 
             Future<List<StepHistoryEntity>> future = executor.submit(() ->
@@ -108,13 +123,25 @@ public class StepHistoryRepository {
                 int mondayBasedIndex = (entityDayOfWeek == Calendar.SUNDAY) ? 6 : entityDayOfWeek - 2;
 
                 if (mondayBasedIndex >= 0 && mondayBasedIndex < 7) {
-                    weeklySteps.set(mondayBasedIndex, entity.getStepCount());
+
+                    int stepCount = Math.min(entity.getStepCount(), MAX_REASONABLE_STEPS);
+                    
+
+                    if (entity.getStepCount() > MAX_REASONABLE_STEPS) {
+                        Log.e(TAG, "Обнаружено аномально большое количество шагов для " + entity.getDate() + 
+                              ": " + entity.getStepCount() + ". Ограничено до " + MAX_REASONABLE_STEPS);
+                    }
+                    
+                    weeklySteps.set(mondayBasedIndex, stepCount);
                 }
             }
 
 
             StepCounterManager stepCounterManager = StepCounterManager.getInstance(AppDatabase.getContext());
             int currentSteps = stepCounterManager.getStepsToday();
+            
+
+            currentSteps = Math.min(currentSteps, MAX_REASONABLE_STEPS);
 
             Calendar today = Calendar.getInstance();
             int todayDayOfWeek = today.get(Calendar.DAY_OF_WEEK);
@@ -122,10 +149,10 @@ public class StepHistoryRepository {
 
             if (todayIndex >= 0 && todayIndex < 7 && weeklySteps.get(todayIndex) < currentSteps) {
                 weeklySteps.set(todayIndex, currentSteps);
-                
+
             }
 
-            
+
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при получении истории шагов за неделю: " + e.getMessage(), e);
         }
@@ -165,12 +192,15 @@ public class StepHistoryRepository {
             String startDate = formatDate(startOfMonth.getTime());
             String endDate = formatDate(endOfMonth.getTime());
             
-            
+
             
 
             Future<List<StepHistoryEntity>> future = executor.submit(() -> 
                 stepHistoryDao.getHistoryBetweenDates(startDate, endDate));
             List<StepHistoryEntity> historyEntities = future.get();
+            
+
+            final int MAX_REASONABLE_STEPS = 100000;
             
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -183,9 +213,18 @@ public class StepHistoryRepository {
                 int dayOfMonth = entityDate.get(Calendar.DAY_OF_MONTH);
                 
 
-                monthlySteps.set(dayOfMonth - 1, entity.getStepCount());
+                int stepCount = Math.min(entity.getStepCount(), MAX_REASONABLE_STEPS);
                 
+
+                if (entity.getStepCount() > MAX_REASONABLE_STEPS) {
+                    Log.e(TAG, "Обнаружено аномально большое количество шагов для " + entity.getDate() + 
+                          ": " + entity.getStepCount() + ". Ограничено до " + MAX_REASONABLE_STEPS);
+                }
                 
+
+                monthlySteps.set(dayOfMonth - 1, stepCount);
+                
+
             }
             
 
@@ -198,12 +237,15 @@ public class StepHistoryRepository {
                     int currentSteps = stepCounterManager.getStepsToday();
                     
 
-                    monthlySteps.set(currentDay - 1, currentSteps);
+                    currentSteps = Math.min(currentSteps, MAX_REASONABLE_STEPS);
                     
+
+                    monthlySteps.set(currentDay - 1, currentSteps);
+
                 }
             }
             
-            
+
             return monthlySteps;
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при получении истории шагов за месяц: " + e.getMessage(), e);
@@ -222,7 +264,7 @@ public class StepHistoryRepository {
                 
 
                 stepHistoryDao.deleteHistoryOlderThan(thirtyDaysAgo);
-                
+
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при удалении старой истории шагов: " + e.getMessage(), e);
             }
@@ -230,6 +272,43 @@ public class StepHistoryRepository {
     }
     
 
+    public void saveStepsForDate(String date, int stepCount) {
+
+        final int MAX_REASONABLE_STEPS = 100000;
+        
+
+        int validatedStepCount = Math.min(stepCount, MAX_REASONABLE_STEPS);
+        
+
+        if (stepCount > MAX_REASONABLE_STEPS) {
+            Log.e(TAG, "Попытка сохранить аномально большое количество шагов для даты " + date + ": " + 
+                  stepCount + ". Ограничено до " + MAX_REASONABLE_STEPS);
+        }
+        
+        executor.execute(() -> {
+            try {
+                StepHistoryEntity entity = stepHistoryDao.getStepHistoryForDate(date);
+                if (entity == null) {
+
+                    entity = new StepHistoryEntity(date, validatedStepCount);
+                    stepHistoryDao.insert(entity);
+
+                } else {
+
+                    if (entity.getStepCount() < validatedStepCount) {
+
+                        entity.setStepCount(validatedStepCount);
+                        stepHistoryDao.update(entity);
+
+                    } else {
+
+                    }
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Ошибка при сохранении истории шагов для даты " + date + ": " + e.getMessage(), e);
+            }
+        });
+    }
     
 
     private String formatDate(Date date) {

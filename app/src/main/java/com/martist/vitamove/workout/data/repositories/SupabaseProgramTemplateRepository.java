@@ -38,7 +38,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
 
     @Override
     public List<ProgramTemplate> getAllPublicTemplates() throws Exception {
-        
+
         
         JSONArray result = supabaseClient.from("program_templates")
             .select("*")
@@ -50,7 +50,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
 
     @Override
     public List<ProgramTemplate> getTemplatesByAuthor(String authorId) throws Exception {
-        
+
         
         JSONArray result = supabaseClient.from("program_templates")
             .select("*")
@@ -62,7 +62,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
 
     @Override
     public ProgramTemplate getTemplateById(String templateId) throws Exception {
-        
+
         
         JSONObject result = supabaseClient.from("program_templates")
             .select("*")
@@ -74,7 +74,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
 
     @Override
     public String createTemplate(ProgramTemplate template) throws Exception {
-        
+
         
         JSONObject templateJson = new JSONObject();
         
@@ -100,7 +100,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
         
         
         
-        
+
 
         JSONObject result = supabaseClient.from("program_templates")
             .insert(templateJson)
@@ -111,7 +111,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
 
     @Override
     public void updateTemplate(ProgramTemplate template) throws Exception {
-        
+
         
         JSONObject templateJson = new JSONObject();
         templateJson.put("name", template.getName());
@@ -133,7 +133,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
 
     @Override
     public void deleteTemplate(String templateId) throws Exception {
-        
+
         
         
         supabaseClient.from("program_template_exercises")
@@ -156,7 +156,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
 
     @Override
     public List<ProgramTemplateDay> getTemplateDays(String templateId) throws Exception {
-        
+
         
         JSONArray result = supabaseClient.from("program_template_days")
             .select("*")
@@ -170,7 +170,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
 
     @Override
     public ProgramTemplateDay getTemplateDayById(String dayId) throws Exception {
-        
+
         
         JSONObject result = supabaseClient.from("program_template_days")
             .select("*")
@@ -182,7 +182,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
 
     @Override
     public String createTemplateDay(ProgramTemplateDay day) throws Exception {
-        
+
         
         JSONObject dayJson = new JSONObject();
         dayJson.put("template_id", day.getTemplateId());
@@ -199,7 +199,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
 
     @Override
     public void updateTemplateDay(ProgramTemplateDay day) throws Exception {
-        
+
         
         JSONObject dayJson = new JSONObject();
         dayJson.put("name", day.getName());
@@ -215,7 +215,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
 
     @Override
     public void deleteTemplateDay(String dayId) throws Exception {
-        
+
         
         
         supabaseClient.from("program_template_exercises")
@@ -232,7 +232,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
 
     @Override
     public List<ProgramTemplateExercise> getTemplateDayExercises(String dayId) throws Exception {
-        
+
         
         
         JSONArray result = supabaseClient.from("program_template_exercises")
@@ -243,7 +243,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
             
         
         if (result == null || result.length() == 0) {
-            
+
             result = supabaseClient.from("program_template_exercises")
                 .select("*")
                 .eq("day_id", dayId)
@@ -256,7 +256,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
 
     @Override
     public ProgramTemplateExercise getTemplateExerciseById(String exerciseId) throws Exception {
-        
+
         
         JSONObject result = supabaseClient.from("program_template_exercises")
             .select("*")
@@ -268,7 +268,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
 
     @Override
     public String createTemplateExercise(ProgramTemplateExercise exercise) throws Exception {
-        
+
         
         JSONObject exerciseJson = new JSONObject();
         
@@ -284,7 +284,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
         
         
         
-        
+
 
         JSONObject result = supabaseClient.from("program_template_exercises")
             .insert(exerciseJson)
@@ -295,7 +295,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
 
     @Override
     public void updateTemplateExercise(ProgramTemplateExercise exercise) throws Exception {
-        
+
         
         JSONObject exerciseJson = new JSONObject();
         
@@ -316,7 +316,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
 
     @Override
     public void deleteTemplateExercise(String exerciseId) throws Exception {
-        
+
         
         supabaseClient.from("program_template_exercises")
             .delete()
@@ -326,7 +326,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
 
     @Override
     public String createProgramFromTemplate(String templateId, String userId, String name) throws Exception {
-        
+
         
         
         JSONObject result = supabaseClient.rpc("create_program_from_template")
@@ -336,10 +336,10 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
             .executeAndGetSingle();
         
         String programId = result.getString("program_id");
+
         
         
-        
-        
+
         cacheFullProgramAsync(programId);
         
         return programId;
@@ -348,7 +348,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
     
     public String createProgramFromTemplate(String templateId, String userId, String name, 
                                            List<Integer> workoutDays, Date startDate) throws Exception {
-        
+
         
         
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
@@ -368,7 +368,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
             .executeAndGetSingle();
         
         String programId = result.getString("program_id");
-        
+
         
         
         cacheFullProgramAsync(programId);
@@ -378,24 +378,24 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
     
     
     private void cacheFullProgramAsync(String programId) {
-        
+
         ProgramManager programManager = new ProgramManager(VitaMoveApplication.getContext());
         programManager.getFullProgramAsync(programId, new AsyncCallback<JSONObject>() {
             @Override
             public void onSuccess(JSONObject fullProgramJson) {
-                
+
                 if (fullProgramJson != null) {
                     try {
                         
                         ProgramRoomCache.saveProgram(programId, fullProgramJson);
-                        
+
 
                         
-                        
+
                         programManager.fetchAndCacheWorkoutPlansAsync(programId, new AsyncCallback<Void>() {
                             @Override
                             public void onSuccess(Void result) {
-                                
+
                             }
 
                             @Override
@@ -413,7 +413,7 @@ public class SupabaseProgramTemplateRepository implements ProgramTemplateReposit
                         
                     }
                 } else {
-                    
+
                 }
             }
 

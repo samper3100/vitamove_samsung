@@ -27,8 +27,9 @@ public class RepsOnlySetAdapter extends RecyclerView.Adapter<RepsOnlySetAdapter.
     private static final int TYPE_ACTIVE = 1;
     private static final int TYPE_INACTIVE = 2;
     
-    private List<ExerciseSet> sets = new ArrayList<>();
+    private final List<ExerciseSet> sets = new ArrayList<>();
     private OnSetClickListener listener;
+    private OnDeleteClickListener deleteListener;
     
     
     public interface OnDataChangeListener {
@@ -44,12 +45,19 @@ public class RepsOnlySetAdapter extends RecyclerView.Adapter<RepsOnlySetAdapter.
     public interface OnSetClickListener {
         void onSetClick(ExerciseSet set, int position, boolean isCompleted);
     }
+
+    public interface OnDeleteClickListener {
+        void onDeleteClick(ExerciseSet set, int position);
+    }
     
     public void setOnSetClickListener(OnSetClickListener listener) {
         this.listener = listener;
     }
-    
 
+    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
+        this.deleteListener = listener;
+    }
+    
     
     @Override
     public int getItemViewType(int position) {
@@ -109,7 +117,7 @@ public class RepsOnlySetAdapter extends RecyclerView.Adapter<RepsOnlySetAdapter.
                     
                     if (parent != null && parent.isComputingLayout()) {
                         
-                        
+
                         parent.post(() -> safeUpdateList(setsCopy));
                     } else {
                         
@@ -184,7 +192,7 @@ public class RepsOnlySetAdapter extends RecyclerView.Adapter<RepsOnlySetAdapter.
             
             diffResult.dispatchUpdatesTo(this);
             
-            
+
         } catch (Exception e) {
             Log.e(TAG, "safeUpdateList: ошибка при безопасном обновлении списка: " + e.getMessage(), e);
             
@@ -284,18 +292,12 @@ public class RepsOnlySetAdapter extends RecyclerView.Adapter<RepsOnlySetAdapter.
 
             actionButton.setOnClickListener(v -> {
                 int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION && position < sets.size() && listener != null) {
+                if (position != RecyclerView.NO_POSITION && position < sets.size()) {
                     ExerciseSet currentSet = sets.get(position);
-                    boolean newCompletionStatus = !currentSet.isCompleted();
                     
-                    
-                    currentSet.setCompleted(newCompletionStatus);
-                    actionButton.setImageResource(newCompletionStatus ? R.drawable.ic_check : R.drawable.ic_delete);
-                    actionButton.setColorFilter(itemView.getContext().getColor(
-                        newCompletionStatus ? R.color.green_500 : R.color.gray_500));
-                    
-                    
-                    listener.onSetClick(currentSet, position, newCompletionStatus);
+                    if (deleteListener != null) {
+                        deleteListener.onDeleteClick(currentSet, position);
+                    }
                 }
             });
         }
@@ -310,7 +312,8 @@ public class RepsOnlySetAdapter extends RecyclerView.Adapter<RepsOnlySetAdapter.
             }
             
             actionButton.setImageResource(set.isCompleted() ? R.drawable.ic_check : R.drawable.ic_delete);
-            actionButton.setClickable(true);
+            
+            actionButton.setEnabled(!set.isCompleted());
             repsEdit.setEnabled(true);
             actionButton.setColorFilter(itemView.getContext().getColor(
                 set.isCompleted() ? R.color.green_500 : R.color.gray_500));

@@ -7,10 +7,16 @@
     <color name="colorSecondary">#f2e2ce</color>
     <color name="colorAccentLight">#E0F2F1</color>
     <color name="colorAccentDark">#388E3C</color>
+    <color name="colorPrimaryLight">#FF9E58</color>
+    <color name="colorGray">#9E9E9E</color>
+    <color name="colorRed">#F44336</color>
+    <color name="colorGreen">#4CAF50</color>
     
     <!-- Цвет для статус-бара, соответствующий начальному цвету градиента -->
     <color name="statusbar_color">#FF7E00</color>
     <color name="steps_status_bar">#7C4DFF</color>
+    <color name="weight_gradient_start">#5E72E4</color>
+    <color name="weight_gradient_end">#4A8AF4</color>
     <color name="profile_img">#9E9E9E</color>
     <color name="gray_900">#212121</color>
     <color name="gray_800">#424242</color>
@@ -110,6 +116,8 @@
     <color name="colorBackgroundLight">#F5F5F5</color>
     <color name="colorSurface">@android:color/white</color>
     <color name="colorOnSurface">@android:color/black</color>
+
+    <color name="weight_note">#F5F5F5</color>
     
     <!-- Цвет фона карточек БЖУ -->
     <color name="card_bju_background">#EFEFEF</color>
@@ -185,4 +193,14 @@
     <color name="assistant_message_background">#FFF3E0</color>
     <color name="assistant_text_color">#212121</color>
     <color name="assistant_hint_color">#9E9E9E</color>
+    
+    <color name="colorGrey">#757575</color>
+    
+    <!-- Цвета для TabLayout -->
+    <color name="tab_layout_background">@color/gray_100</color>
+    <color name="tab_indicator_color">@color/orange_500</color>
+    <color name="tab_selected_text_color">@color/white</color>
+    <color name="tab_unselected_text_color">@color/gray_600</color>
+    
+    <color name="overlay_color">#00000000</color>
 </resources>

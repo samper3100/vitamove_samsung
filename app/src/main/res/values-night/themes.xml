@@ -15,7 +15,7 @@
         <item name="textInputStyle">@style/Widget.VitaMove.TextInputLayout</item>
         
         <!-- Переопределение стилей диалогов -->
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.MaterialComponents.Dialog.Alert</item>
+        <item name="materialAlertDialogTheme">@style/MaterialAlertDialog</item>
         
         <!-- Дополнительные атрибуты для темной темы -->
         <item name="dividerColor">@color/divider_color</item>
@@ -24,6 +24,10 @@
 
     <!-- Базовая тема приложения с объединенными атрибутами -->
     <style name="Theme.VitaMove" parent="Base.Theme.VitaMove">
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@mipmap/ic_vita_black_round</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/colorBackground</item>
+        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="31">@color/colorBackground</item>
+
         <!-- Шрифты -->
         <item name="android:fontFamily">@font/montserrat</item>
         <item name="fontFamily">@font/montserrat</item>

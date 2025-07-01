@@ -6,7 +6,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.widget.TextView;
 
 
@@ -31,7 +30,7 @@ public class FontScaleUtils {
             float scaleFactor = 1.0f / configuration.fontScale;
             
             textView.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, originalSize * scaleFactor);
-            
+
         }
     }
     
@@ -49,7 +48,7 @@ public class FontScaleUtils {
         
         public FixedFontScaleContextWrapper(Context base) {
             super(base);
-            
+
         }
 
         @Override
@@ -59,7 +58,7 @@ public class FontScaleUtils {
                 Configuration configuration = new Configuration(resources.getConfiguration());
                 
                 if (configuration.fontScale != 1.0f) {
-                    
+
                     configuration.fontScale = 1.0f;
                     
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

@@ -28,8 +28,9 @@ public class CardioSetAdapter extends RecyclerView.Adapter<CardioSetAdapter.SetV
     private static final int TYPE_ACTIVE = 1;
     private static final int TYPE_INACTIVE = 2;
     
-    private List<ExerciseSet> sets = new ArrayList<>();
+    private final List<ExerciseSet> sets = new ArrayList<>();
     private OnSetClickListener listener;
+    private OnDeleteClickListener deleteListener;
     
     
     public interface OnDataChangeListener {
@@ -45,12 +46,19 @@ public class CardioSetAdapter extends RecyclerView.Adapter<CardioSetAdapter.SetV
     public interface OnSetClickListener {
         void onSetClick(ExerciseSet set, int position, boolean isCompleted);
     }
+
+    public interface OnDeleteClickListener {
+        void onDeleteClick(ExerciseSet set, int position);
+    }
     
     public void setOnSetClickListener(OnSetClickListener listener) {
         this.listener = listener;
     }
-    
 
+    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
+        this.deleteListener = listener;
+    }
+    
     
     @Override
     public int getItemViewType(int position) {
@@ -106,10 +114,10 @@ public class CardioSetAdapter extends RecyclerView.Adapter<CardioSetAdapter.SetV
             new Handler(Looper.getMainLooper()).post(() -> {
                 try {
                     
-                    RecyclerView parent = (RecyclerView) getRecyclerView();
+                    RecyclerView parent = getRecyclerView();
                     if (parent == null || parent.isComputingLayout()) {
                         
-                        
+
                         parent.post(() -> safeUpdateList(setsCopy));
                     } else {
                         
@@ -126,7 +134,28 @@ public class CardioSetAdapter extends RecyclerView.Adapter<CardioSetAdapter.SetV
     
     
     private void safeUpdateList(List<ExerciseSet> newSets) {
+        if (newSets == null) {
+            Log.e(TAG, "safeUpdateList: newSets равен null");
+            return;
+        }
+        
         try {
+            
+            for (int i = 0; i < sets.size(); i++) {
+                if (sets.get(i) == null) {
+                    Log.e(TAG, "safeUpdateList: найден null элемент в текущем списке на позиции " + i);
+                    sets.set(i, new ExerciseSet()); 
+                }
+            }
+            
+            
+            for (int i = 0; i < newSets.size(); i++) {
+                if (newSets.get(i) == null) {
+                    Log.e(TAG, "safeUpdateList: найден null элемент в новом списке на позиции " + i);
+                    newSets.set(i, new ExerciseSet()); 
+                }
+            }
+            
             
             DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
                 @Override
@@ -141,15 +170,32 @@ public class CardioSetAdapter extends RecyclerView.Adapter<CardioSetAdapter.SetV
     
                 @Override
                 public boolean areItemsTheSame(int oldPos, int newPos) {
-                    return sets.get(oldPos).getId().equals(newSets.get(newPos).getId());
+                    String oldId = sets.get(oldPos).getId();
+                    String newId = newSets.get(newPos).getId();
+                    
+                    
+                    if (oldId == null && newId == null) {
+                        return oldPos == newPos; 
+                    } else if (oldId == null || newId == null) {
+                        return false; 
+                    }
+                    
+                    return oldId.equals(newId); 
                 }
     
                 @Override
                 public boolean areContentsTheSame(int oldPos, int newPos) {
                     ExerciseSet oldSet = sets.get(oldPos);
                     ExerciseSet newSet = newSets.get(newPos);
-                    return oldSet.isCompleted() == newSet.isCompleted() &&
-                           oldSet.getDurationSeconds() == newSet.getDurationSeconds();
+                    
+                    boolean sameCompleted = oldSet.isCompleted() == newSet.isCompleted();
+                    
+                    
+                    boolean sameDuration = (oldSet.getDurationSeconds() == null && newSet.getDurationSeconds() == null) ||
+                                         (oldSet.getDurationSeconds() != null && newSet.getDurationSeconds() != null && 
+                                          oldSet.getDurationSeconds().equals(newSet.getDurationSeconds()));
+                    
+                    return sameCompleted && sameDuration;
                 }
             });
             
@@ -160,7 +206,7 @@ public class CardioSetAdapter extends RecyclerView.Adapter<CardioSetAdapter.SetV
             
             diffResult.dispatchUpdatesTo(this);
             
-            
+
         } catch (Exception e) {
             Log.e(TAG, "safeUpdateList: ошибка при безопасном обновлении списка: " + e.getMessage(), e);
             
@@ -203,6 +249,17 @@ public class CardioSetAdapter extends RecyclerView.Adapter<CardioSetAdapter.SetV
             minutesEdit = itemView.findViewById(R.id.minutes_input);
             secondsEdit = itemView.findViewById(R.id.seconds_input);
             actionButton = itemView.findViewById(R.id.action_button);
+
+            actionButton.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION && position < sets.size()) {
+                    ExerciseSet currentSet = sets.get(position);
+                    
+                    if (deleteListener != null) {
+                        deleteListener.onDeleteClick(currentSet, position);
+                    }
+                }
+            });
 
             
             minutesEdit.addTextChangedListener(new TextWatcher() {
@@ -306,15 +363,6 @@ public class CardioSetAdapter extends RecyclerView.Adapter<CardioSetAdapter.SetV
                 
                 return false;
             });
-
-            actionButton.setOnClickListener(v -> {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION && position < sets.size() && listener != null) {
-                    ExerciseSet currentSet = sets.get(position);
-                    
-                    listener.onSetClick(currentSet, position, !currentSet.isCompleted());
-                }
-            });
         }
 
         void bind(ExerciseSet set, int position) {
@@ -331,7 +379,8 @@ public class CardioSetAdapter extends RecyclerView.Adapter<CardioSetAdapter.SetV
             
             
             actionButton.setImageResource(set.isCompleted() ? R.drawable.ic_check : R.drawable.ic_delete);
-            actionButton.setEnabled(true); 
+            
+            actionButton.setEnabled(!set.isCompleted());
             actionButton.setColorFilter(itemView.getContext().getColor(
                 set.isCompleted() ? R.color.green_500 : R.color.gray_500)); 
         }
@@ -367,7 +416,7 @@ public class CardioSetAdapter extends RecyclerView.Adapter<CardioSetAdapter.SetV
                     }
                     
                     if (hasTemporarySet) {
-                        
+
                         return;
                     }
                     

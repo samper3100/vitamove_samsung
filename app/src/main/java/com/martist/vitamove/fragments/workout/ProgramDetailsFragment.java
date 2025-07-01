@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -73,6 +74,11 @@ public class ProgramDetailsFragment extends Fragment {
         daysRecyclerView = view.findViewById(R.id.days_recycler_view);
         favoriteButton = view.findViewById(R.id.favorite_fab);
         
+        
+        View backButton = view.findViewById(R.id.back_button);
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> navigateBackToProgramsTab());
+        }
 
         setupRecyclerView();
         setupClickListeners();
@@ -83,7 +89,7 @@ public class ProgramDetailsFragment extends Fragment {
 
     private void setupRecyclerView() {
         dayAdapter = new ProgramDayAdapter(new ArrayList<>(), day -> {
-
+            
             showDayDetails(day);
         });
 
@@ -133,55 +139,56 @@ public class ProgramDetailsFragment extends Fragment {
         });
     }
 
-
+    
     public void loadProgramDays() {
         if (program == null || program.getId() == null) {
             showError("Программа не найдена");
             return;
         }
         
-        
-        
 
+        
+        
         ProgressBar dayProgressBar = requireView().findViewById(R.id.days_progress_bar);
         if (dayProgressBar != null) {
             dayProgressBar.setVisibility(View.VISIBLE);
         }
         
-
+        
         programManager.getProgramDaysAsync(program.getId(), new AsyncCallback<List<ProgramDay>>() {
             @Override
             public void onSuccess(List<ProgramDay> days) {
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
-                        
-                        
 
+                        
+                        
                         for (ProgramDay day : days) {
-                            
+
+
                         }
                         
-
+                        
                         Collections.sort(days, Comparator.comparingInt(ProgramDay::getDayNumber));
                         
-
+                        
                         dayAdapter.updateDays(days);
                         
-
+                        
                         if (dayProgressBar != null) {
                             dayProgressBar.setVisibility(View.GONE);
                         }
                         
-
+                        
                         if (days.isEmpty()) {
-
+                            
                             TextView emptyDaysTextView = requireView().findViewById(R.id.empty_days_text);
                             if (emptyDaysTextView != null) {
                                 emptyDaysTextView.setVisibility(View.VISIBLE);
                             }
                         }
                         
-
+                        
                         showLoading(false);
                     });
                 }
@@ -193,15 +200,15 @@ public class ProgramDetailsFragment extends Fragment {
                     getActivity().runOnUiThread(() -> {
                         Log.e(TAG, "Ошибка при загрузке дней программы: " + e.getMessage(), e);
                         
-
+                        
                         showError("Ошибка при загрузке дней программы: " + e.getMessage());
                         
-
+                        
                         if (dayProgressBar != null) {
                             dayProgressBar.setVisibility(View.GONE);
                         }
                         
-
+                        
                         showLoading(false);
                     });
                 }
@@ -217,10 +224,10 @@ public class ProgramDetailsFragment extends Fragment {
         }
 
         try {
-
+            
             programNameText.setText(program.getName());
             
-
+            
             if (program.getDescription() != null && !program.getDescription().isEmpty()) {
                 programDescriptionText.setText(program.getDescription());
                 programDescriptionText.setVisibility(View.VISIBLE);
@@ -228,11 +235,11 @@ public class ProgramDetailsFragment extends Fragment {
                 programDescriptionText.setVisibility(View.GONE);
             }
             
-
+            
             String levelText = "Уровень: " + (program.getLevel() != null ? program.getLevel() : "не указан");
             programTypeText.setText(levelText);
             
-
+            
             String durationText = String.format("%d недель, %d дней в неделю",
                 program.getDurationWeeks() > 0 ? program.getDurationWeeks() : 4,
                 program.getDaysPerWeek() > 0 ? program.getDaysPerWeek() : 3);
@@ -240,18 +247,18 @@ public class ProgramDetailsFragment extends Fragment {
             
 
             
-
+            
             View appBarLayout = getView().findViewById(R.id.app_bar_layout);
             if (appBarLayout != null) {
                 appBarLayout.setVisibility(View.VISIBLE);
             }
             
-
+            
             if (program.getImageUrl() != null && !program.getImageUrl().isEmpty()) {
+
                 
-
-
-
+                
+                
             }
             
             showLoading(false);
@@ -263,10 +270,11 @@ public class ProgramDetailsFragment extends Fragment {
     }
 
     private void showDayDetails(ProgramDay day) {
-
         
 
 
+
+        
         ProgramDayDetailsFragment detailsFragment = ProgramDayDetailsFragment.newInstance(day.getId());
         requireActivity().getSupportFragmentManager()
             .beginTransaction()
@@ -275,11 +283,17 @@ public class ProgramDetailsFragment extends Fragment {
             .commit();
     }
 
-
-
-
     
-
+    private void navigateBackToProgramsTab() {
+        
+        requireActivity().getSharedPreferences("VitaMovePrefs", 0)
+            .edit()
+            .putInt("workout_tab_index", 2) 
+            .apply();
+            
+        
+        requireActivity().getSupportFragmentManager().popBackStack();
+    }
 
     private void showError(String message) {
         if (getActivity() != null) {
@@ -302,6 +316,13 @@ public class ProgramDetailsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
+        
+        requireActivity().getOnBackPressedDispatcher()
+            .addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    navigateBackToProgramsTab();
+                }
+            });
     }
 } 

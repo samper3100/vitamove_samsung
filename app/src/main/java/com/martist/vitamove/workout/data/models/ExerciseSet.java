@@ -19,6 +19,8 @@ public class ExerciseSet implements Parcelable {
 
     public ExerciseSet() {
         this(null, null, null, false, 1);
+        this.id = java.util.UUID.randomUUID().toString();
+        this.createdAt = System.currentTimeMillis();
     }
 
     public ExerciseSet(Float weight, Integer reps, Integer durationSeconds, boolean completed) {
@@ -26,6 +28,7 @@ public class ExerciseSet implements Parcelable {
     }
 
     public ExerciseSet(Float weight, Integer reps, Integer durationSeconds, boolean completed, int setNumber) {
+        this.id = java.util.UUID.randomUUID().toString();
         this.weight = weight;
         this.reps = reps;
         this.durationSeconds = durationSeconds;
@@ -34,10 +37,10 @@ public class ExerciseSet implements Parcelable {
         this.createdAt = System.currentTimeMillis();
     }
     
-    
+
     public ExerciseSet(ExerciseSet other) {
         if (other != null) {
-            this.id = other.id;
+            this.id = other.id != null ? other.id : java.util.UUID.randomUUID().toString();
             this.weight = other.weight;
             this.reps = other.reps;
             this.durationSeconds = other.durationSeconds;
@@ -47,11 +50,14 @@ public class ExerciseSet implements Parcelable {
             this.exerciseId = other.exerciseId;
             this.targetReps = other.targetReps;
             this.targetWeight = other.targetWeight;
-            this.createdAt = other.createdAt;
+            this.createdAt = other.createdAt != null ? other.createdAt : System.currentTimeMillis();
+        } else {
+            this.id = java.util.UUID.randomUUID().toString();
+            this.createdAt = System.currentTimeMillis();
         }
     }
 
-    
+
     public ExerciseSet(String id, Float weight, Integer reps, boolean completed, String workoutExerciseId, int setNumber) {
         this.id = id;
         this.weight = weight;
@@ -62,7 +68,7 @@ public class ExerciseSet implements Parcelable {
         this.createdAt = System.currentTimeMillis();
     }
 
-    
+
     public ExerciseSet(String id, Float weight, Integer reps, Integer durationSeconds, boolean completed, 
                       String workoutExerciseId, String exerciseId, int setNumber) {
         this.id = id;
@@ -141,8 +147,14 @@ public class ExerciseSet implements Parcelable {
         }
     };
 
-    
-    public String getId() { return id; }
+
+    public String getId() { 
+
+        if (id == null) {
+            id = java.util.UUID.randomUUID().toString();
+        }
+        return id; 
+    }
     public Integer getReps() { return reps; }
     public Integer getDurationSeconds() { return durationSeconds; }
     public boolean isCompleted() { return completed; }
@@ -154,7 +166,7 @@ public class ExerciseSet implements Parcelable {
     public Float getTargetWeight() { return targetWeight; }
     public Long getCreatedAt() { return createdAt; }
 
-    
+
     public void setId(String id) { this.id = id; }
     public void setReps(Integer reps) { this.reps = reps; }
     public void setDurationSeconds(Integer durationSeconds) { this.durationSeconds = durationSeconds; }
@@ -167,7 +179,7 @@ public class ExerciseSet implements Parcelable {
     public void setTargetWeight(Float targetWeight) { this.targetWeight = targetWeight; }
     public void setCreatedAt(Long createdAt) { this.createdAt = createdAt; }
 
-    
+
     public boolean isTimeBasedSet() {
         return durationSeconds != null && durationSeconds > 0;
     }
@@ -176,7 +188,7 @@ public class ExerciseSet implements Parcelable {
         return weight != null && weight > 0;
     }
 
-    
+
     public static class Builder {
         private int setNumber;
         private String workoutExerciseId;

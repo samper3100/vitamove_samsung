@@ -2,6 +2,8 @@ package com.martist.vitamove.viewmodels;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.util.LruCache;
 
@@ -56,15 +58,15 @@ public class HistoryViewModel extends AndroidViewModel {
     
     
     private final int PAGE_SIZE = 10;
-    private boolean hasMoreWorkouts = true;
-    private int currentPage = 0;
+    private final boolean hasMoreWorkouts = true;
+    private final int currentPage = 0;
     
     
     private final Executor executor;
     
     
-    private long startDate;
-    private long endDate;
+    private final long startDate;
+    private final long endDate;
     
     private static final int RECENT_WORKOUTS_LIMIT = 3;
     
@@ -124,7 +126,7 @@ public class HistoryViewModel extends AndroidViewModel {
         
         
         if (currentTime - lastUpdateTime > CACHE_EXPIRATION_TIME) {
-            
+
             
             prefs.edit().clear().apply();
             return;
@@ -151,7 +153,7 @@ public class HistoryViewModel extends AndroidViewModel {
                     }
                 }
                 
-                
+
                 
                 
                 for (int i = 0; i < 30; i++) {
@@ -179,7 +181,7 @@ public class HistoryViewModel extends AndroidViewModel {
                             if (i == 0) {
                                 
                                 allWorkouts.postValue(new ArrayList<>(pageWorkouts));
-                                
+
                             }
                         }
                     }
@@ -226,7 +228,7 @@ public class HistoryViewModel extends AndroidViewModel {
             }
             
             editor.apply();
-            
+
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при сохранении кэша: " + e.getMessage());
         }
@@ -519,8 +521,8 @@ public class HistoryViewModel extends AndroidViewModel {
                     }
                     
                     
-                    
-                    
+
+
                     
                     
                     allWorkouts.postValue(workouts);
@@ -529,7 +531,7 @@ public class HistoryViewModel extends AndroidViewModel {
                     totalWorkouts.postValue(workouts.size());
                     
                 } else {
-                    
+
                     
                     workoutsByDate.clear();
                     
@@ -547,16 +549,31 @@ public class HistoryViewModel extends AndroidViewModel {
     
     
     public void initializeLiveDataObservers() {
-        String userId = ((VitaMoveApplication) getApplication()).getCurrentUserId();
-        if (userId == null) return;
-        
-        
-        isLoading.postValue(true);
-        
         try {
             
+            if (Looper.myLooper() != Looper.getMainLooper()) {
+                Log.e(TAG, "initializeLiveDataObservers: вызван не из главного потока!");
+                
+                errorMessage.postValue("Ошибка инициализации наблюдателей LiveData: неправильный поток");
+                isLoading.postValue(false);
+                return;
+            }
+            
+            String userId = ((VitaMoveApplication) getApplication()).getCurrentUserId();
+            if (userId == null) {
+                Log.e(TAG, "LiveData: Пользователь не авторизован");
+                errorMessage.postValue("Пользователь не авторизован");
+                isLoading.postValue(false);
+                return;
+            }
+            
+            isLoading.setValue(true);
+            
+            
             Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.DAY_OF_MONTH, 1); 
+            
+            
+            calendar.set(Calendar.DAY_OF_MONTH, 1);
             calendar.set(Calendar.HOUR_OF_DAY, 0);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
@@ -578,14 +595,14 @@ public class HistoryViewModel extends AndroidViewModel {
             
             workoutsLiveData.observeForever(workoutEntities -> {
                 if (workoutEntities == null || workoutEntities.isEmpty()) {
-                    
+
                     workoutsByDate.clear();
                     allWorkouts.postValue(new ArrayList<>());
                     isLoading.postValue(false);
                     return;
                 }
                 
-                
+
                 
                 
                 executor.execute(() -> {
@@ -641,7 +658,7 @@ public class HistoryViewModel extends AndroidViewModel {
                         totalWorkouts.postValue(workouts.size());
                         isLoading.postValue(false);
                         
-                        
+
                     } catch (Exception e) {
                         Log.e(TAG, "LiveData: Ошибка при обработке данных наблюдателя", e);
                         errorMessage.postValue("Ошибка при обработке данных: " + e.getMessage());
@@ -650,10 +667,9 @@ public class HistoryViewModel extends AndroidViewModel {
                 });
             });
             
-            
+
         } catch (Exception e) {
             Log.e(TAG, "LiveData: Ошибка при инициализации наблюдателя", e);
-            errorMessage.postValue("Ошибка при настройке автоматического обновления: " + e.getMessage());
             isLoading.postValue(false);
         }
     }
@@ -670,14 +686,16 @@ public class HistoryViewModel extends AndroidViewModel {
                 loadAllMonthWorkoutsFromRoom();
                 
                 
-                initializeLiveDataObservers();
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    initializeLiveDataObservers();
+                });
                 
                 
                 loadWorkoutPlans();
                 
                 isLoading.postValue(false);
                 
-                
+
             } catch (Exception e) {
                 errorMessage.postValue("Ошибка обновления: " + e.getMessage());
                 isLoading.postValue(false);
@@ -739,7 +757,7 @@ public class HistoryViewModel extends AndroidViewModel {
                 String cacheFileName = PREF_NAME + "_" + userId;
                 SharedPreferences prefs = application.getSharedPreferences(cacheFileName, Application.MODE_PRIVATE);
                 prefs.edit().clear().apply();
-                
+
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при очистке кэша истории: " + e.getMessage());
             }

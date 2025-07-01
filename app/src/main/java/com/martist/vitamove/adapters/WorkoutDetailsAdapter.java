@@ -20,7 +20,7 @@ public class WorkoutDetailsAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     private static final int TYPE_EXERCISE_HEADER = 0;
     private static final int TYPE_EXERCISE_SET = 1;
     
-    private List<Object> items = new ArrayList<>();
+    private final List<Object> items = new ArrayList<>();
 
     @NonNull
     @Override
@@ -61,15 +61,15 @@ public class WorkoutDetailsAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         return items.size();
     }
 
-    
+
     public void updateExercises(List<WorkoutExercise> exercises) {
         items.clear();
         
         for (WorkoutExercise exercise : exercises) {
-            
+
             items.add(exercise);
             
-            
+
             List<ExerciseSet> sets = exercise.getSetsCompleted();
             for (int i = 0; i < sets.size(); i++) {
                 items.add(new SetItem(sets.get(i), i + 1, exercise.getExercise().getName()));
@@ -79,11 +79,11 @@ public class WorkoutDetailsAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         notifyDataSetChanged();
     }
     
-    
+
     private static class SetItem {
         final ExerciseSet set;
         final int setNumber;
-        final String exerciseName; 
+        final String exerciseName;
         
         SetItem(ExerciseSet set, int setNumber, String exerciseName) {
             this.set = set;
@@ -92,7 +92,7 @@ public class WorkoutDetailsAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         }
     }
 
-    
+
     static class ExerciseHeaderViewHolder extends RecyclerView.ViewHolder {
         private final TextView exerciseNameText;
         private final TextView muscleGroupsText;
@@ -106,14 +106,14 @@ public class WorkoutDetailsAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         void bind(WorkoutExercise exercise) {
             exerciseNameText.setText(exercise.getExercise().getName());
             
-            
+
             List<String> muscleGroupNames = exercise.getExercise().getMuscleGroupRussianNames();
             String muscleGroups = String.join(", ", muscleGroupNames);
             muscleGroupsText.setText(muscleGroups);
         }
     }
 
-    
+
     static class SetViewHolder extends RecyclerView.ViewHolder {
         private final TextView setNumberText;
         private final TextView weightText;
@@ -131,7 +131,7 @@ public class WorkoutDetailsAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             
             ExerciseSet set = setItem.set;
 
-            
+
             if (set.isWeightBasedSet()) {
                 weightText.setVisibility(View.VISIBLE);
                 weightText.setText(String.format("%.1f кг", set.getWeight()));
@@ -139,7 +139,7 @@ public class WorkoutDetailsAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 weightText.setVisibility(View.GONE);
             }
 
-            
+
             if (set.isTimeBasedSet()) {
                 repsText.setText(String.format("%d сек", set.getDurationSeconds()));
             } else if (set.getReps() != null) {

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -66,6 +67,13 @@ public class ProgramDayDetailsFragment extends Fragment implements
                            @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_program_day_details, container, false);
         initViews(view);
+        
+        
+        View backButton = view.findViewById(R.id.back_button);
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> navigateBackToProgramsTab());
+        }
+        
         setupRecyclerView();
         setupClickListeners();
         loadDayDetails();
@@ -86,7 +94,7 @@ public class ProgramDayDetailsFragment extends Fragment implements
     }
 
     private void setupClickListeners() {
-
+        
     }
 
     private void loadDayDetails() {
@@ -95,13 +103,13 @@ public class ProgramDayDetailsFragment extends Fragment implements
             return;
         }
         
-
+        
         View loadingView = getView() != null ? getView().findViewById(R.id.loading_view) : null;
         if (loadingView != null) {
             loadingView.setVisibility(View.VISIBLE);
         }
         
-
+        
         programManager.getProgramDayByIdAsync(dayId, new com.martist.vitamove.utils.AsyncCallback<ProgramDay>() {
             @Override
             public void onSuccess(ProgramDay day) {
@@ -135,41 +143,42 @@ public class ProgramDayDetailsFragment extends Fragment implements
         }
         
         String dayId = programDay.getId();
-        
-        
 
+        
+        
         View loadingView = getView() != null ? getView().findViewById(R.id.loading_view) : null;
         if (loadingView != null) {
             loadingView.setVisibility(View.VISIBLE);
         }
         
-
+        
         new Thread(() -> {
             try {
-
+                
                 List<ProgramExercise> exercises = programManager.getProgramDayExercises(dayId);
                 
-
+                
                 new Handler(Looper.getMainLooper()).post(() -> {
                     if (getActivity() == null || !isAdded()) return;
                     
-                    
-                    
 
+                    
+                    
                     for (int i = 0; i < exercises.size(); i++) {
                         ProgramExercise exercise = exercises.get(i);
-                        
+
+
                     }
                     
-
+                    
                     adapter.updateExercises(exercises);
                     
-
+                    
                     if (loadingView != null) {
                         loadingView.setVisibility(View.GONE);
                     }
                     
-
+                    
                     View emptyView = getView() != null ? getView().findViewById(R.id.empty_view) : null;
                     if (emptyView != null) {
                         emptyView.setVisibility(exercises.isEmpty() ? View.VISIBLE : View.GONE);
@@ -181,15 +190,15 @@ public class ProgramDayDetailsFragment extends Fragment implements
                     
                     Log.e(TAG, "Ошибка при загрузке упражнений: " + e.getMessage() + " для дня: " + dayId, e);
                     
-
+                    
                     if (loadingView != null) {
                         loadingView.setVisibility(View.GONE);
                     }
                     
-
+                    
                     showError("Не удалось загрузить упражнения: " + e.getMessage());
                     
-
+                    
                     View emptyView = getView() != null ? getView().findViewById(R.id.empty_view) : null;
                     if (emptyView != null) {
                         emptyView.setVisibility(View.VISIBLE);
@@ -207,9 +216,10 @@ public class ProgramDayDetailsFragment extends Fragment implements
 
     @Override
     public void onExerciseClick(ProgramExercise exercise) {
-
         
 
+        
+        
         exerciseHelper.showExerciseInfoDialog(exercise);
     }
 
@@ -220,5 +230,30 @@ public class ProgramDayDetailsFragment extends Fragment implements
 
     private void showError(String message) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    
+    private void navigateBackToProgramsTab() {
+        
+        requireActivity().getSharedPreferences("VitaMovePrefs", 0)
+            .edit()
+            .putInt("workout_tab_index", 2) 
+            .apply();
+            
+        
+        requireActivity().getSupportFragmentManager().popBackStack();
+    }
+    
+    @Override
+    public void onResume() {
+        super.onResume();
+        
+        requireActivity().getOnBackPressedDispatcher()
+            .addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    navigateBackToProgramsTab();
+                }
+            });
     }
 } 

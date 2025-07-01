@@ -1,13 +1,15 @@
 package com.martist.vitamove.adapters;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.martist.vitamove.R;
 import com.martist.vitamove.models.Food;
+
 import java.util.List;
 
 public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.ViewHolder> {
@@ -21,18 +23,18 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.ViewHolder> {
 
     public FoodAdapter(List<Food> foods, OnFoodClickListener listener) {
         this.foods = foods;
-        this.listener = listener;
+        FoodAdapter.listener = listener;
     }
 
     public void setOnFoodClickListener(OnFoodClickListener listener) {
-        this.listener = listener;
+        FoodAdapter.listener = listener;
     }
 
     public void updateFoods(List<Food> newFoods) {
-        
+
         if (newFoods != null) {
             for (Food food : newFoods) {
-                
+
             }
         }
         this.foods = newFoods;
@@ -76,9 +78,12 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.ViewHolder> {
 
         void bind(Food food) {
             name.setText(food.getName());
-            calories.setText(String.format("%d ккал, %dг", 
+            
+
+            String unit = food.isLiquid() ? "мл" : "г";
+            calories.setText(String.format("%d ккал, %d%s", 
                 Math.round(food.getCalories()), 
-                100)); 
+                100, unit));
 
             addButton.setOnClickListener(v -> {
                 if (listener != null) {

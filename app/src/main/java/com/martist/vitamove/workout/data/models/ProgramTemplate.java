@@ -28,14 +28,14 @@ public class ProgramTemplate implements Parcelable {
     private Date createdAt;
     private Date updatedAt;
     
-
+    
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
 
-
+    
     public ProgramTemplate() {
     }
 
-
+    
     public ProgramTemplate(String name, String description, String authorId, boolean isPublic, 
                            String category, int durationWeeks, int daysPerWeek, String difficulty) {
         this.name = name;
@@ -51,7 +51,7 @@ public class ProgramTemplate implements Parcelable {
         this.updatedAt = new Date();
     }
 
-
+    
     public static ProgramTemplate fromJson(JSONObject json) throws JSONException, ParseException {
         ProgramTemplate template = new ProgramTemplate();
         template.id = json.getString("id");
@@ -78,7 +78,7 @@ public class ProgramTemplate implements Parcelable {
         return template;
     }
 
-
+    
     public JSONObject toJson() throws JSONException {
         JSONObject json = new JSONObject();
         if (id != null) {
@@ -106,7 +106,7 @@ public class ProgramTemplate implements Parcelable {
         return json;
     }
 
-
+    
     public String getId() {
         return id;
     }
@@ -219,7 +219,7 @@ public class ProgramTemplate implements Parcelable {
         this.updatedAt = updatedAt;
     }
 
-
+    
     protected ProgramTemplate(Parcel in) {
         id = in.readString();
         name = in.readString();

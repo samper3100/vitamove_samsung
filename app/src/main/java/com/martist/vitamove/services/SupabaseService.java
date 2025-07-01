@@ -31,7 +31,7 @@ public class SupabaseService {
                 .executeAsync(new SupabaseCallback<String>() {
                     @Override
                     public void onSuccess(String result) {
-                        
+
 
                         boolean canSend = Boolean.parseBoolean(result);
                         callback.onResult(canSend);

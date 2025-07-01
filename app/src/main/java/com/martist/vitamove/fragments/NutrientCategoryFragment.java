@@ -30,7 +30,7 @@ public class NutrientCategoryFragment extends Fragment {
     private ArrayList<String> nutrientIds;
     private ArrayList<String> nutrientNames;
     private ArrayList<String> selectedNutrients;
-    private List<MaterialCheckBox> checkboxes = new ArrayList<>();
+    private final List<MaterialCheckBox> checkboxes = new ArrayList<>();
     private NutrientSelectionListener listener;
     
     

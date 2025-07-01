@@ -31,6 +31,7 @@
         </provider>
         
         <activity
+
             android:name=".activities.MainActivity"
             android:exported="true">
             <intent-filter>
@@ -82,16 +83,15 @@
         <activity
             android:name=".activities.ExerciseSelectionActivity"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"/>
-        <activity
-            android:name=".workout.ui.ExerciseListActivity"
-            android:exported="true" />
+
         <activity
             android:name=".workout.ui.ExerciseSearchActivity"
             android:label="Поиск упражнений"
             android:theme="@style/Theme.VitaMove.NoActionBar.WatermarkHider"/>
         <activity
             android:name=".workout.ui.ExerciseSettingsActivity"
-            android:label="Настройка упражнения"
+            android:windowSoftInputMode="adjustPan"
+            android:label=""
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"/>
 
 
@@ -114,6 +114,8 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.VitaMove" />
+        <activity android:name=".activities.StepHistoryActivity" />
+        <activity android:name=".activities.WeightHistoryActivity" />
     </application>
 
 </manifest>

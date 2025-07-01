@@ -24,9 +24,9 @@ import java.util.UUID;
 @Dao
 public abstract class WorkoutDao {
 
-    private static final String TAG = "WorkoutDao"; 
+    private static final String TAG = "WorkoutDao";
 
-    
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertWorkout(UserWorkoutEntity workout);
@@ -41,25 +41,25 @@ public abstract class WorkoutDao {
     public abstract void deleteWorkoutById(String workoutId);
     
     @Query("DELETE FROM user_workouts")
-    public abstract void deleteAllWorkouts(); 
+    public abstract void deleteAllWorkouts();
     
-    
+
     @Query("SELECT * FROM user_workouts WHERE user_id = :userId AND start_time >= :startTime AND start_time <= :endTime ORDER BY start_time DESC LIMIT :limit OFFSET :offset")
     public abstract List<UserWorkoutEntity> getWorkoutsByTimeRange(String userId, long startTime, long endTime, int offset, int limit);
     
-    
+
     @Query("SELECT * FROM user_workouts WHERE user_id = :userId AND start_time >= :startTime AND start_time <= :endTime ORDER BY start_time DESC")
     public abstract List<UserWorkoutEntity> getAllWorkoutsByTimeRange(String userId, long startTime, long endTime);
 
-    
+
     @Query("SELECT * FROM user_workouts WHERE user_id = :userId AND start_time >= :startTime AND start_time <= :endTime ORDER BY start_time DESC")
     public abstract androidx.lifecycle.LiveData<List<UserWorkoutEntity>> getAllWorkoutsByTimeRangeLiveData(String userId, long startTime, long endTime);
 
-    
+
     @Query("SELECT * FROM user_workouts WHERE id = :workoutId LIMIT 1")
     public abstract UserWorkoutEntity getWorkoutEntityById(String workoutId);
 
-    
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertWorkoutExercises(List<WorkoutExerciseEntity> exercises);
@@ -73,14 +73,14 @@ public abstract class WorkoutDao {
     @Query("SELECT * FROM workout_exercises WHERE workout_id = :workoutId ORDER BY order_number ASC")
     public abstract List<WorkoutExerciseEntity> getExercisesForWorkout(String workoutId);
     
-    
+
     @Query("SELECT * FROM workout_exercises WHERE workout_id = :workoutId ORDER BY order_number ASC")
     public abstract androidx.lifecycle.LiveData<List<WorkoutExerciseEntity>> getExercisesForWorkoutLiveData(String workoutId);
     
     @Query("DELETE FROM workout_exercises WHERE id = :exerciseId")
     public abstract void deleteWorkoutExerciseById(String exerciseId);
 
-    
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertExerciseSets(List<ExerciseSetEntity> sets);
@@ -94,16 +94,16 @@ public abstract class WorkoutDao {
     @Query("SELECT * FROM exercise_sets WHERE workout_exercise_id = :exerciseId ORDER BY set_number ASC")
     public abstract List<ExerciseSetEntity> getSetsForExercise(String exerciseId);
 
-    
+
     @Query("SELECT * FROM exercise_sets WHERE workout_exercise_id = :exerciseId ORDER BY set_number ASC")
     public abstract androidx.lifecycle.LiveData<List<ExerciseSetEntity>> getSetsForExerciseLiveData(String exerciseId);
 
     @Query("DELETE FROM exercise_sets WHERE workout_exercise_id = :exerciseId")
     public abstract void deleteSetsForExercise(String exerciseId);
 
-    
 
-    
+
+
     @Transaction
     public UserWorkout getFullActiveWorkout(String userId, WorkoutRepositoryHelper repoHelper) {
         UserWorkoutEntity workoutEntity = getActiveWorkoutEntity(userId);
@@ -113,14 +113,14 @@ public abstract class WorkoutDao {
         
         List<WorkoutExercise> workoutExercises = new ArrayList<>();
         List<WorkoutExerciseEntity> exerciseEntities = getExercisesForWorkout(workoutEntity.getId());
-        
-         
+
+
         
         for (WorkoutExerciseEntity exerciseEntity : exerciseEntities) {
-            
+
             com.martist.vitamove.workout.data.models.Exercise baseExercise = repoHelper.getExerciseDetailsSync(exerciseEntity.getBaseExerciseId());
             if (baseExercise == null) {
-                
+
                 baseExercise = new com.martist.vitamove.workout.data.models.Exercise.Builder()
                         .id(exerciseEntity.getBaseExerciseId())
                         .name("Упражнение не найдено")
@@ -136,12 +136,12 @@ public abstract class WorkoutDao {
             workoutExercises.add(exerciseEntity.toModel(baseExercise, sets));
         }
         
-        
-        
+
+
         return workoutEntity.toModel(workoutExercises);
     }
 
-    
+
     @Transaction
     public void saveFullWorkout(UserWorkout workout) {
         if (workout == null) return;
@@ -159,37 +159,39 @@ public abstract class WorkoutDao {
                 
                 if (exerciseModel.getSetsCompleted() != null) {
                     for (ExerciseSet setModel : exerciseModel.getSetsCompleted()) {
-                        
+
                         if (setModel.getExerciseId() == null && exerciseModel.getExercise() != null) {
                             setModel.setExerciseId(exerciseModel.getExercise().getId());
-                            
+
+
                         }
                         
                         ExerciseSetEntity setEntity = ExerciseSetEntity.fromModel(setModel, exerciseEntity.getId());
                         allSetEntities.add(setEntity);
                         
-                        
+
                     }
                 }
             }
             insertWorkoutExercises(exerciseEntities);
             
-            
+
             for (int i = 0; i < allSetEntities.size(); i++) {
                 ExerciseSetEntity entity = allSetEntities.get(i);
-                
+
+
             }
             
             insertExerciseSets(allSetEntities);
         }
     }
     
-    
+
     @Transaction
     public void updateSingleSet(ExerciseSet set) {
          if (set == null || set.getWorkoutExerciseId() == null) return;
          
-         
+
          if (set.getExerciseId() == null) {
              try {
                  WorkoutExerciseEntity exercise = getWorkoutExerciseById(set.getWorkoutExerciseId());
@@ -205,30 +207,30 @@ public abstract class WorkoutDao {
          updateExerciseSet(setEntity);
     }
     
-    
+
     @Query("SELECT * FROM workout_exercises WHERE id = :exerciseId LIMIT 1")
     public abstract WorkoutExerciseEntity getWorkoutExerciseById(String exerciseId);
     
     @Update
     public abstract void updateExerciseSetList(List<ExerciseSetEntity> setEntities);
     
-    
+
     @Transaction
     public void addSetToExercise(ExerciseSet set) {
          if (set == null || set.getWorkoutExerciseId() == null) return;
          
-         
+
          if (set.getId() == null) {
              set.setId(UUID.randomUUID().toString());
          }
          
-         
+
          if (set.getExerciseId() == null) {
              try {
                  WorkoutExerciseEntity exercise = getWorkoutExerciseById(set.getWorkoutExerciseId());
                  if (exercise != null) {
                      set.setExerciseId(exercise.getBaseExerciseId());
-                     
+
                  } else {
                      Log.e(TAG, "addSetToExercise: Не удалось получить workout_exercise с id = " + set.getWorkoutExerciseId());
                  }
@@ -236,15 +238,15 @@ public abstract class WorkoutDao {
                  Log.e(TAG, "addSetToExercise: Ошибка при получении exercise_id", e);
              }
          } else {
-             
+
          }
          
          ExerciseSetEntity setEntity = ExerciseSetEntity.fromModel(set, set.getWorkoutExerciseId());
-         
+
          insertExerciseSet(setEntity);
     }
     
-    
+
     @Transaction
     public void addExerciseToWorkout(WorkoutExercise exercise, String workoutId) {
         if (exercise == null || exercise.getExercise() == null) return;
@@ -252,15 +254,16 @@ public abstract class WorkoutDao {
         insertWorkoutExercise(exerciseEntity);
         
         String exerciseId = exercise.getExercise().getId();
-        
+
+
         
         if (exercise.getSetsCompleted() != null && !exercise.getSetsCompleted().isEmpty()) {
              List<ExerciseSetEntity> setEntities = new ArrayList<>();
              for (ExerciseSet setModel : exercise.getSetsCompleted()) {
-                
+
                 setModel.setExerciseId(exerciseId);
                 
-                
+
                 if (setModel.getCreatedAt() == null) {
                     setModel.setCreatedAt(System.currentTimeMillis());
                 }
@@ -268,44 +271,43 @@ public abstract class WorkoutDao {
                 ExerciseSetEntity entity = ExerciseSetEntity.fromModel(setModel, exerciseEntity.getId());
                 setEntities.add(entity);
                 
-                
+
             }
             
-            
-            
-            
+
+
             insertExerciseSets(setEntities);
         }
     }
     
-    
+
     @Transaction
     public void deleteFullWorkoutExercise(String exerciseId) {
-        deleteSetsForExercise(exerciseId); 
-        deleteWorkoutExerciseById(exerciseId); 
+        deleteSetsForExercise(exerciseId);
+        deleteWorkoutExerciseById(exerciseId);
     }
 
-    
+
     @Transaction
     public void deleteFullWorkout(String workoutId) {
         List<WorkoutExerciseEntity> exercises = getExercisesForWorkout(workoutId);
         for (WorkoutExerciseEntity exercise : exercises) {
             deleteSetsForExercise(exercise.getId());
         }
-        
+
         deleteWorkoutById(workoutId);
     }
     
-    
+
     public interface WorkoutRepositoryHelper {
        Exercise getExerciseDetailsSync(String exerciseId);
     }
 
-    
+
     @Query("SELECT weight FROM exercise_sets WHERE exercise_id = :exerciseId AND weight IS NOT NULL ORDER BY created_at DESC LIMIT 1")
     public abstract Float getLastWeightForExercise(String exerciseId);
     
-    
+
     @Query("SELECT reps FROM exercise_sets WHERE exercise_id = :exerciseId AND reps IS NOT NULL ORDER BY created_at DESC LIMIT 1")
     public abstract Integer getLastRepsForExercise(String exerciseId);
 } 

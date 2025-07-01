@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -34,7 +35,6 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -62,7 +62,7 @@ public class ProgramSetupFragment extends Fragment {
     private View programInfoCard;
 
     private Calendar selectedStartDate = Calendar.getInstance();
-    private Calendar selectedReminderTime = Calendar.getInstance();
+    private final Calendar selectedReminderTime = Calendar.getInstance();
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("ru"));
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", new Locale("ru"));
 
@@ -106,6 +106,26 @@ public class ProgramSetupFragment extends Fragment {
         requestNotificationPermission();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        
+        requireActivity().getOnBackPressedDispatcher()
+            .addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    
+                    requireActivity().getSharedPreferences("VitaMovePrefs", 0)
+                        .edit()
+                        .putInt("workout_tab_index", 2) 
+                        .apply();
+                    
+                    
+                    requireActivity().getSupportFragmentManager().popBackStack();
+                }
+            });
+    }
+
     
     private void initViews(View view) {
         programNameText = view.findViewById(R.id.program_name);
@@ -127,13 +147,19 @@ public class ProgramSetupFragment extends Fragment {
         MaterialButton changeDateButton = requireView().findViewById(R.id.btn_change_date);
         changeDateButton.setOnClickListener(v -> showDatePickerDialog());
 
-
-
         
         startProgramButton.setOnClickListener(v -> startProgram());
 
         
-        cancelButton.setOnClickListener(v -> requireActivity().getSupportFragmentManager().popBackStack());
+        cancelButton.setOnClickListener(v -> {
+            
+            requireActivity().getSharedPreferences("VitaMovePrefs", 0)
+                .edit()
+                .putInt("workout_tab_index", 2) 
+                .apply();
+                
+            requireActivity().getSupportFragmentManager().popBackStack();
+        });
         
         
         daysOfWeekChipGroup.setOnCheckedChangeListener((group, checkedId) -> {
@@ -144,13 +170,13 @@ public class ProgramSetupFragment extends Fragment {
                 if (chip.isChecked()) {
                     int dayIndex = getDayIndex(chip.getId());
                     selectedDays.add(dayIndex);
-                    
+
                 }
             }
             
             
             setupConfig.setWorkoutDays(selectedDays);
-            
+
             
             
             updateDaysSelectionHint();
@@ -231,7 +257,7 @@ public class ProgramSetupFragment extends Fragment {
         
         
         int currentYear = today.get(Calendar.YEAR);
-        
+
         
         
         selectedStartDate = Calendar.getInstance();
@@ -240,7 +266,8 @@ public class ProgramSetupFragment extends Fragment {
         startDateText.setText(dateFormat.format(selectedStartDate.getTime()));
         setupConfig.setStartDate(selectedStartDate.getTimeInMillis());
         
-        
+
+
         
 
         
@@ -400,7 +427,7 @@ public class ProgramSetupFragment extends Fragment {
             }
         }
         
-        
+
         
         
         setupConfig.setWorkoutDays(selectedDays);
@@ -408,23 +435,24 @@ public class ProgramSetupFragment extends Fragment {
         
         program.setWorkoutDays(selectedDays);
         
-        
+
         
         
         programManager.saveProgramConfigAsync(setupConfig, new AsyncCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
-                
+
                 
                 
                 programManager.updateProgramWorkoutDaysAsync(program.getId(), selectedDays, new AsyncCallback<Boolean>() {
                     @Override
                     public void onSuccess(Boolean updated) {
-                        
+
                         
                         
                         ProgramSetupConfig configBeforeStart = programManager.getProgramConfig(setupConfig.getProgramId());
-                        
+
+
                         
                         
                         programManager.startProgramAsync(
@@ -476,7 +504,11 @@ public class ProgramSetupFragment extends Fragment {
     
     private void navigateToProgramsScreen() {
         
-        
+        requireActivity().getSharedPreferences("VitaMovePrefs", 0)
+            .edit()
+            .putInt("workout_tab_index", 2) 
+            .apply();
+            
         
         if (getActivity() != null) {
             getActivity().getSupportFragmentManager().popBackStack();
@@ -508,7 +540,7 @@ public class ProgramSetupFragment extends Fragment {
     
     private void cacheEntireProgram(String userProgramId) {
         try {
-            
+
             
             
             programManager.getFullProgramAsync(userProgramId, new AsyncCallback<JSONObject>() {
@@ -517,23 +549,23 @@ public class ProgramSetupFragment extends Fragment {
                     if (programJson != null) {
                         try {
                             
-                            
+
                             com.martist.vitamove.workout.data.cache.ProgramRoomCache.saveProgram(userProgramId, programJson);
-                            
+
                             
                             
                             android.os.Handler handler = new android.os.Handler();
                             handler.postDelayed(() -> {
-                                
+
                                 com.martist.vitamove.workout.data.cache.ProgramRoomCache.debugExerciseSaving(userProgramId);
                             }, 2000); 
 
                             
-                            
+
                             programManager.fetchAndCacheWorkoutPlansAsync(userProgramId, new AsyncCallback<Void>() {
                                 @Override
                                 public void onSuccess(Void result) {
-                                    
+
                                 }
 
                                 @Override
@@ -547,7 +579,7 @@ public class ProgramSetupFragment extends Fragment {
                             Log.e(TAG, "Ошибка сохранения программы (RPC) в кэш для ID: " + userProgramId, e);
                         }
                     } else {
-                        
+
                     }
                 }
 
@@ -662,12 +694,10 @@ public class ProgramSetupFragment extends Fragment {
                 ActivityResultLauncher<String> requestPermissionLauncher = 
                     registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                         if (isGranted) {
-                            
+
                         } else {
-                            
-                            Toast.makeText(requireContext(), 
-                                "Напоминания не будут работать без разрешения на уведомления", 
-                                Toast.LENGTH_LONG).show();
+
+
                             
                         }
                     });

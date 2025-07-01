@@ -4,18 +4,17 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
-import androidx.room.Ignore;
 
-import com.martist.vitamove.workout.data.models.WorkoutExercise;
 import com.martist.vitamove.workout.data.models.Exercise;
 import com.martist.vitamove.workout.data.models.ExerciseSet;
+import com.martist.vitamove.workout.data.models.WorkoutExercise;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity(tableName = "workout_exercises",
         foreignKeys = @ForeignKey(entity = UserWorkoutEntity.class,
@@ -35,32 +34,32 @@ public class WorkoutExerciseEntity {
     private String notes;
 
     @ColumnInfo(name = "start_time")
-    private Date startTime;
+    private Date startTime; 
 
     @ColumnInfo(name = "end_time")
-    private Date endTime;
+    private Date endTime;   
 
     @ColumnInfo(name = "is_rated")
     private boolean isRated;
 
     @NonNull
     @ColumnInfo(name = "workout_id")
-    private String workoutId;
+    private String workoutId; 
 
     @NonNull
     @ColumnInfo(name = "base_exercise_id")
-    private String baseExerciseId;
+    private String baseExerciseId; 
 
+    
+    
+    
+    
 
-
-
-
-
-
+    
     public WorkoutExerciseEntity() {}
 
-
-    @Ignore
+    
+    @Ignore 
     public WorkoutExerciseEntity(@NonNull String id, int orderNumber, String notes, Date startTime, Date endTime,
                                  boolean isRated, @NonNull String workoutId, @NonNull String baseExerciseId) {
         this.id = id;
@@ -73,7 +72,7 @@ public class WorkoutExerciseEntity {
         this.baseExerciseId = baseExerciseId;
     }
     
-
+    
     @NonNull
     public String getId() {
         return id;
@@ -141,22 +140,22 @@ public class WorkoutExerciseEntity {
         this.baseExerciseId = baseExerciseId;
     }
     
-
+    
     public WorkoutExercise toModel(Exercise baseExerciseDetails, List<ExerciseSet> sets) {
         WorkoutExercise model = new WorkoutExercise();
         model.setId(this.id);
-        model.setExercise(baseExerciseDetails);
+        model.setExercise(baseExerciseDetails); 
         model.setOrderNumber(this.orderNumber);
-        model.setSetsCompleted(sets != null ? sets : new ArrayList<>());
+        model.setSetsCompleted(sets != null ? sets : new ArrayList<>()); 
         model.setNotes(this.notes);
         model.setStartTime(this.startTime);
         model.setEndTime(this.endTime);
         model.setRated(this.isRated);
-
+        
         return model;
     }
 
-
+    
     public static WorkoutExerciseEntity fromModel(WorkoutExercise model, @NonNull String workoutId) {
         if (model.getId() == null) {
             model.setId(java.util.UUID.randomUUID().toString());

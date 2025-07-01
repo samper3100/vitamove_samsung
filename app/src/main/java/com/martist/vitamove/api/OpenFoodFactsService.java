@@ -29,7 +29,7 @@ public class OpenFoodFactsService {
     }
     
     public OpenFoodFactsService() {
-        
+
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         
@@ -37,7 +37,7 @@ public class OpenFoodFactsService {
                 .addInterceptor(loggingInterceptor)
                 .build();
         
-        
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(client)
@@ -59,7 +59,7 @@ public class OpenFoodFactsService {
                     if (openFoodFactsResponse.isSuccess()) {
                         Product product = openFoodFactsResponse.getProduct();
                         
-                        
+
                         if (product != null && product.getNutriments() != null) {
                             Nutriments nutriments = product.getNutriments();
                             boolean hasNutrients = 
@@ -69,19 +69,19 @@ public class OpenFoodFactsService {
                                 nutriments.getCarbohydrates() > 0;
                             
                             if (hasNutrients) {
-                                
+
                                 Food food = convertToFoodModel(product);
                                 listener.onProductFound(food);
                             } else if (product.getProductName() != null && !product.getProductName().isEmpty()) {
-                                
-                                
+
+
                                 listener.onProductFoundWithoutNutrients(product.getProductName());
                             } else {
                                 listener.onProductNotFound();
                             }
                         } else if (product != null && product.getProductName() != null && !product.getProductName().isEmpty()) {
-                            
-                            
+
+
                             listener.onProductFoundWithoutNutrients(product.getProductName());
                         } else {
                             listener.onProductNotFound();
@@ -111,10 +111,10 @@ public class OpenFoodFactsService {
         Nutriments nutriments = product.getNutriments();
         if (nutriments == null) {
             Log.e(TAG, "Nutriments is null");
-            nutriments = new Nutriments(); 
+            nutriments = new Nutriments();
         }
         
-        
+
         String category = "Продукты";
         String subcategory = "Другое";
         
@@ -128,9 +128,9 @@ public class OpenFoodFactsService {
             }
         }
         
+
         
-        
-        
+
         int usefulnessIndex = calculateUsefulnessIndex(
             nutriments.getProteins(),
             nutriments.getFat(),
@@ -142,7 +142,7 @@ public class OpenFoodFactsService {
             nutriments.getSodium()
         );
         
-        
+
         float fiber = nutriments.getFiber();
         float sugar = nutriments.getSugars();
         float saturatedFat = nutriments.getSaturatedFat();
@@ -167,7 +167,7 @@ public class OpenFoodFactsService {
         float vitaminB9 = nutriments.getVitaminB9();
         float vitaminB12 = nutriments.getVitaminB12();
         
-        
+
         if (fiber == 0) fiber = Float.NaN;
         if (sugar == 0) sugar = Float.NaN;
         if (saturatedFat == 0) saturatedFat = Float.NaN;
@@ -193,7 +193,7 @@ public class OpenFoodFactsService {
         if (vitaminB12 == 0) vitaminB12 = Float.NaN;
         
         Food food = new Food.Builder()
-                .id(0) 
+                .id(0)
                 .name(product.getProductName())
                 .category(category)
                 .subcategory(subcategory)
@@ -224,11 +224,11 @@ public class OpenFoodFactsService {
                 .vitaminB6(vitaminB6)
                 .vitaminB9(vitaminB9)
                 .vitaminB12(vitaminB12)
-                .popularity(0) 
-                .usefulness_index(usefulnessIndex) 
+                .popularity(0)
+                .usefulness_index(usefulnessIndex)
                 .build();
                 
-        
+
                   
         return food;
     }
@@ -238,39 +238,39 @@ public class OpenFoodFactsService {
             float fiber, float sugars, float saturatedFat,
             float transFat, float sodium) {
         
-        
+
         float index = 5.0f;
         
-        
-        
+
+
         if (proteins > 15.0f) {
             index += 2.0f;
         } else if (proteins > 10.0f) {
             index += 1.0f;
         }
         
-        
+
         if (fiber > 5.0f) {
             index += 1.0f;
         }
         
-        
-        
+
+
         if (sugars > 15.0f) {
             index -= 1.0f;
         }
         
-        
+
         if (saturatedFat > 5.0f || transFat > 1.0f) {
             index -= 1.0f;
         }
         
-        
+
         if (sodium > 500.0f) {
             index -= 1.0f;
         }
         
-        
+
         return Math.max(1, Math.min(10, Math.round(index)));
     }
 } 

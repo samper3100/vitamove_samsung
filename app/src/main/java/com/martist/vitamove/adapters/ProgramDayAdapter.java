@@ -1,7 +1,6 @@
 package com.martist.vitamove.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,36 +25,36 @@ public class ProgramDayAdapter extends RecyclerView.Adapter<ProgramDayAdapter.Da
     private List<ProgramDay> days;
     private final OnDayClickListener listener;
     
-
+    
     public interface OnDayClickListener {
         void onDayClick(ProgramDay day);
     }
     
-
+    
     public ProgramDayAdapter(Context context, OnDayClickListener listener) {
         this.context = context;
         this.days = new ArrayList<>();
         this.listener = listener;
     }
     
-
+    
     public ProgramDayAdapter(Context context, List<ProgramDay> days, OnDayClickListener listener) {
         this.context = context;
         this.days = days != null ? days : new ArrayList<>();
         this.listener = listener;
     }
     
-
+    
     public ProgramDayAdapter(List<ProgramDay> days, OnDayClickListener listener) {
         this.days = days != null ? days : new ArrayList<>();
         this.listener = listener;
-        this.context = null;
+        this.context = null; 
     }
     
     @NonNull
     @Override
     public DayViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
+        
         Context contextToUse = context != null ? context : parent.getContext();
         View view = LayoutInflater.from(contextToUse).inflate(R.layout.item_program_day, parent, false);
         return new DayViewHolder(view);
@@ -72,13 +71,13 @@ public class ProgramDayAdapter extends RecyclerView.Adapter<ProgramDayAdapter.Da
         return days.size();
     }
     
-
+    
     public void updateDays(List<ProgramDay> newDays) {
         this.days = newDays != null ? newDays : new ArrayList<>();
         notifyDataSetChanged();
     }
     
-
+    
     class DayViewHolder extends RecyclerView.ViewHolder {
         private final MaterialCardView cardView;
         private final TextView dayNumber;
@@ -92,12 +91,12 @@ public class ProgramDayAdapter extends RecyclerView.Adapter<ProgramDayAdapter.Da
         public DayViewHolder(@NonNull View itemView) {
             super(itemView);
             
-
+            
             if (itemView instanceof MaterialCardView) {
                 cardView = (MaterialCardView) itemView;
             } else {
-
-
+                
+                
                 cardView = null;
             }
             
@@ -109,7 +108,7 @@ public class ProgramDayAdapter extends RecyclerView.Adapter<ProgramDayAdapter.Da
             dayStatusIcon = itemView.findViewById(R.id.day_status_icon);
             completedIndicator = itemView.findViewById(R.id.completed_indicator);
             
-
+            
             if (cardView != null) {
                 cardView.setOnClickListener(v -> {
                     int position = getAdapterPosition();
@@ -127,47 +126,48 @@ public class ProgramDayAdapter extends RecyclerView.Adapter<ProgramDayAdapter.Da
             }
         }
         
-
+        
         public void bind(ProgramDay day) {
-
+            
             Context contextToUse = context != null ? context : itemView.getContext();
             
-            
-            
 
+
+            
+            
             if (dayNumber != null) {
                 dayNumber.setText(String.valueOf(day.getDayNumber()));
             }
             
-
+            
             if (dayTitle != null) {
                 String title = day.getName() != null && !day.getName().isEmpty() ? day.getName() : "День " + day.getDayNumber();
                 dayTitle.setText(title);
                 dayTitle.setVisibility(View.VISIBLE);
             }
             
-
+            
             if (focusAreaText != null) {
                 long timestamp = day.getPlannedTimestamp();
                 if (timestamp > 0) {
-
+                    
                     String formattedDate = DateUtils.formatDayMonthRussian(new Date(timestamp));
                     focusAreaText.setText(formattedDate);
                     focusAreaText.setVisibility(View.VISIBLE);
                 } else {
-
+                    
                     String focus = day.getDescription();
                     if (focus != null && !focus.isEmpty()) {
                         focusAreaText.setText(focus);
                         focusAreaText.setVisibility(View.VISIBLE);
                     } else {
-
+                        
                         focusAreaText.setVisibility(View.GONE);
                     }
                 }
             }
             
-
+            
             if (exerciseCount != null) {
                 int exercisesCount = day.getExercises() != null ? day.getExercises().size() : 0;
                  if (exercisesCount > 0) {
@@ -179,7 +179,7 @@ public class ProgramDayAdapter extends RecyclerView.Adapter<ProgramDayAdapter.Da
                  }
             }
             
-
+            
             if (duration != null) {
                 int durationMinutes = day.getDurationMinutes();
                  if (durationMinutes > 0) {
@@ -190,32 +190,33 @@ public class ProgramDayAdapter extends RecyclerView.Adapter<ProgramDayAdapter.Da
                  }
             }
             
-
+            
             if (dayStatusIcon != null && completedIndicator != null) {
-
-                boolean isCompleted = day.isCompleted() || "completed".equals(day.getStatus());
                 
+                boolean isCompleted = day.isCompleted() || "completed".equals(day.getStatus());
+
+
                 
                 if (isCompleted) {
-
                     
+
                     dayStatusIcon.setImageResource(R.drawable.ic_check_circle);
                     dayStatusIcon.setVisibility(View.VISIBLE);
                     completedIndicator.setVisibility(View.VISIBLE);
                 } else if ("skipped".equals(day.getStatus())) {
-
                     
+
                     dayStatusIcon.setImageResource(R.drawable.ic_skip_next);
                     dayStatusIcon.setVisibility(View.VISIBLE);
                     completedIndicator.setVisibility(View.GONE);
                 } else {
-
                     
+
                     dayStatusIcon.setVisibility(View.INVISIBLE);
                     completedIndicator.setVisibility(View.GONE);
                 }
             } else {
-                
+
             }
         }
     }
