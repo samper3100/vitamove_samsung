@@ -89,7 +89,7 @@ public class WorkoutExercise implements Parcelable {
         this.isCompleted = false;
     }
 
-    
+
     public String getId() { return id; }
     public Exercise getExercise() { return exercise; }
     public int getOrderNumber() { return orderNumber; }
@@ -107,7 +107,7 @@ public class WorkoutExercise implements Parcelable {
         return exercises;
     }
 
-    
+
     public void setId(String id) { this.id = id; }
     public void setExercise(Exercise exercise) { this.exercise = exercise; }
     public void setOrderNumber(int orderNumber) { this.orderNumber = orderNumber; }
@@ -120,7 +120,7 @@ public class WorkoutExercise implements Parcelable {
     public void setRated(boolean rated) { this.isRated = rated; }
     public void setCompleted(boolean completed) { this.isCompleted = completed; }
 
-    
+
     public void addSet(ExerciseSet set) {
         if (set != null) {
             setsCompleted.add(set);
@@ -140,27 +140,26 @@ public class WorkoutExercise implements Parcelable {
             return 0;
         }
         
-        
+
         int count = 0;
         for (ExerciseSet set : setsCompleted) {
             boolean isCompleted = set.isCompleted();
             if (isCompleted) {
                 count++;
             }
+
             
-
-
         }
         
+
         
-
-
+        
         return count;
     }
 
-    
+
     public void updateCompletedSetsCount() {
-        
-        
+
+
     }
 } 

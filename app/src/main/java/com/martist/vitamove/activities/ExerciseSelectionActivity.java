@@ -65,31 +65,31 @@ public class ExerciseSelectionActivity extends BaseActivity {
     }
 
     private void loadExercises() {
-        
-        
-        
-        
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
 
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         List<Exercise> exercises = new ArrayList<>();
-        
-        
-        
-        
 
-        adapter.submitList(exercises); 
+
+
+
+
+        adapter.submitList(exercises);
     }
 } 

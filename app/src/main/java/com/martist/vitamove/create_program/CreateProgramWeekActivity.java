@@ -99,7 +99,7 @@ public class CreateProgramWeekActivity extends BaseActivity implements
             programLevel = "MEDIUM"; 
         }
 
-
+        
 
         findViews();
         setupRecyclerView();
@@ -139,7 +139,7 @@ public class CreateProgramWeekActivity extends BaseActivity implements
     private void setupButtonClickListeners() {
         btnNextWeek.setOnClickListener(v -> {
             if (!validateCurrentWeekDaysFilled()) { return; }
-
+            
             currentWeek++;
             updateWeekTitle();
             loadWeekData(currentWeek);
@@ -148,7 +148,7 @@ public class CreateProgramWeekActivity extends BaseActivity implements
 
         btnCopyWeek.setOnClickListener(v -> {
             if (!validateCurrentWeekDaysFilled()) { return; }
-
+            
             
             for (int dayNum = 1; dayNum <= numberOfDaysPerWeek; dayNum++) {
                 int currentDayKey = generateDayKey(currentWeek, dayNum);
@@ -159,12 +159,12 @@ public class CreateProgramWeekActivity extends BaseActivity implements
                 if (idsToCopy != null) {
                     
                     selectedExerciseIdsPerDay.put(nextWeekDayKey, new ArrayList<>(idsToCopy));
-
+                    
                 } else {
                     
                     
                     selectedExerciseIdsPerDay.remove(nextWeekDayKey);
-
+                     
                 }
             }
             
@@ -265,13 +265,13 @@ public class CreateProgramWeekActivity extends BaseActivity implements
             btnNextWeek.setVisibility(View.GONE);
             btnCopyWeek.setVisibility(View.GONE);
             btnCreateProgram.setVisibility(View.VISIBLE);
-
+            
         } else {
             
             btnNextWeek.setVisibility(View.VISIBLE);
             btnCopyWeek.setVisibility(View.VISIBLE);
             btnCreateProgram.setVisibility(View.GONE);
-
+            
         }
     }
 
@@ -324,7 +324,7 @@ public class CreateProgramWeekActivity extends BaseActivity implements
                 exercises.add(exercise);
             } else {
                 
-
+                
                 
             }
         }
@@ -336,7 +336,7 @@ public class CreateProgramWeekActivity extends BaseActivity implements
         
         replacingDayNumber = -1;
         replacingExercisePosition = -1;
-
+        
         launchExerciseSelection(dayNumber);
     }
 
@@ -344,7 +344,7 @@ public class CreateProgramWeekActivity extends BaseActivity implements
     public void onReplaceExerciseRequest(int dayNumber, int exercisePosition, String exerciseId) {
         this.replacingDayNumber = dayNumber;
         this.replacingExercisePosition = exercisePosition;
-
+        
         
         launchExerciseSelection(dayNumber, true); 
     }
@@ -378,7 +378,7 @@ public class CreateProgramWeekActivity extends BaseActivity implements
         ArrayList<String> currentSelectionIds = (ArrayList<String>) selectedExerciseIdsPerDay.get(dayKey);
         if (currentSelectionIds != null && !currentSelectionIds.isEmpty()) {
             
-
+            
             intent.putStringArrayListExtra(DayExerciseSelectionActivity.EXTRA_PREVIOUS_SELECTION, new ArrayList<>(currentSelectionIds));
         }
 
@@ -413,10 +413,10 @@ public class CreateProgramWeekActivity extends BaseActivity implements
 
                             
                             if (replacingExercisePosition != -1 && replacingDayNumber == day) {
-
+                                
                                 if (selectedIds != null && !selectedIds.isEmpty()) {
                                     String newExerciseId = selectedIds.get(0); 
-
+                                    
                                     Exercise newExercise = exerciseListViewModel.getExerciseById(newExerciseId);
 
                                     if (newExercise != null) {
@@ -435,7 +435,7 @@ public class CreateProgramWeekActivity extends BaseActivity implements
                                                       existingIds.set(replacingExercisePosition, newExerciseId);
                                                  } else {
                                                      
-
+                                                      
                                                       existingIds.add(newExerciseId);
                                                  }
                                                 selectedExerciseIdsPerDay.put(generateDayKey(week, day), existingIds); 
@@ -465,7 +465,7 @@ public class CreateProgramWeekActivity extends BaseActivity implements
                             }
                             
                             else if (replacingExercisePosition == -1) {
-
+                                
                                 if (selectedIds != null) {
                                      int dayKey = generateDayKey(week, day);
                                      
@@ -485,9 +485,9 @@ public class CreateProgramWeekActivity extends BaseActivity implements
                                      
                                      String message = String.format("День %d обновлен: %d упр.", day, selectedIds.size());
                                      Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-
+                                     
                                 } else { 
-
+                                     
                                      int dayKey = generateDayKey(week, day);
                                      selectedExerciseIdsPerDay.put(dayKey, new ArrayList<>());
                                      currentWeekDays.get(dayPosition).setSelectedExercises(new ArrayList<>());
@@ -496,18 +496,18 @@ public class CreateProgramWeekActivity extends BaseActivity implements
                                 }
                             } else {
                                  
-
+                                 
                                  replacingDayNumber = -1;
                                  replacingExercisePosition = -1;
                             }
                         } else { 
-
+                             
                              replacingDayNumber = -1;
                              replacingExercisePosition = -1;
                              Toast.makeText(this, "Ошибка получения данных или неверная неделя", Toast.LENGTH_SHORT).show();
                         }
                     } else { 
-
+                         
                          replacingDayNumber = -1;
                          replacingExercisePosition = -1;
                          Toast.makeText(this, "Выбор упражнений отменен", Toast.LENGTH_SHORT).show();

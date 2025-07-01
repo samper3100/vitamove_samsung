@@ -52,7 +52,7 @@ public class AuthManager {
     public boolean refreshToken() {
         
         if (isRefreshing.getAndSet(true)) {
-
+            
             
             
             try {
@@ -70,7 +70,7 @@ public class AuthManager {
         try {
             
             supabaseClient.refreshAccessToken();
-
+            
             return true;
         } catch (SupabaseClient.TokenInvalidatedException e) {
             
@@ -145,7 +145,7 @@ public class AuthManager {
             supabaseClient.setUserToken(null);
             supabaseClient.setRefreshToken(null);
             
-
+            
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при очистке данных аутентификации", e);
         }
@@ -160,7 +160,7 @@ public class AuthManager {
                 loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 context.startActivity(loginIntent);
                 
-
+                
             }
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при перенаправлении на экран входа", e);

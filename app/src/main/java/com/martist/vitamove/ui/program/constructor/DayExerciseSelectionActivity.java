@@ -117,7 +117,7 @@ public class DayExerciseSelectionActivity extends BaseActivity {
 
         ArrayList<String> previouslySelectedIds = getIntent().getStringArrayListExtra(EXTRA_PREVIOUS_SELECTION);
         if (previouslySelectedIds != null && !previouslySelectedIds.isEmpty()) {
-
+            
             adapter.setPreviouslySelectedIds(previouslySelectedIds);
         }
 
@@ -178,7 +178,7 @@ public class DayExerciseSelectionActivity extends BaseActivity {
                         resultIntent.putExtra(EXTRA_IS_REPLACEMENT_MODE, isReplacement);
                         setResult(Activity.RESULT_OK, resultIntent);
                         
-
+                        
                         
                         finish();
                     }
@@ -190,7 +190,7 @@ public class DayExerciseSelectionActivity extends BaseActivity {
     private void observeViewModel() {
 
         exerciseListViewModel.getExercises().observe(this, exercises -> {
-
+            
 
 
             performLocalSearch(searchViewExercises.getQuery().toString());
@@ -198,7 +198,7 @@ public class DayExerciseSelectionActivity extends BaseActivity {
 
 
         exerciseListViewModel.getIsLoading().observe(this, isLoading -> {
-
+            
 
 
         });
@@ -243,9 +243,9 @@ public class DayExerciseSelectionActivity extends BaseActivity {
         if (query == null || query.trim().isEmpty()) {
 
             filteredExercises = new ArrayList<>(fullExerciseList);
-
+            
         } else {
-
+            
             String lowerCaseQuery = query.toLowerCase().trim();
 
             filteredExercises = fullExerciseList.stream()
@@ -261,7 +261,7 @@ public class DayExerciseSelectionActivity extends BaseActivity {
                     return nameMatch || muscleGroupMatch;
                 })
                 .collect(Collectors.toList());
-
+            
         }
 
 

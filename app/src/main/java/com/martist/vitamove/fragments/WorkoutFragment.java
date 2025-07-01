@@ -46,7 +46,7 @@ public class WorkoutFragment extends Fragment {
         
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
-
+            
         }
     }
 
@@ -188,14 +188,14 @@ public class WorkoutFragment extends Fragment {
             
             
             viewPager.setCurrentItem(tabIndex, false);
-
+            
         }
     }
 
     
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onWorkoutStartedEvent(WorkoutStartedEvent event) {
-
+        
         selectWorkoutTab();
     }
 
@@ -256,7 +256,7 @@ public class WorkoutFragment extends Fragment {
         
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
-
+            
         }
     }
 }

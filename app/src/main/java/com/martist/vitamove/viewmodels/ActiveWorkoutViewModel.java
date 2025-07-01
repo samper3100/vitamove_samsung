@@ -95,7 +95,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
 
         UserWorkout existingWorkout = activeWorkout.getValue();
         if (existingWorkout != null && userId.equals(existingWorkout.getUserId())) {
-
+             
 
              if (Boolean.TRUE.equals(isLoading.getValue())) {
                  isLoading.postValue(false);
@@ -104,7 +104,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
         }
 
         
-
+        
         isLoading.setValue(true);
         
         executor.execute(() -> {
@@ -113,7 +113,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
             try {
 
                 UserWorkout existingActiveWorkout = workoutDao.getFullActiveWorkout(userId, this);
-
+                
                 
 
                 boolean existingWorkoutIsEmpty = existingActiveWorkout != null && 
@@ -123,24 +123,24 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
                 WorkoutPlan todayPlan = null;
                 try {
                     todayPlan = scheduleManager.getTodayWorkoutPlan(userId);
-
+                    
                     
 
 
                     if (todayPlan != null && existingWorkoutIsEmpty) {
-
+                        
                         try {
 
                             String emptyWorkoutId = existingActiveWorkout.getId();
                             
 
                             workoutDao.deleteFullWorkout(emptyWorkoutId);
-
+                            
                             
 
                             try {
                                 workoutRepository.deleteWorkout(emptyWorkoutId);
-
+                                
                             } catch (Exception supabaseEx) {
                                 Log.e(TAG, "Ошибка при удалении пустой тренировки из Supabase: " + supabaseEx.getMessage(), supabaseEx);
 
@@ -164,37 +164,37 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
 
                     if (existingActiveWorkout != null) {
 
-
+                        
 
                         if (existingActiveWorkout.getExercises() == null || existingActiveWorkout.getExercises().isEmpty()) {
 
 
-
+                            
                             try {
 
                                 String emptyWorkoutId = existingActiveWorkout.getId();
                                 
 
                                 workoutDao.deleteFullWorkout(emptyWorkoutId);
-
+                                
                                 
 
                                 try {
                                     workoutRepository.deleteWorkout(emptyWorkoutId);
-
+                                    
                                 } catch (Exception supabaseEx) {
                                     Log.e(TAG, "Ошибка при удалении пустой тренировки из Supabase: " + supabaseEx.getMessage(), supabaseEx);
 
                                 }
                                 
 
-
+                                
                                 String createdWorkoutId = workoutRepository.createWorkoutFromPlan(todayPlan);
                                 if (createdWorkoutId != null) {
                                     finalWorkout = workoutDao.getFullActiveWorkout(userId, this);
                                     if (finalWorkout != null) {
-
-
+                                        
+                                        
                                     } else {
                                          Log.e(TAG, "КРИТИЧЕСКАЯ ОШИБКА: Не удалось загрузить тренировку из Room после создания из плана!");
                                          errorMessage.postValue("Критическая ошибка БД после создания из плана.");
@@ -205,7 +205,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
 
                                      finalWorkout = createAndSaveNewEmptyWorkout(userId);
                                      if (finalWorkout != null) {
-
+                                        
                                      }
                                 }
                             } catch (Exception deletionOrCreationEx) {
@@ -213,25 +213,25 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
                                 errorMessage.postValue("Ошибка: " + deletionOrCreationEx.getMessage());
 
                                 finalWorkout = existingActiveWorkout;
-
+                                
                             }
                         } else {
 
-
+                            
                             finalWorkout = existingActiveWorkout;
-
+                            
                         }
                     } else {
 
 
-
+                        
                          try {
                             String createdWorkoutId = workoutRepository.createWorkoutFromPlan(todayPlan);
                             if (createdWorkoutId != null) {
                                 finalWorkout = workoutDao.getFullActiveWorkout(userId, this);
                                 if (finalWorkout != null) {
-
-
+                                    
+                                    
                                 } else {
                                      Log.e(TAG, "КРИТИЧЕСКАЯ ОШИБКА: Не удалось загрузить тренировку из Room после создания из плана!");
                                      errorMessage.postValue("Критическая ошибка БД после создания из плана.");
@@ -242,7 +242,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
 
                                  finalWorkout = createAndSaveNewEmptyWorkout(userId);
                                  if (finalWorkout != null) {
-
+                                    
                                  }
                             }
                         } catch (Exception creationEx) {
@@ -257,16 +257,16 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
                     if (existingActiveWorkout != null) {
 
 
-
+                        
                         finalWorkout = existingActiveWorkout;
-
+                        
                     } else {
 
 
-
+                        
                         finalWorkout = createAndSaveNewEmptyWorkout(userId);
                         if (finalWorkout != null) {
-
+                            
                         }
                     }
                 }
@@ -275,12 +275,12 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
                 if (finalWorkout != null) {
                     activeWorkout.postValue(finalWorkout);
                     activeWorkoutId.postValue(finalWorkout.getId());
-
+                     
                 } else {
 
                     activeWorkout.postValue(null);
                     activeWorkoutId.postValue(null);
-
+                    
                 }
 
             } catch (Exception e) {
@@ -288,7 +288,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
                 errorMessage.postValue("Критическая ошибка: " + e.getMessage());
                 activeWorkout.postValue(null);
                 activeWorkoutId.postValue(null);
-
+                 
             } finally {
                 isLoading.postValue(false);
             }
@@ -305,27 +305,27 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
             if (supabaseWorkoutId == null) {
                 throw new Exception("Supabase createWorkout вернул null ID");
             }
-
+            
 
 
             UserWorkout newWorkout = createNewLocalWorkout(userId);
             newWorkout.setId(supabaseWorkoutId);
             workoutDao.insertWorkout(UserWorkoutEntity.fromModel(newWorkout));
-
+            
 
 
             UserWorkout createdWorkout = workoutDao.getFullActiveWorkout(userId, this);
             if (createdWorkout != null) {
                  activeWorkout.postValue(createdWorkout);
-
+                 
                  activeWorkoutId.postValue(createdWorkout.getId());
-
+                 
                  return createdWorkout;
             } else {
                  Log.e(TAG, "КРИТИЧЕСКАЯ ОШИБКА: Не удалось получить только что созданную пустую тренировку из Room!");
                  errorMessage.postValue("Критическая ошибка локальной базы данных при создании пустой тренировки.");
                  activeWorkout.postValue(null);
-
+                 
                  activeWorkoutId.postValue(null);
                  return null;
             }
@@ -334,7 +334,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
             Log.e(TAG, "КРИТИЧЕСКАЯ ОШИБКА при создании пустой тренировки: " + e.getMessage(), e);
             errorMessage.postValue("Критическая ошибка: " + e.getMessage());
             activeWorkout.postValue(null);
-
+            
             activeWorkoutId.postValue(null);
             return null;
         }
@@ -345,15 +345,14 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
 
 
     public void addExercise(String exerciseId, String userId) {
-
+        
         isLoading.setValue(true);
 
         executor.execute(() -> {
             UserWorkout currentActiveWorkout = activeWorkout.getValue();
 
             if (currentActiveWorkout == null || currentActiveWorkout.getId() == null || currentActiveWorkout.getEndTime() != null) {
-
-
+                
                 
 
                 currentActiveWorkout = createAndSaveNewEmptyWorkout(userId);
@@ -393,7 +392,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
                         exerciseId, 
                         orderNumber
                     );
-
+                    
                 } catch (Exception e) {
                      Log.e(TAG, "КРИТИЧЕСКАЯ ОШИБКА при создании WorkoutExercise в Supabase: " + e.getMessage(), e);
                      errorMessage.postValue("Критическая ошибка: не удалось добавить упражнение на сервер.");
@@ -430,24 +429,23 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
                 }
                 
                 newWorkoutExercise.setSetsCompleted(sets);
-
-
+                
 
 
                 workoutDao.addExerciseToWorkout(newWorkoutExercise, workoutIdToUse);
-
+                
                 
 
 
                 String finalUserId = userId;
                 if (finalUserId == null || finalUserId.isEmpty()) {
-
+                     
 
                      finalUserId = currentActiveWorkout.getUserId();
                 }
                 if (finalUserId != null && !finalUserId.isEmpty()){
                     UserWorkout finalUpdatedWorkout = workoutDao.getFullActiveWorkout(finalUserId, this);
-
+                    
                     activeWorkout.postValue(finalUpdatedWorkout);
                 } else {
                     Log.e(TAG, "addExercise: Не удалось перезагрузить тренировку - отсутствует User ID как в параметре, так и в LiveData");
@@ -469,7 +467,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
 
 
     public void removeExercise(String exerciseIdToRemove) {
-
+        
         String currentWorkoutId = activeWorkoutId.getValue();
         if (currentWorkoutId == null || exerciseIdToRemove == null) {
             Log.e(TAG, "Невозможно удалить упражнение: ID тренировки или упражнения не найдены");
@@ -481,7 +479,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
             try {
 
                 workoutDao.deleteFullWorkoutExercise(exerciseIdToRemove);
-
+                
 
 
                 UserWorkout updatedWorkout = workoutDao.getFullActiveWorkout(activeWorkout.getValue().getUserId(), this);
@@ -505,7 +503,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
         }
         String userId = currentWorkout.getUserId();
         String currentWorkoutId = currentWorkout.getId();
-
+        
 
         final String planId = currentWorkout.getPlanId();
 
@@ -515,13 +513,13 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
              return;
         }
 
-
+        
         isLoading.setValue(true);
 
         executor.execute(() -> {
             UserWorkout completedWorkoutToSend = null;
             boolean planStatusUpdated = false;
-
+            
 
 
             double totalWorkoutCalories = 0.0;
@@ -534,7 +532,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
 
 
                     userWeight = profile.getCurrentWeight(); 
-
+                    
                 } else {
                      Log.e(TAG, "Не удалось получить профиль пользователя (" + userId + ") для расчета калорий.");
 
@@ -546,11 +544,11 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
             }
 
             if (userWeight != null && userWeight > 0 && currentWorkout.getExercises() != null) {
-
+                
                 for (WorkoutExercise workoutExercise : currentWorkout.getExercises()) {
                     Exercise baseExercise = workoutExercise.getExercise();
                     if (baseExercise == null || baseExercise.getMet() <= 0) { 
-
+                         
                         continue;
                     }
                     double metValue = baseExercise.getMet();
@@ -570,11 +568,14 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
 
                         double exerciseCalories = metValue * 3.5 * userWeight / 200.0 * durationMinutes;
                         totalWorkoutCalories += exerciseCalories;
-
-
+                         
+                    } else {
+                         
                     }
                 }
-
+                 
+            } else {
+                 
             }
 
             int calculatedCalories = (int) Math.round(totalWorkoutCalories); 
@@ -582,15 +583,15 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
 
             try {
 
-
+                
                 UserWorkoutEntity workoutEntity = workoutDao.getActiveWorkoutEntity(userId);
                 if (workoutEntity != null) {
-
+                    
                     workoutEntity.setEndTime(endTime);
 
                     workoutEntity.setTotalCalories(calculatedCalories); 
                     workoutDao.updateWorkout(workoutEntity);
-
+                    
 
 
                     completedWorkoutToSend = new UserWorkout(
@@ -609,21 +610,21 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
                     );
                     
 
-
-
+                    
+                    
                     
 
-
+                    
                     workoutRepository.saveCompletedWorkout(completedWorkoutToSend);
-
+                    
 
 
                     if (planId != null && !planId.isEmpty()) {
                         try {
-
+                            
                             workoutRepository.updateWorkoutPlanStatus(planId, "completed");
                             planStatusUpdated = true;
-
+                            
                         } catch (Exception planUpdateEx) {
                             Log.e(TAG, "Ошибка при обновлении статуса плана ID: " + planId, planUpdateEx);
 
@@ -631,7 +632,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
                             errorMessage.postValue("Ошибка обновления статуса плана: " + planUpdateEx.getMessage()); 
                         }
                     } else {
-
+                        
                     }
 
 
@@ -641,11 +642,11 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
                     mainHandler.post(() -> {
                         isWorkoutCompleted.setValue(true);
                         activeWorkout.setValue(null);
-
-
+                        
+                        
                         activeWorkoutId.setValue(null);
                         isLoading.setValue(false);
-
+                        
                     });
                     
                 } else {
@@ -686,7 +687,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
     @Override
     public Exercise getExerciseDetailsSync(String exerciseId) {
         if (exerciseId == null || exerciseId.isEmpty()) {
-
+            
             return null;
         }
         
@@ -699,12 +700,12 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
             return cachedExercise;
         } else {
 
-
+            
             try {
 
                 Exercise fetchedExercise = workoutRepository.getExerciseById(exerciseId);
                 if (fetchedExercise != null) {
-
+                    
 
 
                     return fetchedExercise;
@@ -754,7 +755,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
 
         UserWorkout currentWorkout = activeWorkout.getValue();
         if (currentWorkout == null || currentWorkout.getExercises() == null || currentWorkout.getExercises().isEmpty()) {
-
+            
             realTimeCalories.postValue(0);
             return;
         }
@@ -768,7 +769,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
                 UserProfile profile = userRepository.getCurrentUserProfile();
                 if (profile != null) {
                     userWeight = profile.getCurrentWeight();
-
+                    
                 } else {
                     Log.e(TAG, "Не удалось получить профиль пользователя для расчета калорий в реальном времени");
                 }
@@ -781,7 +782,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
                 for (WorkoutExercise workoutExercise : currentWorkout.getExercises()) {
                     Exercise baseExercise = workoutExercise.getExercise();
                     if (baseExercise == null || baseExercise.getMet() <= 0) {
-
+                        
                         continue;
                     }
                     
@@ -803,20 +804,21 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
                         double exerciseCalories = metValue * 3.5 * userWeight / 200.0 * durationMinutes;
                         totalWorkoutCalories += exerciseCalories;
                         
-
-
+                        
+                    } else {
+                        
                     }
                 }
                 
 
 
             } else {
-
+                
             }
             
 
             int calculatedCalories = (int) Math.round(totalWorkoutCalories);
-
+            
             realTimeCalories.postValue(calculatedCalories);
         });
     }
@@ -827,16 +829,16 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
     public void saveCurrentWorkoutStateToDb() {
         UserWorkout currentWorkout = activeWorkout.getValue();
         if (currentWorkout == null) {
-
+            
             return;
         }
 
-
+        
         executor.execute(() -> {
             try {
 
                 workoutDao.saveFullWorkout(currentWorkout);
-
+                
             } catch (Exception e) {
                 Log.e(TAG, "saveCurrentWorkoutStateToDb: Ошибка при сохранении текущей тренировки в Room: " + e.getMessage(), e);
 
@@ -881,9 +883,9 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
                     currentWorkout.setExercises(sortedExercises);
                     
 
-
+                    
                     for (WorkoutExercise ex : sortedExercises) {
-
+                        
                     }
                     
 
@@ -894,13 +896,13 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
                     
 
 
-
+                    
                     saveCurrentWorkoutStateToDb();
                 } else {
                     isLoading.postValue(false);
                 }
                 
-
+                
             } catch (Exception e) {
                 Log.e(TAG, "updateExerciseOrder: Ошибка при обновлении порядка упражнений", e);
                 errorMessage.postValue("Ошибка при обновлении порядка упражнений: " + e.getMessage());
@@ -912,7 +914,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
 
 
     public void updateWorkoutExerciseSets(String workoutExerciseId, List<ExerciseSet> updatedSets) {
-
+        
         if (workoutExerciseId == null || updatedSets == null) {
             Log.e(TAG, "updateWorkoutExerciseSets: Невозможно обновить - ID упражнения или список подходов null.");
             return;
@@ -927,18 +929,17 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
         boolean exerciseFound = false;
         for (WorkoutExercise exercise : currentWorkout.getExercises()) {
             if (workoutExerciseId.equals(exercise.getId())) {
-
-
+                
                           
 
                 exercise.setSetsCompleted(new ArrayList<>(updatedSets));
                 exerciseFound = true;
                 
 
-
+                
                 for(int i=0; i<updatedSets.size(); i++) {
                     ExerciseSet set = updatedSets.get(i);
-
+                    
                 }
                 break;
             }
@@ -948,26 +949,25 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
 
 
             activeWorkout.postValue(currentWorkout); 
-
+            
             
 
             executor.execute(() -> {
                 try {
-
+                    
                     UserWorkoutEntity entity = workoutDao.getActiveWorkoutEntity(currentWorkout.getUserId());
                     if (entity != null) {
 
                         for (ExerciseSet set : updatedSets) {
                             if (set.getId() != null && !set.getId().isEmpty() && !set.getId().startsWith("temp_")) {
                                 workoutRepository.updateSet(set.getId(), set);
-
-
+                                
                             }
                         }
                         
 
                         saveCurrentWorkoutStateToDb();
-
+                        
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "updateWorkoutExerciseSets: Ошибка при сохранении в БД: " + e.getMessage(), e);
@@ -976,11 +976,11 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
             
 
             if (currentWorkout.getUserId() != null) {
-
+                
                 calculateRealTimeCalories(currentWorkout.getUserId());
             }
         } else {
-
+            
         }
     }
 
@@ -991,7 +991,7 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
             throw new IllegalArgumentException("ID тренировки не может быть пустым");
         }
         
-
+        
         
 
         workoutRepository.updateWorkoutStartTime(workoutId, startTime);
@@ -1006,14 +1006,14 @@ public class ActiveWorkoutViewModel extends AndroidViewModel implements WorkoutD
                     entity.setStartTime(startTime);
 
                     workoutDao.updateWorkout(entity);
-
+                    
                     
 
                     UserWorkout currentWorkout = activeWorkout.getValue();
                     if (currentWorkout != null && workoutId.equals(currentWorkout.getId())) {
                         currentWorkout.setStartTime(startTime);
                         activeWorkout.postValue(currentWorkout);
-
+                        
                     }
                 } else {
                     Log.e(TAG, "Не найдена тренировка с ID " + workoutId + " в локальной БД");

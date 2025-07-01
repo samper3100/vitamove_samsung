@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 public class SelectedFood implements Parcelable {
     private final Food food;
-    private final double amount; 
+    private final double amount;
 
     public SelectedFood(Food food, double amount) {
         this.food = food;

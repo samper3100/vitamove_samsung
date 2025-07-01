@@ -173,7 +173,7 @@ public class GigaChatService {
                     if (userId != null) {
                         WorkoutRepository workoutRepository = ((VitaMoveApplication) context).getWorkoutRepository();
                         workouts = workoutRepository.getRecentWorkouts(userId, 3);
-
+                        
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Ошибка при загрузке тренировок", e);
@@ -187,7 +187,7 @@ public class GigaChatService {
                     
 
                     contextInitialized = true;
-
+                    
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при инициализации контекста пользователя", e);
@@ -212,7 +212,7 @@ public class GigaChatService {
         
 
         if (!isInitialized) {
-
+            
             StringBuilder context = new StringBuilder("Пользователь использует фитнес-приложение VitaMove.");
             
 
@@ -397,9 +397,9 @@ public class GigaChatService {
                 android.util.Base64.NO_WRAP
             );
 
-
-
-
+            
+            
+            
 
             RequestBody body = RequestBody.create(
                 authBody,
@@ -414,9 +414,9 @@ public class GigaChatService {
                 .post(body)
                 .build();
 
-
-
-
+            
+            
+            
 
             client.newCall(request).enqueue(new Callback() {
                 @Override
@@ -429,8 +429,8 @@ public class GigaChatService {
                 public void onResponse(Call call, Response response) throws IOException {
                     try (ResponseBody responseBody = response.body()) {
                         String responseString = responseBody != null ? responseBody.string() : "";
-
-
+                        
+                        
 
                         if (!response.isSuccessful() || responseBody == null) {
                             Log.e(TAG, "Ошибка авторизации: " + response.code() + ", тело: " + responseString);
@@ -445,8 +445,8 @@ public class GigaChatService {
                         long expiresAt = jsonResponse.getLong("expires_at");
                         tokenExpireTime = expiresAt;
 
-
-
+                        
+                        
                         onSuccess.run();
                     } catch (Exception e) {
                         Log.e(TAG, "Ошибка обработки ответа авторизации", e);
@@ -462,7 +462,7 @@ public class GigaChatService {
 
 
     public void sendMessage(String message, ChatCallback callback) {
-
+        
         
 
         Map<String, String> userMessage = new HashMap<>();
@@ -507,7 +507,7 @@ public class GigaChatService {
                 jsonBody.put("top_p", 0.8);
 
                 String requestBody = jsonBody.toString();
-
+                
 
                 RequestBody body = RequestBody.create(
                     requestBody,
@@ -521,8 +521,8 @@ public class GigaChatService {
                     .post(body)
                     .build();
 
-
-
+                
+                
 
                 client.newCall(request).enqueue(new Callback() {
                     @Override
@@ -534,7 +534,7 @@ public class GigaChatService {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         try (ResponseBody responseBody = response.body()) {
-
+                            
                             
                             if (!response.isSuccessful() || responseBody == null) {
                                 String errorBody = responseBody != null ? responseBody.string() : "нет тела ответа";
@@ -544,7 +544,7 @@ public class GigaChatService {
                             }
 
                             String responseString = responseBody.string();
-
+                            
 
                             try {
                                 JSONObject jsonResponse = new JSONObject(responseString);
@@ -560,7 +560,7 @@ public class GigaChatService {
                                 assistantMsg.put("content", assistantResponse);
                                 conversationHistory.add(assistantMsg);
 
-
+                                
                                 callback.onResponse(assistantResponse);
                             } catch (Exception e) {
                                 Log.e(TAG, "Ошибка обработки ответа: " + e.getMessage(), e);
@@ -591,7 +591,7 @@ public class GigaChatService {
             conversationHistory.remove(0);
         }
         
-
+        
     }
     
 
@@ -613,6 +613,6 @@ public class GigaChatService {
     public void resetConversation() {
         conversationHistory.clear();
         sessionId = UUID.randomUUID().toString();
-
+        
     }
 } 

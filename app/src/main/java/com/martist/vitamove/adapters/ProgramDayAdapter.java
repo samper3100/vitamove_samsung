@@ -131,8 +131,7 @@ public class ProgramDayAdapter extends RecyclerView.Adapter<ProgramDayAdapter.Da
             
             Context contextToUse = context != null ? context : itemView.getContext();
             
-
-
+            
             
             
             if (dayNumber != null) {
@@ -194,29 +193,28 @@ public class ProgramDayAdapter extends RecyclerView.Adapter<ProgramDayAdapter.Da
             if (dayStatusIcon != null && completedIndicator != null) {
                 
                 boolean isCompleted = day.isCompleted() || "completed".equals(day.getStatus());
-
-
+                
                 
                 if (isCompleted) {
                     
-
+                    
                     dayStatusIcon.setImageResource(R.drawable.ic_check_circle);
                     dayStatusIcon.setVisibility(View.VISIBLE);
                     completedIndicator.setVisibility(View.VISIBLE);
                 } else if ("skipped".equals(day.getStatus())) {
                     
-
+                    
                     dayStatusIcon.setImageResource(R.drawable.ic_skip_next);
                     dayStatusIcon.setVisibility(View.VISIBLE);
                     completedIndicator.setVisibility(View.GONE);
                 } else {
                     
-
+                    
                     dayStatusIcon.setVisibility(View.INVISIBLE);
                     completedIndicator.setVisibility(View.GONE);
                 }
             } else {
-
+                
             }
         }
     }

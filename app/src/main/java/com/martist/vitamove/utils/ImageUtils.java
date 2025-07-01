@@ -38,7 +38,7 @@ public class ImageUtils {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
             fos.close();
             
-
+            
             return true;
             
         } catch (IOException e) {
@@ -52,7 +52,7 @@ public class ImageUtils {
         try {
             File imageFile = new File(context.getFilesDir(), fileName);
             if (!imageFile.exists()) {
-
+                
                 return null;
             }
             
@@ -75,7 +75,7 @@ public class ImageUtils {
         if (imageFile.exists()) {
             boolean deleted = imageFile.delete();
             if (deleted) {
-
+                
             } else {
                 Log.e(TAG, "Не удалось удалить файл изображения: " + fileName);
             }

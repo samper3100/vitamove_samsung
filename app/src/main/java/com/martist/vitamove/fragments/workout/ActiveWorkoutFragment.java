@@ -94,16 +94,16 @@ public class ActiveWorkoutFragment extends Fragment
         
         caloriesManager = CaloriesManager.getInstance(requireContext());
 
-
+        
         
         
         workoutViewModel = new ViewModelProvider.AndroidViewModelFactory(requireActivity().getApplication())
                 .create(ActiveWorkoutViewModel.class);
-
+        
         
         
         if (userId != null) {
-
+            
             workoutViewModel.loadOrCreateActiveWorkout(userId);
         } else {
             Log.e(TAG, "onCreate: userId is null, не могу загрузить тренировку");
@@ -234,7 +234,7 @@ public class ActiveWorkoutFragment extends Fragment
                 new Thread(() -> {
                     try {
                         workoutViewModel.updateWorkoutStartTime(workout.getId(), workoutStartTime);
-
+                        
                     } catch (Exception e) {
                         Log.e(TAG, "Ошибка при обновлении времени начала тренировки: " + e.getMessage(), e);
                         
@@ -342,12 +342,12 @@ public class ActiveWorkoutFragment extends Fragment
             
             workoutViewModel.getActiveWorkout().observe(getViewLifecycleOwner(), workout -> {
                 if (workout != null) {
-
+                    
                     adapter.updateExercises(workout.getExercises());
                     
                     updateWorkoutStats(workout);
                 } else {
-
+                    
                     adapter.updateExercises(new ArrayList<>());
                 }
             });
@@ -368,7 +368,7 @@ public class ActiveWorkoutFragment extends Fragment
             workoutViewModel.getIsWorkoutCompleted().observe(getViewLifecycleOwner(), isCompleted -> {
                 if (isCompleted) {
                     handleWorkoutCompletionUI();
-
+                    
                 }
             });
             
@@ -425,7 +425,7 @@ public class ActiveWorkoutFragment extends Fragment
         super.onActivityResult(requestCode, resultCode, data);
         
         if (data == null) {
-
+            
             return;
         }
         
@@ -434,48 +434,48 @@ public class ActiveWorkoutFragment extends Fragment
                 if (data.hasExtra("selected_exercise")) { 
                     Exercise selectedExercise = data.getParcelableExtra("selected_exercise");
                     if (selectedExercise != null && userId != null) {
-
+                        
                         
                         UserWorkout currentWorkout = workoutViewModel.getActiveWorkout().getValue();
                         if (currentWorkout == null || currentWorkout.getEndTime() != null) {
-
+                            
                             workoutViewModel.loadOrCreateActiveWorkout(userId);
                             
                         }
                         workoutViewModel.addExercise(selectedExercise.getId(), userId);
                     } else {
-
+                        
                     }
                 } else if (data.getBooleanExtra("exercise_added_via_details", false)) { 
                     String exerciseId = data.getStringExtra("exercise_id");
                     if (exerciseId != null && userId != null) {
-
+                        
                         
                         UserWorkout currentWorkout = workoutViewModel.getActiveWorkout().getValue();
                         if (currentWorkout == null || currentWorkout.getEndTime() != null) {
-
+                            
                             workoutViewModel.loadOrCreateActiveWorkout(userId);
                             
                         }
                         workoutViewModel.addExercise(exerciseId, userId);
                     } else {
-
+                        
                     }
                 } else {
-
+                    
                 }
             } else if (requestCode == REQUEST_CODE_CONFIGURE_EXERCISE) { 
-
+                
                 
                 WorkoutExercise completedExercise = data.getParcelableExtra("completed_exercise");
                 if (completedExercise != null) {
                     String exerciseName = completedExercise.getExercise() != null ? 
                         completedExercise.getExercise().getName() : "Неизвестное упражнение";
                     
-
+                    
                     
                     if (completedExercise.getSetsCompleted() == null || completedExercise.getSetsCompleted().isEmpty()) {
-
+                        
                     } else {
                         for (ExerciseSet set : completedExercise.getSetsCompleted()) {
                             String durationInfo = "";
@@ -484,8 +484,7 @@ public class ActiveWorkoutFragment extends Fragment
                                 int seconds = set.getDurationSeconds() % 60;
                                 durationInfo = ", длительность: " + minutes + " мин. " + seconds + " сек.";
                             }
-
-
+                            
                         }
                     }
                           
@@ -493,10 +492,10 @@ public class ActiveWorkoutFragment extends Fragment
                         completedExercise.getId(), 
                         completedExercise.getSetsCompleted()
                     );
-
+                    
 
                     if (userId != null) {
-
+                        
                         workoutViewModel.calculateRealTimeCalories(userId);
                     }
                     
@@ -504,13 +503,13 @@ public class ActiveWorkoutFragment extends Fragment
                     
                     UserWorkout currentWorkoutState = workoutViewModel.getActiveWorkout().getValue();
                     if (currentWorkoutState != null && currentWorkoutState.getExercises() != null) {
-
+                        
                         adapter.updateExercises(currentWorkoutState.getExercises());
                         
                         
                         boolean autoNextExercise = data.getBooleanExtra("auto_next_exercise", false);
                         if (autoNextExercise) {
-
+                            
                             
                             
                             int currentIndex;
@@ -522,14 +521,14 @@ public class ActiveWorkoutFragment extends Fragment
                             if (currentIndex >= 0 && currentIndex < exercises.size() - 1) {
                                 
                                 WorkoutExercise nextExercise = exercises.get(currentIndex + 1);
-
-
+                                
+                                
                                 
                                 new Handler().postDelayed(() -> {
                                     onExerciseClick(nextExercise, currentIndex + 1);
                                 }, 300);
                             } else {
-
+                                
                                 Toast.makeText(requireContext(), "Вы завершили все упражнения!", Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -537,23 +536,23 @@ public class ActiveWorkoutFragment extends Fragment
                     
                     Boolean workoutOverallCompleted = workoutViewModel.getIsWorkoutCompleted().getValue();
                     if (workoutOverallCompleted != null && workoutOverallCompleted) {
-
+                         
                     } else {
-
+                         
                     }
 
                 } else {
-
+                    
                 }
             }
         } else if (resultCode != Activity.RESULT_CANCELED) { 
-
+            
         }
     }
 
     @Override
     public void onExerciseClick(WorkoutExercise exercise, int position) {
-
+        
         
         
         Intent intent = new Intent(getActivity(), ExerciseSettingsActivity.class);
@@ -565,7 +564,7 @@ public class ActiveWorkoutFragment extends Fragment
 
     @Override
     public void onDeleteExercise(WorkoutExercise exercise, int position) {
-
+        
         
         new AlertDialog.Builder(requireContext())
             .setTitle("Удалить упражнение?")
@@ -647,11 +646,11 @@ public class ActiveWorkoutFragment extends Fragment
             Integer currentCalories = workoutViewModel.getRealTimeCalories().getValue();
             if (currentCalories != null && currentCalories > 0) {
                 caloriesManager.updateActiveWorkoutCalories(currentCalories);
-
+                
             }
         }
         
-
+        
     }
 
     @Override
@@ -660,7 +659,7 @@ public class ActiveWorkoutFragment extends Fragment
         
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
-
+            
         }
     }
 
@@ -676,7 +675,7 @@ public class ActiveWorkoutFragment extends Fragment
             Integer currentCalories = workoutViewModel.getRealTimeCalories().getValue();
             if (currentCalories != null && currentCalories > 0) {
                 caloriesManager.updateActiveWorkoutCalories(currentCalories);
-
+                
             }
         }
         
@@ -688,10 +687,10 @@ public class ActiveWorkoutFragment extends Fragment
         
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
-
+            
         }
         
-
+        
     }
 
     @Override
@@ -717,7 +716,7 @@ public class ActiveWorkoutFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
-
+        
         
         
         if (isWorkoutActive && userId != null) {
@@ -746,7 +745,7 @@ public class ActiveWorkoutFragment extends Fragment
             return;
         }
 
-
+        
 
         if (userId == null) {
             Log.e(TAG, "userId is null, не могу добавить упражнение. Пользователь может быть не авторизован.");
@@ -764,12 +763,12 @@ public class ActiveWorkoutFragment extends Fragment
         UserWorkout currentWorkout = workoutViewModel.getActiveWorkout().getValue();
         if (currentWorkout == null || currentWorkout.getEndTime() != null) {
             
-
+            
             workoutViewModel.loadOrCreateActiveWorkout(userId);
 
         }
 
-
+        
         workoutViewModel.addExercise(event.exerciseId, userId);
     }
 } 

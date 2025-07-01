@@ -153,7 +153,7 @@ public class AssistantFragment extends Fragment {
         editor.putString(KEY_CHAT_HISTORY, json);
         editor.apply();
         
-
+        
     }
     
     
@@ -177,7 +177,7 @@ public class AssistantFragment extends Fragment {
                 
                 chatRecyclerView.post(() -> chatRecyclerView.scrollToPosition(chatAdapter.getItemCount() - 1));
                 
-
+                
                 
                 
                 restoreChatHistoryToGigaChat(messages);
@@ -199,7 +199,7 @@ public class AssistantFragment extends Fragment {
             }
         }
         
-
+        
     }
     
     

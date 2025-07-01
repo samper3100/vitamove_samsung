@@ -149,7 +149,7 @@ public class HistoryFragment extends Fragment implements WorkoutHistoryAdapter.O
             
 
             if (lastRefreshTime == 0 || currentTime - lastRefreshTime > 30 * 60 * 1000) {
-
+                
                 
 
                 if (isAdded()) {
@@ -190,7 +190,7 @@ public class HistoryFragment extends Fragment implements WorkoutHistoryAdapter.O
         
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
-
+            
             
 
             SharedPreferences prefs = requireActivity().getSharedPreferences(
@@ -208,7 +208,7 @@ public class HistoryFragment extends Fragment implements WorkoutHistoryAdapter.O
 
                     viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
                         if (!isLoading) {
-
+                            
                             swipeRefreshLayout.setRefreshing(false);
                             
 
@@ -226,14 +226,14 @@ public class HistoryFragment extends Fragment implements WorkoutHistoryAdapter.O
         if (viewModelWorkoutsByDate != null) {
             workoutsByDate.clear();
             workoutsByDate.putAll(viewModelWorkoutsByDate);
-
+            
         }
         
         Map<Long, WorkoutPlan> viewModelPlansByDate = viewModel.getPlansByDate();
         if (viewModelPlansByDate != null) {
             plansByDate.clear();
             plansByDate.putAll(viewModelPlansByDate);
-
+            
         }
     }
     
@@ -257,7 +257,7 @@ public class HistoryFragment extends Fragment implements WorkoutHistoryAdapter.O
 
                 viewModel.getAllWorkouts().observe(getViewLifecycleOwner(), workouts -> {
                     if (workouts != null) {
-
+                        
                         updateDataFromViewModel();
                     }
                 });
@@ -485,7 +485,7 @@ public class HistoryFragment extends Fragment implements WorkoutHistoryAdapter.O
                     .map(Map.Entry::getKey)
                     .orElse(null);
     
-
+                
                 
 
                 final String finalFavoriteExercise = favoriteExercise;

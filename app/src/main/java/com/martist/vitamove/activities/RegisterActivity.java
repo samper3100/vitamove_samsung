@@ -35,18 +35,18 @@ public class RegisterActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        
+
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         
         setContentView(R.layout.activity_register);
 
-        
+
         supabaseClient = SupabaseClient.getInstance(
             Constants.SUPABASE_CLIENT_ID,
             Constants.SUPABASE_CLIENT_SECRET
         );
         
-        
+
         userWeightViewModel = new ViewModelProvider(this).get(UserWeightViewModel.class);
 
         initializeViews();
@@ -56,13 +56,13 @@ public class RegisterActivity extends BaseActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        
+        
 
-        
-        
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-
+            
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-
+            
         }
     }
     
@@ -92,7 +92,7 @@ public class RegisterActivity extends BaseActivity {
         String password = passwordInput.getText().toString().trim();
         String confirmPassword = confirmPasswordInput.getText().toString().trim();
 
-        
+
         if (email.isEmpty()) {
             showError("Пожалуйста, введите email");
             return;
@@ -108,13 +108,13 @@ public class RegisterActivity extends BaseActivity {
             return;
         }
 
-        
+
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             showError("Пожалуйста, введите корректный email адрес");
             return;
         }
 
-        
+
         if (password.length() < 6) {
             showError("Пароль должен содержать не менее 6 символов");
             return;
@@ -125,21 +125,21 @@ public class RegisterActivity extends BaseActivity {
             return;
         }
 
-        
+
         registerButton.setEnabled(false);
         
-        
+
         new Thread(() -> {
             try {
-                
+
                 String responseJson = supabaseClient.signUp(email, password);
                 JSONObject jsonResponse = new JSONObject(responseJson);
                 
-                
+
                 String accessToken = jsonResponse.getString("access_token");
                 String refreshToken = jsonResponse.optString("refresh_token", "");
                 
-                
+
                 String userId = null;
                 try {
                     String[] jwtParts = accessToken.split("\\.");
@@ -147,7 +147,7 @@ public class RegisterActivity extends BaseActivity {
                         String payload = new String(android.util.Base64.decode(jwtParts[1], android.util.Base64.DEFAULT));
                         JSONObject jwtJson = new JSONObject(payload);
                         userId = jwtJson.getString("sub");
-
+                        
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Ошибка получения ID пользователя из токена", e);
@@ -157,7 +157,7 @@ public class RegisterActivity extends BaseActivity {
                 
                 runOnUiThread(() -> {
                     try {
-                        
+
                         SharedPreferences prefs = getSharedPreferences("VitaMovePrefs", MODE_PRIVATE);
                         prefs.edit()
                                 .putBoolean("isLogged", true)
@@ -168,12 +168,12 @@ public class RegisterActivity extends BaseActivity {
                                 .putString("userEmail", email)
                                 .apply();
 
-                        
+
                         addInitialWeightRecord();
 
                         Toast.makeText(this, "Регистрация успешна!", Toast.LENGTH_SHORT).show();
                         
-                        
+
                         Intent intent = new Intent(this, MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
@@ -188,7 +188,7 @@ public class RegisterActivity extends BaseActivity {
                 Log.e(TAG, "Registration error: " + e.getMessage());
                 String errorMessage = e.getMessage();
                 
-                
+
                 String userFriendlyMessage;
                 if (errorMessage.contains("уже существует")) {
                     userFriendlyMessage = "Этот email уже зарегистрирован. Попробуйте войти или используйте другой email.";
@@ -215,35 +215,35 @@ public class RegisterActivity extends BaseActivity {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
-    
+
     private void addInitialWeightRecord() {
-        
+
         SharedPreferences userDataPrefs = getSharedPreferences("user_data", MODE_PRIVATE);
         float currentWeight = userDataPrefs.getFloat("current_weight", 0f);
         
-        
+
         if (currentWeight > 0) {
-            
+
             new Thread(() -> {
                 try {
-                    
+
                     Thread.sleep(1000);
                     
-                    
-                    userWeightViewModel.addWeightRecordOnlyToSupabase(currentWeight, "Начальный вес");
 
+                    userWeightViewModel.addWeightRecordOnlyToSupabase(currentWeight, "Начальный вес");
                     
                     
+
                     SharedPreferences.Editor editor = userDataPrefs.edit();
                     editor.putBoolean("weight_record_created", true);
                     editor.apply();
-
+                    
                 } catch (Exception e) {
                     Log.e(TAG, "Ошибка при добавлении записи о весе: " + e.getMessage(), e);
                 }
             }).start();
         } else {
-
+            
         }
     }
 }

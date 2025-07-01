@@ -25,12 +25,12 @@ public class HeightRulerAdapter extends RecyclerView.Adapter<HeightRulerAdapter.
     private final Context context;
     private final HeightSelectedListener listener;
 
-    
+
     public interface HeightSelectedListener {
         void onHeightSelected(int heightValue, boolean isMetric);
     }
 
-    
+
     public HeightRulerAdapter(Context context, boolean isMetric, HeightSelectedListener listener) {
         this.context = context;
         this.listener = listener;
@@ -48,44 +48,44 @@ public class HeightRulerAdapter extends RecyclerView.Adapter<HeightRulerAdapter.
         setupMetricRuler(holder, position);
     }
 
-    
+
     private void setupMetricRuler(RulerViewHolder holder, int position) {
         int heightValue = position + MIN_HEIGHT_CM;
         
-        
+
         if (heightValue % 10 == 0) {
             holder.line.setLayoutParams(new LinearLayout.LayoutParams(
-                    2, 
-                    dpToPx(context, 35)  
+                    2,
+                    dpToPx(context, 35)
             ));
-            holder.line.setBackgroundColor(Color.BLACK); 
+            holder.line.setBackgroundColor(Color.BLACK);
             holder.valueText.setVisibility(View.VISIBLE);
             holder.valueText.setText(String.valueOf(heightValue));
             holder.valueText.setTypeface(null, Typeface.BOLD);
         } 
-        
+
         else if (heightValue % 5 == 0) {
             holder.line.setLayoutParams(new LinearLayout.LayoutParams(
-                    1, 
-                    dpToPx(context, 25)  
+                    1,
+                    dpToPx(context, 25)
             ));
             holder.line.setBackgroundColor(ContextCompat.getColor(context, R.color.gray_700));
             holder.valueText.setVisibility(View.VISIBLE);
             holder.valueText.setText(String.valueOf(heightValue));
             holder.valueText.setTextSize(10);
         } 
-        
+
         else {
             holder.line.setLayoutParams(new LinearLayout.LayoutParams(
-                    1, 
-                    dpToPx(context, 15)  
+                    1,
+                    dpToPx(context, 15)
             ));
             holder.line.setBackgroundColor(ContextCompat.getColor(context, R.color.gray_500));
             holder.valueText.setVisibility(View.INVISIBLE);
         }
     }
 
-    
+
     private int dpToPx(Context context, int dp) {
         return (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,

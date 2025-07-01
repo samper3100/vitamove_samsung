@@ -143,7 +143,7 @@ public class ProgramDayDetailsFragment extends Fragment implements
         }
         
         String dayId = programDay.getId();
-
+        
         
         
         View loadingView = getView() != null ? getView().findViewById(R.id.loading_view) : null;
@@ -161,13 +161,12 @@ public class ProgramDayDetailsFragment extends Fragment implements
                 new Handler(Looper.getMainLooper()).post(() -> {
                     if (getActivity() == null || !isAdded()) return;
                     
-
+                    
                     
                     
                     for (int i = 0; i < exercises.size(); i++) {
                         ProgramExercise exercise = exercises.get(i);
-
-
+                        
                     }
                     
                     

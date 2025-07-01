@@ -114,7 +114,7 @@ public class ExerciseSearchActivity extends BaseActivity {
         viewModel.getExercises().observe(this, exercises -> {
             allExercises = exercises;
             adapter.updateExercises(exercises);
-
+            
         });
         
         
@@ -160,7 +160,7 @@ public class ExerciseSearchActivity extends BaseActivity {
         sortExercisesByRelevance(filteredExercises, queryLowerCase, queryWords);
         
         adapter.updateExercises(filteredExercises);
-
+        
     }
     
     
@@ -257,7 +257,7 @@ public class ExerciseSearchActivity extends BaseActivity {
                 int maxAllowedDistance = Math.max(1, wordOrPrefix.length() / 3);
                 
                 if (distance <= maxAllowedDistance) {
-
+                    
                     return true;
                 }
             }
@@ -272,7 +272,7 @@ public class ExerciseSearchActivity extends BaseActivity {
                     int maxAllowedDistance = Math.max(1, Math.min(wordOrPrefix.length() / 3, 3));
                     
                     if (distance <= maxAllowedDistance) {
-
+                        
                         return true;
                     }
                 }
@@ -283,7 +283,7 @@ public class ExerciseSearchActivity extends BaseActivity {
                     int maxAllowedDistance = Math.max(1, Math.min(wordOrPrefix.length() / 3, 2));
                     
                     if (distance <= maxAllowedDistance) {
-
+                        
                         return true;
                     }
                 }
@@ -507,7 +507,7 @@ public class ExerciseSearchActivity extends BaseActivity {
             
             if (data.getBooleanExtra("exercise_added", false) || data.getBooleanExtra("exercise_added_via_details", false)) {
                 String exerciseId = data.getStringExtra("exercise_id");
-
+                
                 
                 
                 Intent resultIntent = new Intent();

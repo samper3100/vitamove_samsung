@@ -116,7 +116,7 @@ public class ProfileFragment extends Fragment {
         }
         
         
-
+        
     }
 
     private void initViews(View view) {
@@ -188,7 +188,7 @@ public class ProfileFragment extends Fragment {
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString("fitness_goal", fitnessGoal);
             editor.apply();
-
+            
         }
         
         
@@ -196,15 +196,15 @@ public class ProfileFragment extends Fragment {
         int targetCalories = prefs.getInt("target_calories", 0);
         float targetWater = prefs.getFloat("target_water", 0);
         
-
-
+        
         
         
         if (dataFromSupabase && targetCalories > 0) {
             
             userProfile.setTargetCalories(targetCalories);
             userProfile.setTargetWater(targetWater > 0 ? targetWater : userProfile.calculateTargetWater());
-
+            
+            
         } else {
             
             userProfile.updateTargetCalories();
@@ -220,7 +220,7 @@ public class ProfileFragment extends Fragment {
             editor.putFloat("target_water", updatedTargetWater);
             editor.apply();
             
-
+            
         }
         
         
@@ -322,7 +322,8 @@ public class ProfileFragment extends Fragment {
         params.setMarginStart((int)absolutePosition);
         markerCard.setLayoutParams(params);
         
-
+        
+        
     }
     
 
@@ -342,7 +343,7 @@ public class ProfileFragment extends Fragment {
             dailyCaloriesValue.setText(String.format("%d ккал", targetCalories));
             
             
-
+            
         } else {
             Log.e("ProfileFragment", "Не удалось обновить данные калорий: компонент равен null");
         }
@@ -520,7 +521,7 @@ public class ProfileFragment extends Fragment {
                     editor.apply();
                     
                     Toast.makeText(requireContext(), "Аватар успешно обновлен", Toast.LENGTH_SHORT).show();
-
+                    
                 }
             } else {
                 Toast.makeText(requireContext(), "Не удалось сохранить аватар", Toast.LENGTH_SHORT).show();
@@ -554,7 +555,7 @@ public class ProfileFragment extends Fragment {
             String fitnessGoal = appPrefs.getString("fitness_goal", "weight_loss");
             
             
-
+            
         } else {
             Log.e("ProfileFragment", "Не удалось обновить данные о потреблении воды: компонент или профиль равны null");
         }
@@ -569,7 +570,7 @@ public class ProfileFragment extends Fragment {
                 Bitmap avatarBitmap = ImageUtils.loadImageFromInternalStorage(requireContext(), AVATAR_FILE_NAME);
                 if (avatarBitmap != null) {
                     profileImage.setImageBitmap(avatarBitmap);
-
+                    
                     return;
                 }
             }
@@ -590,11 +591,11 @@ public class ProfileFragment extends Fragment {
                                 Bitmap avatarBitmap = ImageUtils.loadImageFromInternalStorage(requireContext(), AVATAR_FILE_NAME);
                                 if (avatarBitmap != null) {
                                     profileImage.setImageBitmap(avatarBitmap);
-
+                                    
                                 }
                             }
                         } else {
-
+                            
                             
                             prefs.edit().remove("profile_image").apply();
                         }
@@ -609,7 +610,7 @@ public class ProfileFragment extends Fragment {
                     prefs.edit().remove("profile_image").apply();
                 }
             } else {
-
+                
             }
         } catch (Exception e) {
             Log.e("ProfileFragment", "Ошибка при загрузке аватара: " + e.getMessage(), e);

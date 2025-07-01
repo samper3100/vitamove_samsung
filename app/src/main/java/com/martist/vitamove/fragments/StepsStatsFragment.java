@@ -117,7 +117,7 @@ public class StepsStatsFragment extends Fragment {
         
         updateStepsUI(dashboardData);
         
-
+        
     }
     
     
@@ -169,7 +169,7 @@ public class StepsStatsFragment extends Fragment {
         
         setupBarChart(weeklySteps, getDayNamesForWeek());
         
-
+        
     }
     
     
@@ -198,7 +198,7 @@ public class StepsStatsFragment extends Fragment {
         
         
         if (filteredSteps.isEmpty()) {
-
+            
             
             setupEmptyChart("Нет данных о шагах за этот месяц");
             return;
@@ -207,7 +207,7 @@ public class StepsStatsFragment extends Fragment {
         
         setupBarChart(filteredSteps, filteredLabels);
         
-
+        
     }
     
     
@@ -341,7 +341,7 @@ public class StepsStatsFragment extends Fragment {
         stepsBarChart.setNoDataText(message);
         stepsBarChart.setNoDataTextColor(Color.GRAY);
         
-
+        
     }
     
     @Override
@@ -361,7 +361,7 @@ public class StepsStatsFragment extends Fragment {
         updateStepsUI(dashboardData);
         
         
-
+        
         
         
         if (radioWeek.isChecked()) {

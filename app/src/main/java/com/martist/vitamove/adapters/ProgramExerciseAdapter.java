@@ -136,7 +136,7 @@ public class ProgramExerciseAdapter extends RecyclerView.Adapter<ProgramExercise
                     }, 150);
                     
                     
-
+                    
                     
                     
                     if (listener != null) {

@@ -146,7 +146,7 @@ public class ProgramDetailsFragment extends Fragment {
             return;
         }
         
-
+        
         
         
         ProgressBar dayProgressBar = requireView().findViewById(R.id.days_progress_bar);
@@ -160,12 +160,11 @@ public class ProgramDetailsFragment extends Fragment {
             public void onSuccess(List<ProgramDay> days) {
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
-
+                        
                         
                         
                         for (ProgramDay day : days) {
-
-
+                            
                         }
                         
                         
@@ -255,7 +254,7 @@ public class ProgramDetailsFragment extends Fragment {
             
             
             if (program.getImageUrl() != null && !program.getImageUrl().isEmpty()) {
-
+                
                 
                 
                 
@@ -271,8 +270,7 @@ public class ProgramDetailsFragment extends Fragment {
 
     private void showDayDetails(ProgramDay day) {
         
-
-
+        
 
         
         ProgramDayDetailsFragment detailsFragment = ProgramDayDetailsFragment.newInstance(day.getId());

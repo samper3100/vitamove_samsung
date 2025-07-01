@@ -169,7 +169,7 @@ public class UserProfile {
             activityLevel = "intermediate";
         }
         
-
+        
         
         
         switch (activityLevel) {
@@ -221,7 +221,7 @@ public class UserProfile {
             fitnessGoal = "weight_loss";
         }
         
-
+        
         
         
         float weightDifference = Math.abs(this.currentWeight - this.targetWeight);
@@ -257,7 +257,7 @@ public class UserProfile {
         }
         
         
-
+        
         
         return Math.round(dailyCalories);
     }
@@ -326,7 +326,7 @@ public class UserProfile {
             fitnessLevel = "intermediate";
         }
         
-
+        
         
         
         switch (fitnessLevel) {
@@ -362,7 +362,7 @@ public class UserProfile {
             fitnessGoal = "weight_loss";
         }
         
-
+        
         
         float goalFactor = 1.0f;
         switch (fitnessGoal) {

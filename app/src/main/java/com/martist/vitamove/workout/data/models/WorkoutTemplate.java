@@ -12,14 +12,14 @@ public class WorkoutTemplate {
 
 
 
-    
+
     public String getId() { return id; }
     public String getName() { return name; }
     public String getUserId() { return userId; }
     public List<Exercise> getExercises() { return exercises; }
     public String getNotes() { return notes; }
 
-    
+
     public void setId(String id) { this.id = id; }
     public void setName(String name) { this.name = name; }
     public void setUserId(String userId) { this.userId = userId; }

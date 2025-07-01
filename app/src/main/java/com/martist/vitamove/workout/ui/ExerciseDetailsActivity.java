@@ -350,7 +350,7 @@ public class ExerciseDetailsActivity extends BaseActivity {
         boolean fromAnalytics = getIntent().getBooleanExtra("from_analytics", false);
         
         if (fromAnalytics) {
-
+            
 
             Intent resultIntent = new Intent();
             resultIntent.putExtra("exercise_added_via_details", true);
@@ -360,7 +360,7 @@ public class ExerciseDetailsActivity extends BaseActivity {
 
             Toast.makeText(this, "Упражнение выбрано для отслеживания", Toast.LENGTH_SHORT).show();
         } else {
-
+            
 
             EventBus.getDefault().post(new AddExerciseEvent(exerciseId));
             

@@ -32,7 +32,7 @@ public class TokenRefreshInterceptor implements Interceptor {
 
                 response.close();
                 
-
+                
                 
 
                 if (isRefreshing.compareAndSet(false, true)) {
@@ -47,7 +47,7 @@ public class TokenRefreshInterceptor implements Interceptor {
                                     .addHeader("Authorization", "Bearer " + supabaseClient.getUserToken())
                                     .build();
                             
-
+                            
 
                             isRefreshing.set(false);
 

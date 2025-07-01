@@ -13,23 +13,23 @@ public class StepHistoryEntity {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "date")
-    private String date;
+    private String date; 
 
     @ColumnInfo(name = "step_count")
-    private int stepCount;
+    private int stepCount; 
 
     @ColumnInfo(name = "created_at")
-    private long createdAt;
+    private long createdAt; 
 
     @ColumnInfo(name = "updated_at")
-    private long updatedAt;
+    private long updatedAt; 
 
-
+    
     @Ignore
     public StepHistoryEntity() {
     }
 
-
+    
     public StepHistoryEntity(@NonNull String date, int stepCount) {
         this.date = date;
         this.stepCount = stepCount;

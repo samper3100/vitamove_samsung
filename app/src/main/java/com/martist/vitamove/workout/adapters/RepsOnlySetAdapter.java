@@ -117,7 +117,7 @@ public class RepsOnlySetAdapter extends RecyclerView.Adapter<RepsOnlySetAdapter.
                     
                     if (parent != null && parent.isComputingLayout()) {
                         
-
+                        
                         parent.post(() -> safeUpdateList(setsCopy));
                     } else {
                         
@@ -192,7 +192,7 @@ public class RepsOnlySetAdapter extends RecyclerView.Adapter<RepsOnlySetAdapter.
             
             diffResult.dispatchUpdatesTo(this);
             
-
+            
         } catch (Exception e) {
             Log.e(TAG, "safeUpdateList: ошибка при безопасном обновлении списка: " + e.getMessage(), e);
             

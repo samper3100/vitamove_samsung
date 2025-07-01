@@ -51,7 +51,7 @@ public class SurveyActivity extends BaseActivity {
     private float currentWeight = 0f;
     private float targetWeight = 0f;
     private String fitnessLevel = "";
-    private final boolean isMetric = true;
+    private final boolean isMetric = true; 
     
     private LinearProgressIndicator progressIndicator;
     private TextView tvStepCounter;
@@ -59,7 +59,7 @@ public class SurveyActivity extends BaseActivity {
     private Button btnNext;
     private ImageView btnBack;
     
-
+    
     private SupabaseClient supabaseClient;
     
     private UserWeightViewModel userWeightViewModel;
@@ -69,7 +69,7 @@ public class SurveyActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey);
         
-
+        
         supabaseClient = SupabaseClient.getInstance(
             "qjopbdiafgbbstkwmhpt", 
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqb3BiZGlhZmdiYnN0a3dtaHB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU1MDg4ODAsImV4cCI6MjAzMTA4NDg4MH0.F0XS4F4k31O7ciI43vYjzJFyK5wHHvlU0Jl2AFYZF4A"
@@ -81,33 +81,33 @@ public class SurveyActivity extends BaseActivity {
         btnNext = findViewById(R.id.btnNext);
         btnBack = findViewById(R.id.btnBack);
         
-
+        
         progressIndicator.setMax(TOTAL_STEPS);
         updateStepCounter();
         
-
+        
         btnNext.setOnClickListener(v -> nextStep());
         btnBack.setOnClickListener(v -> previousStep());
         
-
+        
         userWeightViewModel = new ViewModelProvider(this).get(UserWeightViewModel.class);
         
-
+        
         showStep(currentStep);
     }
     
     private void showStep(int step) {
-
+        
         progressIndicator.setProgress(step);
         tvStepCounter.setText(getString(R.string.step_counter, step, TOTAL_STEPS));
         
-
+        
         contentContainer.removeAllViews();
         
-
+        
         btnBack.setVisibility(View.VISIBLE);
         
-
+        
         btnNext.setText(step == TOTAL_STEPS ? R.string.finish : R.string.continue_text);
         
         View view;
@@ -151,7 +151,7 @@ public class SurveyActivity extends BaseActivity {
                 break;
         }
         
-
+        
         view.setAlpha(0f);
         view.animate().alpha(1f).setDuration(300).start();
         
@@ -161,10 +161,10 @@ public class SurveyActivity extends BaseActivity {
     private void setupNameStep(View view) {
         TextInputEditText etName = view.findViewById(R.id.etName);
         
-
+        
         if (!name.isEmpty()) etName.setText(name);
         
-
+        
         etName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -182,10 +182,10 @@ public class SurveyActivity extends BaseActivity {
     private void setupAgeStep(View view) {
         TextInputEditText etAge = view.findViewById(R.id.etAge);
         
-
+        
         if (age > 0) etAge.setText(String.valueOf(age));
         
-
+        
         etAge.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -215,11 +215,11 @@ public class SurveyActivity extends BaseActivity {
         ImageView ivMaleSelected = view.findViewById(R.id.ivMaleSelected);
         ImageView ivFemaleSelected = view.findViewById(R.id.ivFemaleSelected);
         
-
+        
         cardMale.setStrokeColor(getResources().getColorStateList(R.color.card_stroke_color, null));
         cardFemale.setStrokeColor(getResources().getColorStateList(R.color.card_stroke_color, null));
         
-
+        
         if (!gender.isEmpty()) {
             if (gender.equals("Мужчина")) {
                 rbMale.setChecked(true);
@@ -232,16 +232,16 @@ public class SurveyActivity extends BaseActivity {
             }
         }
         
-
+        
         cardMale.setOnClickListener(v -> {
-
+            
             rbMale.setChecked(true);
             rbFemale.setChecked(false);
             
-
+            
             gender = "Мужчина";
             
-
+            
             cardMale.setChecked(true);
             cardFemale.setChecked(false);
             
@@ -249,16 +249,16 @@ public class SurveyActivity extends BaseActivity {
             ivFemaleSelected.setVisibility(View.GONE);
         });
         
-
+        
         cardFemale.setOnClickListener(v -> {
-
+            
             rbFemale.setChecked(true);
             rbMale.setChecked(false);
             
-
+            
             gender = "Женщина";
             
-
+            
             cardFemale.setChecked(true);
             cardMale.setChecked(false);
             
@@ -266,7 +266,7 @@ public class SurveyActivity extends BaseActivity {
             ivMaleSelected.setVisibility(View.GONE);
         });
         
-
+        
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rbMale) {
                 gender = "Мужчина";
@@ -289,20 +289,20 @@ public class SurveyActivity extends BaseActivity {
         TextView tvHeightUnit = view.findViewById(R.id.tvHeightUnit);
         RecyclerView heightRulerRecyclerView = view.findViewById(R.id.heightRulerRecyclerView);
         
-
+        
         if (height <= 0) {
-            height = 175f;
+            height = 175f; 
         }
         
         tvHeightValue.setText(String.valueOf((int)height));
         tvHeightUnit.setText("см");
         
-
+        
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         heightRulerRecyclerView.setLayoutManager(layoutManager);
-        heightRulerRecyclerView.setItemAnimator(null);
+        heightRulerRecyclerView.setItemAnimator(null); 
         
-
+        
         heightRulerRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
@@ -311,28 +311,28 @@ public class SurveyActivity extends BaseActivity {
             }
         });
         
-
+        
         HeightRulerAdapter adapter = new HeightRulerAdapter(this, true, (heightValue, metric) -> {
             height = heightValue;
             tvHeightValue.setText(String.valueOf(heightValue));
         });
         heightRulerRecyclerView.setAdapter(adapter);
         
-
-        int initialPosition = (int)height > 0 ? (int)height - 120 : 55;
+        
+        int initialPosition = (int)height > 0 ? (int)height - 120 : 55; 
         heightRulerRecyclerView.scrollToPosition(initialPosition);
         
-
+        
         LinearSnapHelper heightSnapHelper = new LinearSnapHelper();
         heightSnapHelper.attachToRecyclerView(heightRulerRecyclerView);
         
-
+        
         heightRulerRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-
+                    
                     View centerView = heightSnapHelper.findSnapView(layoutManager);
                     if (centerView != null) {
                         int position = layoutManager.getPosition(centerView);
@@ -349,20 +349,20 @@ public class SurveyActivity extends BaseActivity {
         TextView tvWeightUnit = view.findViewById(R.id.tvWeightUnit);
         RecyclerView weightRulerRecyclerView = view.findViewById(R.id.weightRulerRecyclerView);
 
-
+        
         if (currentWeight <= 0) {
-            currentWeight = 70f;
+            currentWeight = 70f; 
         }
         
         tvWeightValue.setText(String.valueOf((int)currentWeight));
         tvWeightUnit.setText("кг");
         
-
+        
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         weightRulerRecyclerView.setLayoutManager(layoutManager);
-        weightRulerRecyclerView.setItemAnimator(null);
+        weightRulerRecyclerView.setItemAnimator(null); 
         
-
+        
         weightRulerRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
@@ -371,7 +371,7 @@ public class SurveyActivity extends BaseActivity {
             }
         });
         
-
+        
         WeightRulerAdapter adapter = new WeightRulerAdapter(this, true, (weightValue, metric) -> {
             currentWeight = weightValue;
             tvWeightValue.setText(String.valueOf(weightValue));
@@ -381,29 +381,29 @@ public class SurveyActivity extends BaseActivity {
         });
         weightRulerRecyclerView.setAdapter(adapter);
         
-
-        int initialPosition = (int)currentWeight > 0 ? (int)currentWeight - 30 : 40;
+        
+        int initialPosition = (int)currentWeight > 0 ? (int)currentWeight - 30 : 40; 
         weightRulerRecyclerView.scrollToPosition(initialPosition);
         
-
+        
         LinearSnapHelper weightSnapHelper = new LinearSnapHelper();
         weightSnapHelper.attachToRecyclerView(weightRulerRecyclerView);
         
-
+        
         weightRulerRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-
+                    
                     View centerView = weightSnapHelper.findSnapView(layoutManager);
                     if (centerView != null) {
                         int position = layoutManager.getPosition(centerView);
-                        int kg = 30 + position;
+                        int kg = 30 + position; 
                         currentWeight = kg;
                         tvWeightValue.setText(String.valueOf(kg));
                         
-
+                        
                         if (height > 0) {
                             updateBMI(view);
                         }
@@ -412,7 +412,7 @@ public class SurveyActivity extends BaseActivity {
             }
         });
         
-
+        
         if (height > 0) {
             updateBMI(view);
         }
@@ -421,30 +421,30 @@ public class SurveyActivity extends BaseActivity {
     private void updateBMI(View view) {
         if (height <= 0 || currentWeight <= 0) return;
         
-
+        
         TextView tvBmiValue = view.findViewById(R.id.tvBmiValue);
         TextView tvBmiDescription = view.findViewById(R.id.tvBmiDescription);
         View bmiIndicator = view.findViewById(R.id.bmiIndicator);
         MaterialCardView bmiValueCard = view.findViewById(R.id.bmiValueCard);
         View bmiValuePointer = view.findViewById(R.id.bmiValuePointer);
         
-
+        
         ViewGroup indicatorContainer = (ViewGroup) bmiIndicator.getParent();
         ViewGroup cardContainer = (ViewGroup) bmiValueCard.getParent();
         
-
+        
         float bmi = BMICalculator.calculateBMI(currentWeight, height);
         BMICalculator.BMICategory category = BMICalculator.getBMICategory(bmi);
         
-
+        
         tvBmiValue.setText(String.format("вы - %.1f", bmi));
         
-
+        
         String description = String.format("Ваш ИМТ %.1f - %s",
                 bmi, category.getDescription().toLowerCase());
         tvBmiDescription.setText(description);
         
-
+        
         indicatorContainer.post(() -> {
             float containerWidth = indicatorContainer.getWidth();
             float indicatorWidth = bmiIndicator.getWidth();
@@ -453,41 +453,41 @@ public class SurveyActivity extends BaseActivity {
             
             float relativePosition;
             
-
+            
             if (bmi < BMICalculator.UNDERWEIGHT_THRESHOLD) {
-
+                
                 relativePosition = bmi / BMICalculator.UNDERWEIGHT_THRESHOLD / 3.0f;
             } else if (bmi < BMICalculator.NORMAL_THRESHOLD) {
-
+                
                 relativePosition = 1.0f/3.0f + (bmi - BMICalculator.UNDERWEIGHT_THRESHOLD) /
                         (BMICalculator.NORMAL_THRESHOLD - BMICalculator.UNDERWEIGHT_THRESHOLD) / 3.0f;
             } else if (bmi < BMICalculator.OVERWEIGHT_THRESHOLD) {
-
+                
                 relativePosition = 2.0f/3.0f + (bmi - BMICalculator.NORMAL_THRESHOLD) /
                         (BMICalculator.OVERWEIGHT_THRESHOLD - BMICalculator.NORMAL_THRESHOLD) / 3.0f;
             } else {
-
+                
                 relativePosition = 1.0f;
             }
             
-
+            
             relativePosition = Math.max(0, Math.min(1, relativePosition));
             
-
+            
             float absolutePosition = containerWidth * relativePosition;
             
-
+            
             float leftMargin = absolutePosition - (indicatorWidth / 2);
             
-
+            
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) bmiIndicator.getLayoutParams();
             params.leftMargin = (int) leftMargin;
             params.gravity = Gravity.TOP | Gravity.START;
             bmiIndicator.setLayoutParams(params);
             
-
+            
             float cardLeftMargin = (cardContainerWidth * relativePosition) - (cardWidth / 2);
-
+            
             cardLeftMargin = Math.max(0, Math.min(cardContainerWidth - cardWidth, cardLeftMargin));
             
             FrameLayout.LayoutParams cardParams = (FrameLayout.LayoutParams) bmiValueCard.getLayoutParams();
@@ -495,7 +495,7 @@ public class SurveyActivity extends BaseActivity {
             cardParams.gravity = Gravity.TOP | Gravity.START;
             bmiValueCard.setLayoutParams(cardParams);
             
-
+            
             FrameLayout.LayoutParams pointerParams = (FrameLayout.LayoutParams) bmiValuePointer.getLayoutParams();
             pointerParams.leftMargin = (int) (cardLeftMargin + (cardWidth / 2) - (bmiValuePointer.getWidth() / 2));
             pointerParams.gravity = Gravity.TOP | Gravity.START;
@@ -504,18 +504,18 @@ public class SurveyActivity extends BaseActivity {
     }
     
     private void setupTargetWeightStep(View view) {
-
+        
         TextView tvTargetWeightValue = view.findViewById(R.id.tvTargetWeightValue);
         TextView tvTargetWeightUnit = view.findViewById(R.id.tvTargetWeightUnit);
         TextView tvWeightDifference = view.findViewById(R.id.tvWeightDifference);
         RecyclerView targetWeightRulerRecyclerView = view.findViewById(R.id.targetWeightRulerRecyclerView);
         
-
+        
         final int MIN_WEIGHT_KG = 40;
         final int MAX_WEIGHT_KG = 150;
         final int DEFAULT_WEIGHT_KG = 65;
         
-
+        
         if (targetWeight <= 0) {
             targetWeight = DEFAULT_WEIGHT_KG;
         }
@@ -523,12 +523,12 @@ public class SurveyActivity extends BaseActivity {
         tvTargetWeightValue.setText(String.valueOf((int)targetWeight));
         tvTargetWeightUnit.setText("кг");
         
-
+        
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         targetWeightRulerRecyclerView.setLayoutManager(layoutManager);
         targetWeightRulerRecyclerView.setItemAnimator(null);
         
-
+        
         targetWeightRulerRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
@@ -537,7 +537,7 @@ public class SurveyActivity extends BaseActivity {
             }
         });
         
-
+        
         WeightRulerAdapter adapter = new WeightRulerAdapter(this, true, (weightValue, metric) -> {
             targetWeight = weightValue;
             tvTargetWeightValue.setText(String.valueOf(weightValue));
@@ -545,38 +545,38 @@ public class SurveyActivity extends BaseActivity {
         });
         targetWeightRulerRecyclerView.setAdapter(adapter);
         
-
+        
         int initialPosition = (int)targetWeight - 30;
         targetWeightRulerRecyclerView.scrollToPosition(initialPosition);
         
-
+        
         LinearSnapHelper targetWeightSnapHelper = new LinearSnapHelper();
         targetWeightSnapHelper.attachToRecyclerView(targetWeightRulerRecyclerView);
         
-
+        
         targetWeightRulerRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-
+                    
                     View centerView = targetWeightSnapHelper.findSnapView(recyclerView.getLayoutManager());
                     if (centerView != null) {
                         int position = recyclerView.getLayoutManager().getPosition(centerView);
-
-                        int kg = position + 30;
+                        
+                        int kg = position + 30; 
                         targetWeight = kg;
                         tvTargetWeightValue.setText(String.valueOf(kg));
                         
-
+                        
                         updateWeightDifference(tvWeightDifference);
                     }
                 }
             }
         });
         
-
+        
         updateWeightDifference(tvWeightDifference);
     }
     
@@ -609,13 +609,13 @@ public class SurveyActivity extends BaseActivity {
         ImageView ivEnduranceSelected = view.findViewById(R.id.ivEnduranceSelected);
         ImageView ivGeneralFitnessSelected = view.findViewById(R.id.ivGeneralFitnessSelected);
         
-
+        
         cardWeightLoss.setStrokeColor(getResources().getColorStateList(R.color.card_stroke_color, null));
         cardMuscleGain.setStrokeColor(getResources().getColorStateList(R.color.card_stroke_color, null));
         cardEndurance.setStrokeColor(getResources().getColorStateList(R.color.card_stroke_color, null));
         cardGeneralFitness.setStrokeColor(getResources().getColorStateList(R.color.card_stroke_color, null));
         
-
+        
         if (!fitnessGoal.isEmpty()) {
             switch (fitnessGoal) {
                 case "weight_loss":
@@ -641,28 +641,28 @@ public class SurveyActivity extends BaseActivity {
             }
         }
         
-
+        
         Runnable clearSelections = () -> {
-
+            
             rbWeightLoss.setChecked(false);
             rbMuscleGain.setChecked(false);
             rbEndurance.setChecked(false);
             rbGeneralFitness.setChecked(false);
             
-
+            
             ivWeightLossSelected.setVisibility(View.GONE);
             ivMuscleGainSelected.setVisibility(View.GONE);
             ivEnduranceSelected.setVisibility(View.GONE);
             ivGeneralFitnessSelected.setVisibility(View.GONE);
             
-
+            
             cardWeightLoss.setChecked(false);
             cardMuscleGain.setChecked(false);
             cardEndurance.setChecked(false);
             cardGeneralFitness.setChecked(false);
         };
         
-
+        
         cardWeightLoss.setOnClickListener(v -> {
             clearSelections.run();
             rbWeightLoss.setChecked(true);
@@ -671,7 +671,7 @@ public class SurveyActivity extends BaseActivity {
             cardWeightLoss.setChecked(true);
         });
         
-
+        
         cardMuscleGain.setOnClickListener(v -> {
             clearSelections.run();
             rbMuscleGain.setChecked(true);
@@ -680,7 +680,7 @@ public class SurveyActivity extends BaseActivity {
             cardMuscleGain.setChecked(true);
         });
         
-
+        
         cardEndurance.setOnClickListener(v -> {
             clearSelections.run();
             rbEndurance.setChecked(true);
@@ -689,7 +689,7 @@ public class SurveyActivity extends BaseActivity {
             cardEndurance.setChecked(true);
         });
         
-
+        
         cardGeneralFitness.setOnClickListener(v -> {
             clearSelections.run();
             rbGeneralFitness.setChecked(true);
@@ -698,7 +698,7 @@ public class SurveyActivity extends BaseActivity {
             cardGeneralFitness.setChecked(true);
         });
         
-
+        
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rbWeightLoss) {
                 fitnessGoal = "weight_loss";
@@ -729,7 +729,7 @@ public class SurveyActivity extends BaseActivity {
         ImageView ivAdvancedSelected = view.findViewById(R.id.ivAdvancedSelected);
         ImageView ivExpertSelected = view.findViewById(R.id.ivExpertSelected);
         
-
+        
         if (!fitnessLevel.isEmpty()) {
             switch (fitnessLevel) {
                 case "beginner":
@@ -755,103 +755,103 @@ public class SurveyActivity extends BaseActivity {
             }
         }
         
-
+        
         cardBeginner.setOnClickListener(v -> {
-
+            
             rbBeginner.setChecked(true);
             rbIntermediate.setChecked(false);
             rbAdvanced.setChecked(false);
             rbExpert.setChecked(false);
             
-
+            
             fitnessLevel = "beginner";
             
-
+            
             ivBeginnerSelected.setVisibility(View.VISIBLE);
             ivIntermediateSelected.setVisibility(View.GONE);
             ivAdvancedSelected.setVisibility(View.GONE);
             ivExpertSelected.setVisibility(View.GONE);
             
-
+            
             cardBeginner.setChecked(true);
             cardIntermediate.setChecked(false);
             cardAdvanced.setChecked(false);
             cardExpert.setChecked(false);
         });
         
-
+        
         cardIntermediate.setOnClickListener(v -> {
-
+            
             rbIntermediate.setChecked(true);
             rbBeginner.setChecked(false);
             rbAdvanced.setChecked(false);
             rbExpert.setChecked(false);
             
-
+            
             fitnessLevel = "intermediate";
             
-
+            
             ivIntermediateSelected.setVisibility(View.VISIBLE);
             ivBeginnerSelected.setVisibility(View.GONE);
             ivAdvancedSelected.setVisibility(View.GONE);
             ivExpertSelected.setVisibility(View.GONE);
             
-
+            
             cardIntermediate.setChecked(true);
             cardBeginner.setChecked(false);
             cardAdvanced.setChecked(false);
             cardExpert.setChecked(false);
         });
         
-
+        
         cardAdvanced.setOnClickListener(v -> {
-
+            
             rbAdvanced.setChecked(true);
             rbBeginner.setChecked(false);
             rbIntermediate.setChecked(false);
             rbExpert.setChecked(false);
             
-
+            
             fitnessLevel = "advanced";
             
-
+            
             ivAdvancedSelected.setVisibility(View.VISIBLE);
             ivBeginnerSelected.setVisibility(View.GONE);
             ivIntermediateSelected.setVisibility(View.GONE);
             ivExpertSelected.setVisibility(View.GONE);
             
-
+            
             cardAdvanced.setChecked(true);
             cardBeginner.setChecked(false);
             cardIntermediate.setChecked(false);
             cardExpert.setChecked(false);
         });
         
-
+        
         cardExpert.setOnClickListener(v -> {
-
+            
             rbExpert.setChecked(true);
             rbBeginner.setChecked(false);
             rbIntermediate.setChecked(false);
             rbAdvanced.setChecked(false);
             
-
+            
             fitnessLevel = "expert";
             
-
+            
             ivExpertSelected.setVisibility(View.VISIBLE);
             ivBeginnerSelected.setVisibility(View.GONE);
             ivIntermediateSelected.setVisibility(View.GONE);
             ivAdvancedSelected.setVisibility(View.GONE);
             
-
+            
             cardExpert.setChecked(true);
             cardBeginner.setChecked(false);
             cardIntermediate.setChecked(false);
             cardAdvanced.setChecked(false);
         });
         
-
+        
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rbBeginner) {
                 fitnessLevel = "beginner";
@@ -868,16 +868,16 @@ public class SurveyActivity extends BaseActivity {
     private void nextStep() {
         if (validateCurrentStep()) {
             if (currentStep < TOTAL_STEPS) {
-
+                
                 contentContainer.animate()
                     .alpha(0f)
                     .translationX(-contentContainer.getWidth())
                     .setDuration(250)
                     .withEndAction(() -> {
-
+                        
                         currentStep++;
                         showStep(currentStep);
-
+                        
                         contentContainer.setTranslationX(contentContainer.getWidth());
                         contentContainer.animate()
                             .alpha(1f)
@@ -887,15 +887,15 @@ public class SurveyActivity extends BaseActivity {
                     })
                     .start();
             } else {
-
+                
                 saveUserData();
                 startActivity(new Intent(this, RegisterActivity.class));
-
+                
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 finish();
             }
         } else {
-
+            
             String errorMessage;
             switch (currentStep) {
                 case 1:
@@ -970,15 +970,15 @@ public class SurveyActivity extends BaseActivity {
     }
     
     private boolean validateHeight() {
-        return height > 0 && height < 250;
+        return height > 0 && height < 250; 
     }
     
     private boolean validateCurrentWeight() {
-        return currentWeight > 0 && currentWeight < 500;
+        return currentWeight > 0 && currentWeight < 500; 
     }
     
     private boolean validateTargetWeight() {
-        return targetWeight > 0 && targetWeight < 500;
+        return targetWeight > 0 && targetWeight < 500; 
     }
     
     private boolean validateFitnessLevel() {
@@ -987,16 +987,16 @@ public class SurveyActivity extends BaseActivity {
     
     private void previousStep() {
         if (currentStep > 1) {
-
+            
             contentContainer.animate()
                 .alpha(0f)
                 .translationX(contentContainer.getWidth())
                 .setDuration(250)
                 .withEndAction(() -> {
-
+                    
                     currentStep--;
                     showStep(currentStep);
-
+                    
                     contentContainer.setTranslationX(-contentContainer.getWidth());
                     contentContainer.animate()
                         .alpha(1f)
@@ -1006,21 +1006,21 @@ public class SurveyActivity extends BaseActivity {
                 })
                 .start();
         } else {
-
+            
             Intent intent = new Intent(this, OnboardingActivity.class);
             startActivity(intent);
-
+            
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             finish();
         }
     }
     
     private void saveUserData() {
-
+        
         SharedPreferences prefs = getSharedPreferences(PREFS_USER_DATA, MODE_PRIVATE);
         SharedPreferences.Editor userDataEditor = prefs.edit();
         
-
+        
         userDataEditor.putString("name", name);
         userDataEditor.putInt("age", age);
         userDataEditor.putString("gender", gender);
@@ -1029,11 +1029,11 @@ public class SurveyActivity extends BaseActivity {
         userDataEditor.putFloat("current_weight", currentWeight);
         userDataEditor.putFloat("target_weight", targetWeight);
         
-
-
+        
+        
         userDataEditor.putString("user_fitness_level", fitnessLevel);
         
-
+        
         float bmi = 0;
         if (height > 0 && currentWeight > 0) {
             bmi = currentWeight / ((height / 100) * (height / 100));
@@ -1044,29 +1044,29 @@ public class SurveyActivity extends BaseActivity {
         
         userDataEditor.apply();
         
-
-
+        
+        
         SharedPreferences appPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor appPrefsEditor = appPrefs.edit();
         appPrefsEditor.putString("fitness_goal", fitnessGoal);
         appPrefsEditor.putString("user_fitness_level", fitnessLevel);
         appPrefsEditor.apply();
         
-
-
         
-
+        
+        
+        
         String userId = prefs.getString("userId", null);
         if (userId != null) {
-
+            
             new Thread(() -> {
                 try {
-
+                    
                     String accessToken = prefs.getString("accessToken", null);
                     String refreshToken = prefs.getString("refreshToken", null);
                     
                     if (accessToken != null && refreshToken != null) {
-
+                        
                         supabaseClient.setUserToken(accessToken);
                         supabaseClient.setRefreshToken(refreshToken);
                         
@@ -1083,17 +1083,17 @@ public class SurveyActivity extends BaseActivity {
                             isMetric
                         );
                         
-
+                        
                         runOnUiThread(() -> {
                             if (success) {
-
-
+                                
+                                
                                 SharedPreferences.Editor syncEditor = prefs.edit();
                                 syncEditor.putBoolean("user_data_synced", true);
                                 syncEditor.apply();
                             } else {
                                 Log.e("SurveyActivity", "Не удалось обновить профиль пользователя в Supabase");
-
+                                
                             }
                         });
                     } else {
@@ -1104,11 +1104,11 @@ public class SurveyActivity extends BaseActivity {
                 }
             }).start();
         } else {
-
+            
         }
     }
 
-
+    
     private void updateStepCounter() {
         progressIndicator.setProgress(currentStep);
         tvStepCounter.setText("Шаг " + currentStep + " из " + TOTAL_STEPS);

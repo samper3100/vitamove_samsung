@@ -45,116 +45,116 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        
         setContentView(R.layout.activity_main);
 
-        
+
         exerciseListViewModel = new ViewModelProvider(this).get(ExerciseListViewModel.class);
 
-        
+
         SharedPreferences prefs = getSharedPreferences("VitaMovePrefs", MODE_PRIVATE);
         boolean isFirstRun = prefs.getBoolean("isFirstRun", true);
         boolean isLogged = prefs.getBoolean("isLogged", false);
         boolean exercisesCached = prefs.getBoolean("exercises_cached", false);
 
-
+        
 
         if (isFirstRun || !isLogged) {
-
+            
             startActivity(new Intent(this, OnboardingActivity.class));
             finish();
             return;
         }
 
-        
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             checkActivityRecognitionPermission();
         } else {
-            
+
             initializeStepCounter();
         }
 
-        
-        if (!exercisesCached) {
 
+        if (!exercisesCached) {
+            
             exerciseListViewModel.cacheExercisesAfterLogin().observe(this, isComplete -> {
                 if (isComplete) {
-
                     
+
                     prefs.edit().putBoolean("exercises_cached", true).apply();
                 }
             });
         } else {
-            
 
+            
             exerciseListViewModel.preloadCacheWithPriority();
         }
 
-        
+
         syncFitnessGoals();
 
-        
+
         FoodManager foodManager = FoodManager.getInstance(this);
         foodManager.refreshNutrientNorms();
 
-        
+
         initNavigationButtons();
 
-        
+
         String openTab = getIntent().getStringExtra("open_tab");
         boolean navigateToPrograms = getIntent().getBooleanExtra(CreateProgramWeekActivity.EXTRA_NAVIGATE_TO_PROGRAMS, false);
 
         if (navigateToPrograms) {
-            
-            loadFragment(new WorkoutFragment());
-            btnWorkouts.setSelected(true);
-            
-            prefs.edit().putInt("workout_tab_index", 2).apply();
-        } else if (openTab != null && openTab.equals("workout")) {
-            
+
             loadFragment(new WorkoutFragment());
             btnWorkouts.setSelected(true);
 
-            
+            prefs.edit().putInt("workout_tab_index", 2).apply();
+        } else if (openTab != null && openTab.equals("workout")) {
+
+            loadFragment(new WorkoutFragment());
+            btnWorkouts.setSelected(true);
+
+
             int workoutTabIndex = getIntent().getIntExtra("workout_tab_index", -1);
-            String activeWorkoutId = getIntent().getStringExtra("active_workout_id"); 
+            String activeWorkoutId = getIntent().getStringExtra("active_workout_id");
             if (workoutTabIndex != -1) {
-                
+
                 SharedPreferences.Editor editor = prefs.edit().putInt("workout_tab_index", workoutTabIndex);
                 if (activeWorkoutId != null) {
-                    
+
                     editor.putString("active_workout_id_for_fragment", activeWorkoutId);
                 }
                 editor.apply();
             }
         } else if (savedInstanceState == null) {
-            
+
             loadFragment(new HomeFragment());
             btnHome.setSelected(true);
         }
     }
 
-    
+
     private void checkActivityRecognitionPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
                     != PackageManager.PERMISSION_GRANTED) {
-                
+
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACTIVITY_RECOGNITION},
                         ACTIVITY_RECOGNITION_PERMISSION_CODE);
             } else {
-                
+
                 initializeStepCounter();
             }
         } else {
-            
+
             initializeStepCounter();
         }
     }
 
     private void initializeStepCounter() {
-        
+
         stepCounterManager = StepCounterManager.getInstance(this);
 
     }
@@ -168,7 +168,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
                 initializeStepCounter();
             } else {
-                
+
                 Toast.makeText(this, "Для отслеживания шагов необходимо разрешение на отслеживание активности",
                         Toast.LENGTH_LONG).show();
             }
@@ -183,7 +183,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         View navNutrition = findViewById(R.id.nav_nutrition);
         View navProfile = findViewById(R.id.nav_profile);
 
-        
+
         btnAssistant = findViewById(R.id.btn_assistant);
         btnWorkouts = findViewById(R.id.btn_workouts);
         btnHome = findViewById(R.id.btn_home);
@@ -197,10 +197,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         navProfile.setOnClickListener(this);
     }
 
-    
+
     @Override
     public void onClick(View view) {
-        
+
         resetButtonSelection();
 
         int id = view.getId();
@@ -222,7 +222,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    
+
     private void resetButtonSelection() {
         btnAssistant.setSelected(false);
         btnWorkouts.setSelected(false);
@@ -231,7 +231,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         btnProfile.setSelected(false);
     }
 
-    
+
     private void loadFragment(Fragment fragment) {
         if (fragment != null) {
             currentFragment = fragment;
@@ -242,70 +242,70 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    
+
     private void syncFitnessGoals() {
-        
+
         SharedPreferences userDataPrefs = getSharedPreferences("user_data", MODE_PRIVATE);
         String userDataGoal = userDataPrefs.getString("fitness_goal", "");
 
-        
+
         SharedPreferences appPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         String appPrefsGoal = appPrefs.getString("fitness_goal", "weight_loss");
 
-        
-        if (!userDataGoal.isEmpty() && !userDataGoal.equals(appPrefsGoal)) {
-            
-            appPrefs.edit().putString("fitness_goal", userDataGoal).apply();
 
+        if (!userDataGoal.isEmpty() && !userDataGoal.equals(appPrefsGoal)) {
+
+            appPrefs.edit().putString("fitness_goal", userDataGoal).apply();
+            
         }
-        
+
         else if (userDataGoal.isEmpty() && !appPrefsGoal.isEmpty()) {
             userDataPrefs.edit().putString("fitness_goal", appPrefsGoal).apply();
-
+            
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-
         
+
+
         checkAndSyncUserData();
 
-        
+
         updateUI();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
+        
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        
+
         DashboardManager dashboardManager = DashboardManager.getInstance(this);
         dashboardManager.stopTracking();
     }
 
-    
+
     private void syncUserDataWithSupabase() {
-
-
         
+
+
         SharedPreferences prefs = getSharedPreferences("VitaMovePrefs", MODE_PRIVATE);
         String userId = prefs.getString("userId", null);
 
         if (userId == null) {
-
+            
             return;
         }
 
-        
+
         String name = prefs.getString("user_name", "");
         int age = prefs.getInt("user_age", 0);
         String gender = prefs.getString("user_gender", "");
@@ -316,13 +316,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         String fitnessLevel = prefs.getString("user_fitness_level", "beginner");
         boolean isMetric = prefs.getBoolean("use_metric", true);
 
-        
-        if (name.isEmpty() || age == 0 || gender.isEmpty() || height == 0 || currentWeight == 0 || targetWeight == 0) {
 
+        if (name.isEmpty() || age == 0 || gender.isEmpty() || height == 0 || currentWeight == 0 || targetWeight == 0) {
+            
+            
             return;
         }
 
-        
+
         String accessToken = prefs.getString("accessToken", null);
         String refreshToken = prefs.getString("refreshToken", null);
 
@@ -331,19 +332,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             return;
         }
 
-        
+
         SupabaseClient supabaseClient = SupabaseClient.getInstance(
                 "qjopbdiafgbbstkwmhpt",
                 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqb3BiZGlhZmdiYnN0a3dtaHB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU1MDg4ODAsImV4cCI6MjAzMTA4NDg4MH0.F0XS4F4k31O7ciI43vYjzJFyK5wHHvlU0Jl2AFYZF4A"
         );
 
-        
+
         supabaseClient.setUserToken(accessToken);
         supabaseClient.setRefreshToken(refreshToken);
 
-
-
         
+
+
         new Thread(() -> {
             try {
                 boolean success = supabaseClient.updateUserProfile(
@@ -360,14 +361,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 );
 
                 if (success) {
-
-
                     
+
+
                     SharedPreferences.Editor syncEditor = prefs.edit();
                     syncEditor.putBoolean("user_data_synced", true);
                     syncEditor.apply();
 
-                    
+
                     SharedPreferences userDataPrefs = getSharedPreferences("user_data", MODE_PRIVATE);
                     SharedPreferences.Editor userDataEditor = userDataPrefs.edit();
 
@@ -384,7 +385,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
                     userDataEditor.apply();
 
-
+                    
                 } else {
                     Log.e(TAG, "Не удалось синхронизировать данные пользователя с Supabase");
                 }
@@ -394,27 +395,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }).start();
     }
 
-    
+
     private void checkAndSyncUserData() {
         SharedPreferences prefs = getSharedPreferences("VitaMovePrefs", MODE_PRIVATE);
         boolean dataSynced = prefs.getBoolean("user_data_synced", false);
 
         if (!dataSynced) {
             syncUserDataWithSupabase();
-            
+
             prefs.edit().putBoolean("user_data_synced", true).apply();
         }
     }
 
-    
+
     private void updateUI() {
-        
-        
+
+
     }
 
-    
+
     public void updateNavigationHeader() {
-        
+
         SharedPreferences prefs = getSharedPreferences("user_data", MODE_PRIVATE);
 
         String name = prefs.getString("name", "Пользователь");
@@ -423,21 +424,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
 
         
+
+
         DashboardManager dashboardManager = DashboardManager.getInstance(this);
         dashboardManager.updateWaterGoalFromProfile();
         dashboardManager.updateCaloriesGoalFromProfile();
 
-        
+
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         if (currentFragment instanceof HomeFragment) {
-            
-            ((HomeFragment) currentFragment).updateDashboardData();
 
+            ((HomeFragment) currentFragment).updateDashboardData();
+            
         }
 
-        
-        
-        
+
+
+
         updateUI();
     }
 } 

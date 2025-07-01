@@ -32,7 +32,7 @@ public class CaloriesManager {
     
     public static synchronized void resetInstance() {
         if (instance != null) {
-
+            
             instance = null;
         }
     }
@@ -56,8 +56,7 @@ public class CaloriesManager {
         burnedCaloriesLiveData.setValue(totalBurnedCalories);
         consumedCaloriesLiveData.setValue(consumedCalories);
         
-
-
+        
     }
 
     
@@ -73,7 +72,7 @@ public class CaloriesManager {
     
     public void addCompletedWorkoutCalories(int calories) {
         if (calories <= 0) {
-
+            
             return;
         }
         
@@ -84,7 +83,7 @@ public class CaloriesManager {
         editor.putInt(KEY_COMPLETED_CALORIES, newTotal);
         editor.apply();
         
-
+        
         
         
         updateBurnedCaloriesLiveData();
@@ -94,7 +93,7 @@ public class CaloriesManager {
     
     public void setConsumedCalories(int calories) {
         if (calories < 0) {
-
+            
             return;
         }
         
@@ -102,7 +101,7 @@ public class CaloriesManager {
         editor.putInt(KEY_CONSUMED_CALORIES, calories);
         editor.apply();
         
-
+        
         
         
         updateConsumedCaloriesLiveData();
@@ -111,7 +110,7 @@ public class CaloriesManager {
     
     public void updateActiveWorkoutCalories(int calories) {
         if (calories < 0) {
-
+            
             return;
         }
         
@@ -119,7 +118,7 @@ public class CaloriesManager {
         editor.putInt(KEY_ACTIVE_WORKOUT_CALORIES, calories);
         editor.apply();
         
-
+        
         
         
         updateBurnedCaloriesLiveData();
@@ -131,7 +130,7 @@ public class CaloriesManager {
         editor.putInt(KEY_ACTIVE_WORKOUT_CALORIES, 0);
         editor.apply();
         
-
+        
         
         
         updateBurnedCaloriesLiveData();
@@ -161,14 +160,14 @@ public class CaloriesManager {
     private void updateBurnedCaloriesLiveData() {
         int totalCalories = getTotalBurnedCalories();
         burnedCaloriesLiveData.postValue(totalCalories);
-
+        
     }
     
     
     private void updateConsumedCaloriesLiveData() {
         int calories = getConsumedCalories();
         consumedCaloriesLiveData.postValue(calories);
-
+        
     }
 
     
@@ -178,7 +177,7 @@ public class CaloriesManager {
         
         if (!currentDateStr.equals(savedDateStr)) {
             
-
+            
             SharedPreferences.Editor editor = prefs.edit();
             editor.putInt(KEY_COMPLETED_CALORIES, 0);
             editor.putInt(KEY_ACTIVE_WORKOUT_CALORIES, 0);
@@ -191,7 +190,7 @@ public class CaloriesManager {
     
     public void setTargetCalories(int targetCalories) {
         if (targetCalories <= 0) {
-
+            
             return;
         }
         
@@ -199,7 +198,7 @@ public class CaloriesManager {
         SharedPreferences userPrefs = context.getSharedPreferences("user_data", Context.MODE_PRIVATE);
         userPrefs.edit().putInt("target_calories", targetCalories).apply();
         
-
+        
         
         
     }

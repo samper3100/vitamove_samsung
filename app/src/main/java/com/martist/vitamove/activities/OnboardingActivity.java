@@ -36,35 +36,35 @@ public class OnboardingActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-
+        
         int nightModeFlags = getResources().getConfiguration().uiMode & 
                             Configuration.UI_MODE_NIGHT_MASK;
         
         setContentView(R.layout.activity_onboarding);
 
-
+        
         SharedPreferences prefs = getSharedPreferences("VitaMovePrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("isFirstRun", false);
         editor.apply();
 
-
+        
         initViews();
         
-
+        
         setupPrivacyPolicyText();
         
-
+        
         appTitle.setAlpha(0f);
         appDescription.setAlpha(0f);
         startButton.setAlpha(0f);
         loginText.setAlpha(0f);
         privacyPolicyText.setAlpha(0f);
         
-
+        
         animateElements();
         
-
+        
         setupClickListeners();
     }
     
@@ -80,15 +80,15 @@ public class OnboardingActivity extends BaseActivity {
         String fullText = "Продолжая использовать Vitamove, вы принимаете политику конфиденциальности";
         SpannableString spannableString = new SpannableString(fullText);
         
-
+        
         int startIndex = fullText.indexOf("политику конфиденциальности");
         int endIndex = startIndex + "политику конфиденциальности".length();
         
-
+        
         ClickableSpan clickableSpan = new ClickableSpan() {
             @Override
             public void onClick(@NonNull View widget) {
-
+                
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://project13585281.tilda.ws/"));
                 startActivity(browserIntent);
             }
@@ -96,41 +96,41 @@ public class OnboardingActivity extends BaseActivity {
             @Override
             public void updateDrawState(@NonNull TextPaint ds) {
                 super.updateDrawState(ds);
-
+                
                 ds.setUnderlineText(true);
             }
         };
         
-
+        
         spannableString.setSpan(clickableSpan, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannableString.setSpan(new UnderlineSpan(), startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         
-
+        
         privacyPolicyText.setText(spannableString);
         
-
+        
         privacyPolicyText.setMovementMethod(LinkMovementMethod.getInstance());
         
-
+        
         privacyPolicyText.setHighlightColor(0);
     }
     
     private void animateElements() {
-
+        
         ObjectAnimator titleFadeIn = ObjectAnimator.ofFloat(appTitle, "alpha", 0f, 1f);
         ObjectAnimator descFadeIn = ObjectAnimator.ofFloat(appDescription, "alpha", 0f, 1f);
         ObjectAnimator buttonFadeIn = ObjectAnimator.ofFloat(startButton, "alpha", 0f, 1f);
         ObjectAnimator loginFadeIn = ObjectAnimator.ofFloat(loginText, "alpha", 0f, 1f);
         ObjectAnimator policyFadeIn = ObjectAnimator.ofFloat(privacyPolicyText, "alpha", 0f, 1f);
         
-
+        
         titleFadeIn.setDuration(300);
         descFadeIn.setDuration(300);
         buttonFadeIn.setDuration(300);
         loginFadeIn.setDuration(300);
         policyFadeIn.setDuration(300);
         
-
+        
         AnimatorSet allAnimations = new AnimatorSet();
         allAnimations.playTogether(
                 titleFadeIn,
@@ -145,20 +145,20 @@ public class OnboardingActivity extends BaseActivity {
     }
     
     private void setupClickListeners() {
-
+        
         startButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, SurveyActivity.class);
             startActivity(intent);
-
+            
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             finish();
         });
 
-
+        
         loginText.setOnClickListener(v -> {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
-
+            
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             finish();
         });

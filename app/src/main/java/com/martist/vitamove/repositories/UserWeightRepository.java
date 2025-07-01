@@ -70,7 +70,7 @@ public class UserWeightRepository {
         executor.execute(() -> {
             
             long insertId = userWeightDao.insert(entity);
-
+            
             
             
             syncWithSupabase(entity);
@@ -103,7 +103,7 @@ public class UserWeightRepository {
                             .eq("id", weightEntity.getId())
                             .delete()
                             .executeDelete();
-
+                    
                 } catch (Exception e) {
                     Log.e(TAG, "Ошибка при удалении записи о весе из Supabase: " + e.getMessage(), e);
                 }
@@ -141,7 +141,7 @@ public class UserWeightRepository {
         
         executor.execute(() -> {
             List<UserWeightEntity> unsyncedRecords = userWeightDao.getUnsyncedRecords(userId);
-
+            
             
             for (UserWeightEntity record : unsyncedRecords) {
                 syncWithSupabase(record);
@@ -180,13 +180,13 @@ public class UserWeightRepository {
                             .eq("id", entity.getId())
                             .update(data)
                             .executeUpdate();
-
+                    
                 } else {
                     
                     supabaseClient.from("user_weight_history")
                             .insert(data)
                             .executeInsert();
-
+                    
                 }
                 
                 
@@ -211,7 +211,7 @@ public class UserWeightRepository {
         
         executor.execute(() -> {
             try {
-
+                
                 
                 
                 JSONArray result = supabaseClient.from("user_weight_history")
@@ -257,7 +257,7 @@ public class UserWeightRepository {
                             
                             
                             if (weight <= 0 || weight > 500) {
-
+                                
                                 continue;
                             }
                             
@@ -276,7 +276,7 @@ public class UserWeightRepository {
                     
                     if (!weightEntities.isEmpty()) {
                         userWeightDao.insertAll(weightEntities);
-
+                        
                         
                         
                         if (!weightEntities.isEmpty()) {
@@ -291,7 +291,7 @@ public class UserWeightRepository {
                             callback.onSyncCompleted(true, "Загружено " + weightEntities.size() + " записей");
                         }
                     } else {
-
+                        
                         if (callback != null) {
                             callback.onSyncCompleted(true, "Нет записей о весе");
                         }
@@ -318,7 +318,7 @@ public class UserWeightRepository {
         editor.putFloat("current_weight", weight);
         editor.apply();
         
-
+        
     }
     
     
@@ -331,7 +331,7 @@ public class UserWeightRepository {
                 List<UserWeightEntity> allRecords = userWeightDao.getAllWeightRecordsForUserDirect(userId);
                 
                 if (allRecords == null || allRecords.isEmpty()) {
-
+                    
                     return;
                 }
                 
@@ -350,8 +350,7 @@ public class UserWeightRepository {
                 editor.putFloat("initial_weight", initialWeight);
                 editor.apply();
                 
-
-
+                
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при обновлении начального веса: " + e.getMessage(), e);
             }
@@ -382,7 +381,7 @@ public class UserWeightRepository {
                                 String payload = new String(android.util.Base64.decode(jwtParts[1], android.util.Base64.DEFAULT));
                                 JSONObject jwtJson = new JSONObject(payload);
                                 effectiveUserId = jwtJson.getString("sub");
-
+                                
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "Ошибка при извлечении userId из токена: " + e.getMessage(), e);
@@ -422,7 +421,8 @@ public class UserWeightRepository {
                         .insert(data)
                         .executeInsert();
                 
-
+                
+                
                 
                 updateCurrentWeightInPreferences(weight);
                 
@@ -432,7 +432,7 @@ public class UserWeightRepository {
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putFloat("initial_weight", weight);
                     editor.apply();
-
+                    
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при добавлении записи в Supabase: " + e.getMessage(), e);

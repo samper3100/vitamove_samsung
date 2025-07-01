@@ -37,16 +37,16 @@ public class NutritionAnalyticsActivity extends BaseActivity {
     
     private static final String TAG = "NutritionAnalytics";
     
-    
+
     private FoodManager foodManager;
     
-    
+
     private TextView dateText;
     private TextView caloriesText;
     private TextView caloriesPercentText;
     private CircularProgressIndicator circularCaloriesProgress;
     
-    
+
     private TextView proteinsValueText;
     private TextView fatsValueText;
     private TextView carbsValueText;
@@ -54,48 +54,48 @@ public class NutritionAnalyticsActivity extends BaseActivity {
     private LinearProgressIndicator fatsProgressBar;
     private LinearProgressIndicator carbsProgressBar;
     
-    
+
     private LinearLayout vitaminsContainer;
     private LinearLayout mineralsContainer;
     private LinearLayout additionalNutrientsContainer;
     
-    
+
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("ru"));
     private final SimpleDateFormat dbDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     
-    
+
     private static final Map<String, Float> DAILY_NORMS = new HashMap<>();
     
-    
+
     private ProgressBar loadingIndicator;
     
-    
+
     private final Calendar calendar = Calendar.getInstance();
     
     static {
+
         
-        
-        
+
         DAILY_NORMS.put("calories", 2500f);
         DAILY_NORMS.put("proteins", 75f);
         DAILY_NORMS.put("fats", 83f);
         DAILY_NORMS.put("carbs", 365f);
         
+
+        DAILY_NORMS.put("vitamin_a", 900f);
+        DAILY_NORMS.put("vitamin_b1", 1.2f);
+        DAILY_NORMS.put("vitamin_b2", 1.3f);
+        DAILY_NORMS.put("vitamin_b3", 16f);
+        DAILY_NORMS.put("vitamin_b5", 5f);
+        DAILY_NORMS.put("vitamin_b6", 1.7f);
+        DAILY_NORMS.put("vitamin_b9", 400f);
+        DAILY_NORMS.put("vitamin_b12", 2.4f);
+        DAILY_NORMS.put("vitamin_c", 90f);
+        DAILY_NORMS.put("vitamin_d", 15f);
+        DAILY_NORMS.put("vitamin_e", 15f);
+        DAILY_NORMS.put("vitamin_k", 120f);
         
-        DAILY_NORMS.put("vitamin_a", 900f); 
-        DAILY_NORMS.put("vitamin_b1", 1.2f); 
-        DAILY_NORMS.put("vitamin_b2", 1.3f); 
-        DAILY_NORMS.put("vitamin_b3", 16f); 
-        DAILY_NORMS.put("vitamin_b5", 5f); 
-        DAILY_NORMS.put("vitamin_b6", 1.7f); 
-        DAILY_NORMS.put("vitamin_b9", 400f); 
-        DAILY_NORMS.put("vitamin_b12", 2.4f); 
-        DAILY_NORMS.put("vitamin_c", 90f); 
-        DAILY_NORMS.put("vitamin_d", 15f); 
-        DAILY_NORMS.put("vitamin_e", 15f); 
-        DAILY_NORMS.put("vitamin_k", 120f); 
-        
-        
+
         DAILY_NORMS.put("calcium", 1000f);
         DAILY_NORMS.put("iron", 8f);
         DAILY_NORMS.put("magnesium", 400f);
@@ -104,12 +104,12 @@ public class NutritionAnalyticsActivity extends BaseActivity {
         DAILY_NORMS.put("sodium", 2300f);
         DAILY_NORMS.put("zinc", 11f);
         
-        
-        DAILY_NORMS.put("fiber", 25f); 
-        DAILY_NORMS.put("sugar", 50f); 
-        DAILY_NORMS.put("cholesterol", 300f); 
-        DAILY_NORMS.put("saturated_fats", 20f); 
-        DAILY_NORMS.put("trans_fats", 2f); 
+
+        DAILY_NORMS.put("fiber", 25f);
+        DAILY_NORMS.put("sugar", 50f);
+        DAILY_NORMS.put("cholesterol", 300f);
+        DAILY_NORMS.put("saturated_fats", 20f);
+        DAILY_NORMS.put("trans_fats", 2f);
     }
     
     @Override
@@ -117,49 +117,49 @@ public class NutritionAnalyticsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nutrition_analytics);
         
-        
+
         foodManager = FoodManager.getInstance(this);
         
-        
+
         initViews();
         
-        
+
         setupToolbar();
         
-        
+
         updateNutritionData();
     }
     
     @Override
     protected void onStart() {
         super.onStart();
-        
+
         EventBus.getDefault().register(this);
     }
     
     @Override
     protected void onStop() {
         super.onStop();
-        
+
         EventBus.getDefault().unregister(this);
     }
     
     private void setupToolbar() {
-        
+
         CardView toolbar = findViewById(R.id.toolbar);
         
-        
+
         findViewById(R.id.back_button).setOnClickListener(v -> onBackPressed());
         
-        
+
         ImageButton settingsButton = findViewById(R.id.settings_button);
         settingsButton.setOnClickListener(v -> showNutrientSelectionBottomSheet());
         
-        
+
         findViewById(R.id.date_prev_button).setOnClickListener(v -> changeDate(-1));
         findViewById(R.id.date_next_button).setOnClickListener(v -> changeDate(1));
         
-        
+
         TextView dateTextView = findViewById(R.id.date_text);
         dateTextView.setClickable(true);
         dateTextView.setFocusable(true);
@@ -171,18 +171,18 @@ public class NutritionAnalyticsActivity extends BaseActivity {
     }
     
     private void initViews() {
-        
+
         dateText = findViewById(R.id.date_text);
         
-        
+
         loadingIndicator = findViewById(R.id.loading_indicator);
         
-        
+
         caloriesText = findViewById(R.id.calories_text);
         caloriesPercentText = findViewById(R.id.calories_percent);
         circularCaloriesProgress = findViewById(R.id.circular_calories_progress);
         
-        
+
         proteinsValueText = findViewById(R.id.proteins_value);
         fatsValueText = findViewById(R.id.fats_value);
         carbsValueText = findViewById(R.id.carbs_value);
@@ -190,7 +190,7 @@ public class NutritionAnalyticsActivity extends BaseActivity {
         fatsProgressBar = findViewById(R.id.fats_progress);
         carbsProgressBar = findViewById(R.id.carbs_progress);
         
-        
+
         vitaminsContainer = findViewById(R.id.vitamins_container);
         mineralsContainer = findViewById(R.id.minerals_container);
         additionalNutrientsContainer = findViewById(R.id.additional_nutrients_container);
@@ -199,40 +199,40 @@ public class NutritionAnalyticsActivity extends BaseActivity {
     private void updateNutritionData() {
         showLoadingState(true);
         
-        
+
         Date selectedDate = foodManager.getSelectedDateForView();
         dateText.setText(dateFormat.format(selectedDate));
         
-        
+
         updateMacronutrients();
         
-        
+
         updateVitamins();
         
-        
+
         updateMinerals();
         
-        
+
         updateAdditionalNutrients();
         
         showLoadingState(false);
     }
     
     private void updateMacronutrients() {
-        
+
         float totalCalories = (float) foodManager.getTotalCaloriesForSelectedDate();
         float targetCalories = foodManager.getDailyNorm("calories");
         float totalProteins = 0;
         float totalFats = 0;
         float totalCarbs = 0;
         
-        
+
         Meal breakfast = foodManager.getMeal("breakfast");
         Meal lunch = foodManager.getMeal("lunch");
         Meal dinner = foodManager.getMeal("dinner");
         Meal snack = foodManager.getMeal("snack");
         
-        
+
         if (breakfast != null) {
             totalProteins += breakfast.getTotalProteins();
             totalFats += breakfast.getTotalFats();
@@ -254,23 +254,23 @@ public class NutritionAnalyticsActivity extends BaseActivity {
             totalCarbs += snack.getTotalCarbs();
         }
         
-        
+
         float targetProteins = foodManager.getDailyNorm("proteins");
         float targetFats = foodManager.getDailyNorm("fats");
         float targetCarbs = foodManager.getDailyNorm("carbs");
         
-        
+
         caloriesText.setText(String.format(Locale.getDefault(), "%.0f/%.0f", totalCalories, targetCalories));
         
-        
+
         int caloriesProgress = Math.min((int)((totalCalories / targetCalories) * 100), 150);
         circularCaloriesProgress.setProgress(caloriesProgress);
         
-        
+
         int caloriesPercent = (int)((totalCalories / targetCalories) * 100);
         caloriesPercentText.setText(String.format(Locale.getDefault(), "%d%%", caloriesPercent));
         
-        
+
         int textColor;
         if (caloriesPercent < 30) {
             textColor = ContextCompat.getColor(this, R.color.colorDanger);
@@ -281,29 +281,29 @@ public class NutritionAnalyticsActivity extends BaseActivity {
         }
         caloriesPercentText.setTextColor(textColor);
         
-        
+
         proteinsValueText.setText(String.format(Locale.getDefault(), "%.1f/%.0fг", totalProteins, targetProteins));
         proteinsProgressBar.setProgress(Math.min((int)((totalProteins / targetProteins) * 100), 150));
         
-        
+
         fatsValueText.setText(String.format(Locale.getDefault(), "%.1f/%.0fг", totalFats, targetFats));
         fatsProgressBar.setProgress(Math.min((int)((totalFats / targetFats) * 100), 150));
         
-        
+
         carbsValueText.setText(String.format(Locale.getDefault(), "%.1f/%.0fг", totalCarbs, targetCarbs));
         carbsProgressBar.setProgress(Math.min((int)((totalCarbs / targetCarbs) * 100), 150));
     }
     
     private void updateVitamins() {
-        
+
         vitaminsContainer.removeAllViews();
         
-        
+
         Date selectedDate = foodManager.getSelectedDateForView();
         String selectedDateStr = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedDate);
         Map<String, Float> consumedNutrients = foodManager.getConsumedNutrients(selectedDateStr);
         
-        
+
         if (consumedNutrients.getOrDefault("vitamin_a", 0f) > 0)
             addVitaminItem(vitaminsContainer, "Витамин A", consumedNutrients.getOrDefault("vitamin_a", 0f), DAILY_NORMS.get("vitamin_a"), "мкг");
         if (consumedNutrients.getOrDefault("vitamin_b1", 0f) > 0)
@@ -331,15 +331,15 @@ public class NutritionAnalyticsActivity extends BaseActivity {
     }
     
     private void updateMinerals() {
-        
+
         mineralsContainer.removeAllViews();
         
-        
+
         Date selectedDate = foodManager.getSelectedDateForView();
         String selectedDateStr = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedDate);
         Map<String, Float> consumedNutrients = foodManager.getConsumedNutrients(selectedDateStr);
         
-        
+
         if (consumedNutrients.getOrDefault("calcium", 0f) > 0)
             addMineralItem(mineralsContainer, "Кальций", consumedNutrients.getOrDefault("calcium", 0f), DAILY_NORMS.get("calcium"), "мг");
         if (consumedNutrients.getOrDefault("iron", 0f) > 0)
@@ -357,15 +357,15 @@ public class NutritionAnalyticsActivity extends BaseActivity {
     }
     
     private void updateAdditionalNutrients() {
-        
+
         additionalNutrientsContainer.removeAllViews();
         
-        
+
         Date selectedDate = foodManager.getSelectedDateForView();
         String selectedDateStr = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedDate);
         Map<String, Float> consumedNutrients = foodManager.getConsumedNutrients(selectedDateStr);
         
-        
+
         if (consumedNutrients.getOrDefault("fiber", 0f) > 0)
             addNutrientItem(additionalNutrientsContainer, "Клетчатка", consumedNutrients.getOrDefault("fiber", 0f), DAILY_NORMS.get("fiber"), "г");
         if (consumedNutrients.getOrDefault("sugar", 0f) > 0)
@@ -379,7 +379,7 @@ public class NutritionAnalyticsActivity extends BaseActivity {
     }
     
     private void addVitaminItem(LinearLayout container, String name, float value, float norm, String unit) {
-        if (value <= 0) return; 
+        if (value <= 0) return;
         
         View itemView = LayoutInflater.from(this).inflate(R.layout.item_nutrient, container, false);
         
@@ -398,7 +398,7 @@ public class NutritionAnalyticsActivity extends BaseActivity {
         
         percentText.setText(String.format(Locale.getDefault(), "%d%%", percentOfNorm));
         
-        
+
         int colorId;
         if (percentOfNorm < 30) {
             colorId = R.color.colorDanger;
@@ -416,29 +416,29 @@ public class NutritionAnalyticsActivity extends BaseActivity {
     }
     
     private void addMineralItem(LinearLayout container, String name, float value, float norm, String unit) {
-        
+
         addVitaminItem(container, name, value, norm, unit);
     }
     
     private void addNutrientItem(LinearLayout container, String name, float value, float norm, String unit) {
-        
+
         addVitaminItem(container, name, value, norm, unit);
     }
     
-    
+
     private void showNutrientSelectionBottomSheet() {
         NutrientSelectionBottomSheet bottomSheet = new NutrientSelectionBottomSheet();
         bottomSheet.show(getSupportFragmentManager(), "NutrientSelectionBottomSheet");
     }
     
-    
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTrackedNutrientsChanged(TrackedNutrientsChangedEvent event) {
-        
+
         updateNutritionData();
     }
     
-    
+
     private void showLoadingState(boolean isLoading) {
         if (isLoading) {
             loadingIndicator.setVisibility(View.VISIBLE);
@@ -447,36 +447,36 @@ public class NutritionAnalyticsActivity extends BaseActivity {
         }
     }
     
-    
+
     private void changeDate(int daysDelta) {
-        
+
         showLoadingState(true);
         
         Date currentDate = foodManager.getSelectedDateForView();
         
-        
+
         java.util.Calendar calendar = java.util.Calendar.getInstance();
         calendar.setTime(currentDate);
         
-        
+
         calendar.add(java.util.Calendar.DAY_OF_MONTH, daysDelta);
         
-        
+
         Date newDate = calendar.getTime();
         foodManager.setSelectedDateForView(newDate);
         
-        
+
         updateNutritionData();
     }
     
-    
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMealsLoaded(MealsLoadedEvent event) {
-        
+
         updateNutritionData();
     }
     
-    
+
     private void showDatePickerDialog() {
         Date currentSelectedDate = foodManager.getSelectedDateForView();
         Calendar cal = Calendar.getInstance();

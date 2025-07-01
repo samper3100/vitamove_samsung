@@ -97,7 +97,7 @@ public  class SettingsFragment extends PreferenceFragmentCompat
     public void unregisterListener() {
         getPreferenceManager().getSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(this);
-
+        
     }
 
     @Override
@@ -162,7 +162,7 @@ public  class SettingsFragment extends PreferenceFragmentCompat
                 dashboardManager.updateCaloriesGoalFromProfile();
                 dashboardManager.updateWaterGoalFromProfile();
 
-
+                
 
                 
                 if (getActivity() != null) {
@@ -250,13 +250,13 @@ public  class SettingsFragment extends PreferenceFragmentCompat
                         );
 
                 
-
+                
 
                 supabaseClient.deleteUserAccount(userId, new SupabaseClient.AsyncCallback() {
                     @Override
                     public void onSuccess(String responseBody) {
                         
-
+                        
 
                         
                         clearLocalUserData(context);
@@ -315,7 +315,7 @@ public  class SettingsFragment extends PreferenceFragmentCompat
             com.martist.vitamove.managers.CaloriesManager.resetInstance();
             com.martist.vitamove.managers.DashboardManager.resetInstance();
 
-
+            
         } catch (Exception e) {
             Log.e("SettingsActivity", "Ошибка при очистке локальных данных: " + e.getMessage(), e);
         }
@@ -331,7 +331,7 @@ public  class SettingsFragment extends PreferenceFragmentCompat
             boolean isMetric = appPrefs.getBoolean("use_metric", true);
             
             if (userId == null || userId.isEmpty()) {
-
+                
                 return;
             }
 
@@ -346,7 +346,7 @@ public  class SettingsFragment extends PreferenceFragmentCompat
             String refreshToken = appPrefs.getString("refreshToken", null);
             
             if (accessToken == null || refreshToken == null) {
-
+                
                 return;
             }
             
@@ -371,7 +371,7 @@ public  class SettingsFragment extends PreferenceFragmentCompat
                     );
 
                     if (success) {
-
+                        
                     } else {
                         Log.e("SettingsFragment", "Не удалось синхронизировать данные с Supabase");
                     }

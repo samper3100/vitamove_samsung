@@ -52,7 +52,7 @@ public class ExerciseMedia implements Parcelable {
     public String getAnimationUrl() { return animationUrl; }
     public String getModelUrl() { return modelUrl; }
     
-
+    
     public String getPreviewImageUrl() { return previewImage; }
 
     public void setPreviewImage(String previewImage) { this.previewImage = previewImage; }

@@ -112,7 +112,7 @@ public class HomeFragment extends Fragment {
                     stepsCount.setText(String.format(Locale.getDefault(), "%,d", dashboardData.getStepsToday()));
                     stepsCircularProgress.setProgress(dashboardData.getStepsProgress());
                     
-
+                    
                 }
                 
 
@@ -125,14 +125,14 @@ public class HomeFragment extends Fragment {
     private final BroadcastReceiver dashboardUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-
+            
             
 
             SharedPreferences prefs = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE);
             int targetCalories = prefs.getInt("target_calories", 0);
             if (targetCalories > 0 && caloriesManager != null) {
                 caloriesManager.setTargetCalories(targetCalories);
-
+                
             }
             
 
@@ -157,8 +157,7 @@ public class HomeFragment extends Fragment {
             setupWaterCard();
             setupWeightCard();
             
-
-
+            
         }
     };
 
@@ -336,7 +335,7 @@ public class HomeFragment extends Fragment {
         caloriesManager.getBurnedCaloriesLiveData().observe(getViewLifecycleOwner(), burnedCalories -> {
 
             updateCaloriesUI(burnedCalories, dashboardData.getCaloriesConsumed());
-
+            
         });
         
 
@@ -346,7 +345,7 @@ public class HomeFragment extends Fragment {
             
 
             updateCaloriesUI(dashboardData.getCaloriesBurned(), consumedCalories);
-
+            
         });
     }
     
@@ -378,7 +377,7 @@ public class HomeFragment extends Fragment {
 
             if (caloriesGoalValue <= 0) {
                 caloriesGoalValue = 2000;
-
+                
             }
         }
         
@@ -401,7 +400,7 @@ public class HomeFragment extends Fragment {
             (int) (((float) consumedCalories / totalAvailableCalories) * 100) : 0;
         consumedPercent = Math.min(consumedPercent, 100);
         
-
+        
               
         caloriesCircularProgress.setProgress(consumedPercent);
     }
@@ -520,7 +519,7 @@ public class HomeFragment extends Fragment {
                 .addToBackStack(null)
                 .commit();
             
-
+            
         });
         
 
@@ -528,7 +527,7 @@ public class HomeFragment extends Fragment {
 
             Intent intent = new Intent(getActivity(), WeightHistoryActivity.class);
             startActivity(intent);
-
+            
         });
     }
     
@@ -604,7 +603,9 @@ public class HomeFragment extends Fragment {
         
 
         waterCircularProgress.setProgress(Math.min(waterPercent, 100));
+        
 
+        
     }
     
 
@@ -666,7 +667,7 @@ public class HomeFragment extends Fragment {
 
         if (currentWeightPref > 0) {
             currentWeightCardView.setText(String.format(Locale.getDefault(), "%.1f кг", currentWeightPref));
-
+            
         } else {
             currentWeightCardView.setText("–");
         }
@@ -679,8 +680,7 @@ public class HomeFragment extends Fragment {
 
                 if (currentWeightPref > 0 && Math.abs(currentWeightPref - weightFromDb) > 5) {
 
-
-
+                    
                     
 
                     currentWeightCardView.setText(String.format(Locale.getDefault(), "%.1f кг", currentWeightPref));
@@ -693,12 +693,11 @@ public class HomeFragment extends Fragment {
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putFloat("current_weight", weightFromDb);
                         editor.apply();
-
+                        
                     }
                 }
                 
-
-
+                
             } else {
 
                 if (currentWeightPref > 0) {
@@ -773,7 +772,7 @@ public class HomeFragment extends Fragment {
         if (!isUpdateActive) {
             isUpdateActive = true;
             updateHandler.postDelayed(updateRunnable, UPDATE_INTERVAL_MS);
-
+            
         }
     }
     
@@ -781,7 +780,7 @@ public class HomeFragment extends Fragment {
     private void stopPeriodicUpdates() {
         isUpdateActive = false;
         updateHandler.removeCallbacks(updateRunnable);
-
+        
     }
 
 
@@ -801,6 +800,7 @@ public class HomeFragment extends Fragment {
             setupWeightCard();
             
 
+            
         }
     }
 
@@ -816,7 +816,7 @@ public class HomeFragment extends Fragment {
 
 
             if (targetCalories <= 0 || targetCalories == 3178) {
-
+                
                 
 
                 String name = prefs.getString("name", "Пользователь");
@@ -847,9 +847,9 @@ public class HomeFragment extends Fragment {
 
                 caloriesManager.setTargetCalories(targetCalories);
                 
-
+                
             } else {
-
+                
             }
         } catch (Exception e) {
             Log.e("HomeFragment", "Ошибка при инициализации целевых калорий", e);

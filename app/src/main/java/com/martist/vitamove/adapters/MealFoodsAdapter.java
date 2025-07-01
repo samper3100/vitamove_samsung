@@ -108,7 +108,7 @@ public class MealFoodsAdapter extends RecyclerView.Adapter<MealFoodsAdapter.View
                 }
             });
             
-
+            
         } catch (Exception e) {
             Log.e(TAG, "Error binding view holder at position " + position, e);
         }
@@ -120,7 +120,7 @@ public class MealFoodsAdapter extends RecyclerView.Adapter<MealFoodsAdapter.View
     }
 
     public void updateFoods(List<Meal.FoodPortion> newFoods) {
-
+        
         this.foods = newFoods != null ? newFoods : new ArrayList<>();
         notifyDataSetChanged();
     }

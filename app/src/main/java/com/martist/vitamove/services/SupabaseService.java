@@ -10,7 +10,7 @@ public class SupabaseService {
     private static final String TAG = "SupabaseService";
     private final SupabaseClient client;
 
-
+    
     public SupabaseService(SupabaseClient client) {
         this.client = client;
     }
@@ -26,13 +26,13 @@ public class SupabaseService {
             return;
         }
 
-
+        
         client.rpc("can_send_assistant_message")
                 .executeAsync(new SupabaseCallback<String>() {
                     @Override
                     public void onSuccess(String result) {
-
-
+                        
+                        
                         boolean canSend = Boolean.parseBoolean(result);
                         callback.onResult(canSend);
                     }

@@ -50,7 +50,7 @@ public class SupabaseFoodRepository {
                         .executeAndGetArray();
                 } catch (SupabaseClient.TokenRefreshedException e) {
                     
-
+                    
                     currentRetry++;
                     
                     if (currentRetry >= maxRetries) {
@@ -91,7 +91,7 @@ public class SupabaseFoodRepository {
         }
         
         String normalizedQuery = query.trim().toLowerCase();
-
+        
         
         try {
             
@@ -211,10 +211,10 @@ public class SupabaseFoodRepository {
                 
                 if (hasExactMatch) {
                     exactMatches.add(food);
-
+                    
                 } else if (hasPartialMatch) {
                     partialMatches.add(food);
-
+                    
                 }
             }
             
@@ -222,8 +222,7 @@ public class SupabaseFoodRepository {
             List<Food> matchingFoods = new ArrayList<>(exactMatches);
             matchingFoods.addAll(partialMatches);
             
-
-
+            
             
             
             return matchingFoods;
@@ -239,12 +238,12 @@ public class SupabaseFoodRepository {
     public List<Food> getAllFoods() {
         
         if (allFoodsCache != null && !isCacheExpired()) {
-
+            
             return allFoodsCache;
         }
         
         try {
-
+            
             
             List<Food> foods = new ArrayList<>();
             int pageSize = 1000; 
@@ -253,7 +252,7 @@ public class SupabaseFoodRepository {
             
             
             while (hasMoreData) {
-
+                
                 
                 JSONArray foodsArray = null;
                 int maxRetries = 3;
@@ -269,7 +268,7 @@ public class SupabaseFoodRepository {
                             .executeAndGetArray();
                     } catch (SupabaseClient.TokenRefreshedException e) {
                         
-
+                        
                         currentRetry++;
                         
                         if (currentRetry >= maxRetries) {
@@ -284,7 +283,7 @@ public class SupabaseFoodRepository {
                     break;
                 }
                 
-
+                
                 
                 
                 for (int i = 0; i < foodsArray.length(); i++) {
@@ -305,7 +304,7 @@ public class SupabaseFoodRepository {
                 }
             }
             
-
+            
             
             
             allFoodsCache = foods;
@@ -317,7 +316,7 @@ public class SupabaseFoodRepository {
             
             
             if (allFoodsCache != null) {
-
+                
                 return allFoodsCache;
             }
             
@@ -334,7 +333,7 @@ public class SupabaseFoodRepository {
     private Food parseFoodFromJson(JSONObject json) {
         try {
             String name = json.optString("name", "Неизвестный продукт");
-
+            
             
             
             float proteins = (float) json.optDouble("proteins", 0);
@@ -355,7 +354,7 @@ public class SupabaseFoodRepository {
             
             
             if (json.isNull("popularity")) {
-
+                
             }
             
             
@@ -371,7 +370,7 @@ public class SupabaseFoodRepository {
                     
                     
                     numericId = Math.abs((long)idStr.hashCode());
-
+                    
                 }
             }
             
@@ -413,7 +412,8 @@ public class SupabaseFoodRepository {
                 .usefulness_index(usefulnessIndex)
                 .is_liquid(isLiquid)
                 .build();
-
+                
+            
                       
             return food;
         } catch (Exception e) {
@@ -425,7 +425,7 @@ public class SupabaseFoodRepository {
     
     public String addFood(Food food) {
         try {
-
+            
             
             
             String foodName = food.getName();
@@ -439,15 +439,15 @@ public class SupabaseFoodRepository {
             if (existingFood != null) {
                 
                 String existingId = String.valueOf(existingFood.getId());
-
+                
                 return existingId;
             }
             
-
+            
             
             
             String newUUID = java.util.UUID.randomUUID().toString();
-
+            
             
             
             JSONObject foodData = new JSONObject();
@@ -523,8 +523,8 @@ public class SupabaseFoodRepository {
             foodData.put("is_moderated", false); 
             
             
-
-
+            
+            
 
             
             try {
@@ -533,12 +533,12 @@ public class SupabaseFoodRepository {
                         .executeAndGetArray();
                 
                 if (result != null && result.length() > 0) {
-
+                    
                     
                     
                     allFoodsCache = null;
                 } else {
-
+                    
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при добавлении продукта в Supabase: " + e.getMessage(), e);
@@ -558,7 +558,7 @@ public class SupabaseFoodRepository {
             if (!Float.isNaN(value) && value > 0) {
                 json.put(key, value);
             } else if (Float.isNaN(value)) {
-
+                
             }
         } catch (JSONException e) {
             Log.e(TAG, "Ошибка при добавлении значения для ключа '" + key + "': " + e.getMessage(), e);
@@ -568,7 +568,7 @@ public class SupabaseFoodRepository {
     
     public Food getFoodByName(String foodName) {
         try {
-
+            
             
             if (foodName == null || foodName.trim().isEmpty()) {
                 Log.e(TAG, "Пустое имя продукта в запросе");
@@ -590,7 +590,7 @@ public class SupabaseFoodRepository {
                         .eq("name", normalizedFoodName)  
                         .executeAndGetArray();
                 } catch (SupabaseClient.TokenRefreshedException e) {
-
+                    
                     currentRetry++;
                     
                     if (currentRetry >= maxRetries) {
@@ -609,10 +609,10 @@ public class SupabaseFoodRepository {
             if (foodsArray.length() > 0) {
                 JSONObject foodJson = foodsArray.getJSONObject(0);
                 Food food = parseFoodFromJson(foodJson);
-
+                
                 return food;
             } else {
-
+                
                 return null;
             }
         } catch (Exception e) {
@@ -624,7 +624,7 @@ public class SupabaseFoodRepository {
     
     public List<String> getAllUniqueCategories() {
         try {
-
+            
             
             
             List<Food> foods = getAllFoods();
@@ -645,7 +645,7 @@ public class SupabaseFoodRepository {
             
             List<String> categories = new ArrayList<>(uniqueCategories.values());
             
-
+            
             return categories;
             
         } catch (Exception e) {
@@ -657,7 +657,7 @@ public class SupabaseFoodRepository {
     
     public List<String> getUniqueSubcategoriesForCategory(String category) {
         try {
-
+            
             
             
             List<Food> foods = getAllFoods();
@@ -683,7 +683,7 @@ public class SupabaseFoodRepository {
             
             List<String> subcategories = new ArrayList<>(uniqueSubcategories.values());
             
-
+            
             return subcategories;
             
         } catch (Exception e) {

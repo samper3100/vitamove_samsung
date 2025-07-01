@@ -60,7 +60,7 @@ public class StepCounterManager implements SensorEventListener {
         if (!isListening) {
             sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_NORMAL);
             isListening = true;
-
+            
         }
         
         return true;
@@ -75,7 +75,7 @@ public class StepCounterManager implements SensorEventListener {
             
             saveCurrentSteps();
             
-
+            
         }
     }
     
@@ -112,14 +112,14 @@ public class StepCounterManager implements SensorEventListener {
         long lastSaveDate = sharedPreferences.getLong(KEY_LAST_SAVE_DATE, 0);
         long currentTime = System.currentTimeMillis();
         
-
+        
+        
         
         boolean isNewDay = !isSameDay(lastSaveDate, currentTime);
         
         if (isNewDay) {
             
-
-
+            
             
             
             final int MAX_REASONABLE_STEPS = 100000;
@@ -142,7 +142,7 @@ public class StepCounterManager implements SensorEventListener {
                     java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
                     String previousDay = sdf.format(calendar.getTime());
                     
-
+                    
                     
                     
                     new Thread(() -> {
@@ -154,7 +154,7 @@ public class StepCounterManager implements SensorEventListener {
                             
                             repository.saveStepsForDate(previousDay, stepsToday);
                             
-
+                            
                         } catch (Exception e) {
                             Log.e(TAG, "Ошибка при сохранении шагов за предыдущий день: " + e.getMessage(), e);
                         }
@@ -171,7 +171,7 @@ public class StepCounterManager implements SensorEventListener {
             stepsToday = 0;    
             stepsBeforeReboot = 0; 
 
-
+            
             
             
             saveData();
@@ -186,7 +186,7 @@ public class StepCounterManager implements SensorEventListener {
         editor.putLong(KEY_LAST_SAVE_DATE, System.currentTimeMillis());
         editor.apply();
         
-
+        
     }
     
     
@@ -199,7 +199,7 @@ public class StepCounterManager implements SensorEventListener {
         editor.putLong(KEY_LAST_SAVE_DATE, System.currentTimeMillis());
         editor.apply();
         
-
+        
     }
     
     
@@ -222,7 +222,7 @@ public class StepCounterManager implements SensorEventListener {
             long lastSaveDate = sharedPreferences.getLong(KEY_LAST_SAVE_DATE, 0);
             if (!isSameDay(lastSaveDate, System.currentTimeMillis())) {
                 
-
+                
                 loadSavedData();
             }
             
@@ -231,24 +231,24 @@ public class StepCounterManager implements SensorEventListener {
                 initialSteps = sensorSteps;
                 stepsBeforeReboot = 0; 
                 saveData();
-
+                
             }
 
             
             if (sensorSteps < initialSteps) {
-
+                
 
                 
                 if (stepsToday > 0) {
                     
-
+                    
                     stepsBeforeReboot = stepsToday;
                     initialSteps = sensorSteps;
                 } else {
                     
                     
                     
-
+                    
                     stepsBeforeReboot = sensorSteps;
                     initialSteps = sensorSteps;
                 }
@@ -285,14 +285,14 @@ public class StepCounterManager implements SensorEventListener {
             
             final int REASONABLE_STEP_DIFF = 1000;
             if (Math.abs(calculatedSteps - stepsToday) > REASONABLE_STEP_DIFF) {
-
+                
             }
             
             stepsToday = calculatedSteps;
             
             
             if (stepsToday % 10 == 0) { 
-
+                
             }
             
             
@@ -313,7 +313,7 @@ public class StepCounterManager implements SensorEventListener {
         long currentTime = System.currentTimeMillis();
         
         if (!isSameDay(lastSaveDate, currentTime)) {
-
+            
             loadSavedData(); 
         }
     }

@@ -59,7 +59,7 @@ public class SupabaseClient {
                 .addInterceptor(new TokenRefreshInterceptor(this, authManager))
                 .build();
         
-
+        
     }
 
     public void setUserToken(String token) {
@@ -85,7 +85,7 @@ public class SupabaseClient {
 
     
     public String signIn(String email, String password) throws IOException, JSONException {
-
+        
 
         JSONObject signInData = new JSONObject();
         signInData.put("email", email);
@@ -131,7 +131,7 @@ public class SupabaseClient {
                     String payload = new String(android.util.Base64.decode(jwtParts[1], android.util.Base64.DEFAULT));
                     JSONObject jwtJson = new JSONObject(payload);
                     userId = jwtJson.getString("sub");
-
+                    
 
                     
                     try {
@@ -141,9 +141,9 @@ public class SupabaseClient {
 
                         if (result.length() == 0) {
 
-
+                            
                         } else {
-
+                            
                         }
                     } catch (Exception e) {
                         Log.e("SupabaseClient", "Ошибка при проверке/создании записи пользователя: " + e.getMessage(), e);
@@ -153,7 +153,7 @@ public class SupabaseClient {
                 Log.e("SupabaseClient", "Ошибка извлечения ID пользователя из токена: " + e.getMessage(), e);
             }
 
-
+            
             return responseBody;
         }
     }
@@ -167,7 +167,7 @@ public class SupabaseClient {
             throw new IllegalArgumentException("Некорректный формат email");
         }
 
-
+        
 
         JSONObject signUpData = new JSONObject();
         signUpData.put("email", email);
@@ -223,7 +223,7 @@ public class SupabaseClient {
                     String payload = new String(android.util.Base64.decode(jwtParts[1], android.util.Base64.DEFAULT));
                     JSONObject jwtJson = new JSONObject(payload);
                     userId = jwtJson.getString("sub");
-
+                    
 
                     
                     try {
@@ -265,7 +265,7 @@ public class SupabaseClient {
                                 .insert(userData)
                                 .executeInsert();
 
-
+                        
                     } catch (Exception e) {
                         
                         Log.e("SupabaseClient", "Не удалось создать запись в таблице users: " + e.getMessage(), e);
@@ -275,7 +275,7 @@ public class SupabaseClient {
                 Log.e("SupabaseClient", "Ошибка извлечения ID пользователя из токена: " + e.getMessage(), e);
             }
 
-
+            
             return responseBody;
         }
     }
@@ -415,7 +415,7 @@ public class SupabaseClient {
                 this.jsonData = jsonData.toString();
                 this.method = "POST";
                 this.headers.put("Prefer", "return=representation");
-
+                
                 return this;
             } catch (Exception e) {
                 Log.e("SupabaseClient", "Ошибка при создании JSON для вставки", e);
@@ -431,7 +431,7 @@ public class SupabaseClient {
 
             
             String requestUrl = getRequestBuilder().build().url().toString();
-
+            
 
             while (currentTry < maxRetries) {
                 try {
@@ -440,16 +440,16 @@ public class SupabaseClient {
                     if (jsonData != null) {
                         RequestBody body = RequestBody.create(jsonData, JSON);
                         requestBuilder.post(body);
-
+                        
                     } else {
                         requestBuilder.get();
-
+                        
                     }
 
                     
                     try (Response response = client.newCall(requestBuilder.build()).execute()) {
                         int responseCode = response.code();
-
+                        
 
                         if (!response.isSuccessful()) {
                             String responseBody = response.body() != null ? response.body().string() : "null";
@@ -459,7 +459,7 @@ public class SupabaseClient {
                                 throw new IOException("Ошибка авторизации. Будет выполнена автоматическая повторная попытка.");
                             } else if (responseCode >= 500) {
                                 
-
+                                
                                 Thread.sleep(1000L * (currentTry + 1));
                                 currentTry++;
                                 continue;
@@ -469,7 +469,7 @@ public class SupabaseClient {
                         }
 
                         String responseBody = response.body().string();
-
+                        
 
                         if (responseBody == null || responseBody.isEmpty()) {
                             Log.e("SupabaseClient", "Ответ пуст");
@@ -484,7 +484,7 @@ public class SupabaseClient {
                                 return array.getJSONObject(0);
                             } else {
                                 
-
+                                
                                 return null;
                             }
                         } else {
@@ -496,7 +496,7 @@ public class SupabaseClient {
                     lastException = e;
                     Log.e("SupabaseClient", "Ошибка запроса: " + e.getMessage(), e);
                     if (currentTry < maxRetries - 1) {
-
+                        
                         Thread.sleep(1000L * (currentTry + 1));
                         currentTry++;
                     } else {
@@ -518,7 +518,7 @@ public class SupabaseClient {
 
             
             String requestUrl = getRequestBuilder().build().url().toString();
-
+            
 
             while (currentTry < maxRetries) {
                 try {
@@ -530,26 +530,26 @@ public class SupabaseClient {
                         
                         if ("POST".equals(method)) {
                             requestBuilder.post(body);
-
+                            
                         } else if ("PATCH".equals(method)) {
                             requestBuilder.patch(body);
-
+                            
                         } else if ("PUT".equals(method)) {
                             requestBuilder.put(body);
-
+                            
                         } else {
                             requestBuilder.post(body);
-
+                            
                         }
                     } else {
                         requestBuilder.get();
-
+                        
                     }
 
                     
                     try (Response response = client.newCall(requestBuilder.build()).execute()) {
                         int responseCode = response.code();
-
+                        
 
                         if (!response.isSuccessful()) {
                             String responseBody = response.body() != null ? response.body().string() : "null";
@@ -559,7 +559,7 @@ public class SupabaseClient {
                                 throw new IOException("Ошибка авторизации. Будет выполнена автоматическая повторная попытка.");
                             } else if (responseCode >= 500) {
                                 
-
+                                
                                 Thread.sleep(1000L * (currentTry + 1));
                                 currentTry++;
                                 continue;
@@ -569,7 +569,7 @@ public class SupabaseClient {
                         }
 
                         String responseBody = response.body().string();
-
+                        
 
                         if (responseBody == null || responseBody.isEmpty()) {
                             Log.e("SupabaseClient", "Ответ пуст");
@@ -578,7 +578,7 @@ public class SupabaseClient {
 
                         
                         if (responseBody.equals("[]")) {
-
+                            
                             return new JSONArray();
                         }
 
@@ -588,7 +588,7 @@ public class SupabaseClient {
                     lastException = e;
                     Log.e("SupabaseClient", "Ошибка запроса: " + e.getMessage(), e);
                     if (currentTry < maxRetries - 1) {
-
+                        
                         Thread.sleep(1000L * (currentTry + 1));
                         currentTry++;
                     } else {
@@ -670,7 +670,7 @@ public class SupabaseClient {
 
                 
                 if (response.code() == 300) {
-
+                    
                     throw new IOException("Проблема с перенаправлением запроса. Тело ответа: " + responseBody);
                 } else if (response.code() >= 500) {
                     Log.e("SupabaseClient", "Серверная ошибка " + response.code() + ": " + responseBody);
@@ -718,13 +718,13 @@ public class SupabaseClient {
                 .build();
 
         
-
+        
 
         try (Response response = client.newCall(request).execute()) {
             String responseBody = "";
             try {
                 responseBody = response.body().string();
-
+                
             } catch (Exception e) {
                 Log.e("SupabaseClient", "Не удалось прочитать тело ответа", e);
             }
@@ -754,7 +754,7 @@ public class SupabaseClient {
                                         .remove("accessToken")
                                         .remove("refreshToken")
                                         .apply();
-
+                                
                             }
                         } catch (Exception e) {
                             Log.e("SupabaseClient", "Ошибка при удалении токенов из SharedPreferences", e);
@@ -775,7 +775,7 @@ public class SupabaseClient {
             String newAccessToken = jsonResponse.getString("access_token");
             String newRefreshToken = jsonResponse.getString("refresh_token");
 
-
+            
 
             setUserToken(newAccessToken);
             setRefreshToken(newRefreshToken);
@@ -910,7 +910,7 @@ public class SupabaseClient {
                 public void onResponse(okhttp3.Call call, Response response) throws IOException {
                     try (Response responseClone = response) {
                         int responseCode = responseClone.code();
-
+                        
 
                         if (!responseClone.isSuccessful()) {
                             String responseBody = responseClone.body() != null ? responseClone.body().string() : "null";
@@ -983,7 +983,7 @@ public class SupabaseClient {
             public void onResponse(okhttp3.Call call, Response response) throws IOException {
                 try (Response responseClone = response) {
                     int responseCode = responseClone.code();
-
+                    
 
                     if (!responseClone.isSuccessful()) {
                         String responseBody = responseClone.body() != null ? responseClone.body().string() : "null";
@@ -1017,7 +1017,7 @@ public class SupabaseClient {
 
     
     public JSONObject insertRecord(String tableName, JSONObject data) throws IOException, JSONException {
-
+        
 
         
         String url = SUPABASE_URL + "/rest/v1/" + tableName;
@@ -1069,14 +1069,14 @@ public class SupabaseClient {
                     prefs.edit()
                             .putString("accessToken", userToken)
                             .apply();
-
+                    
                 }
                 if (refreshToken != null) {
                     prefs.edit()
                             .putString("refreshToken", refreshToken)
                             .putLong("tokenUpdateTime", System.currentTimeMillis())
                             .apply();
-
+                    
                 }
             }
         } catch (Exception e) {
@@ -1089,7 +1089,7 @@ public class SupabaseClient {
     public boolean updateUserProfile(String userId, String name, int age, String gender,
                                      String fitnessGoal, float height, float currentWeight,
                                      float targetWeight, String fitnessLevel, boolean isMetric) {
-
+        
 
         try {
             
@@ -1133,7 +1133,7 @@ public class SupabaseClient {
                         .update(data)
                         .executeUpdate();
 
-
+                
                 return true;
             } catch (Exception e) {
                 
@@ -1144,7 +1144,7 @@ public class SupabaseClient {
                             .insert(data)
                             .executeInsert();
 
-
+                    
                     return true;
                 } catch (Exception insertError) {
                     Log.e("SupabaseClient", "Ошибка при создании профиля: " + insertError.getMessage(), insertError);

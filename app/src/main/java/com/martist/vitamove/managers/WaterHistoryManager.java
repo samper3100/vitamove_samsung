@@ -41,7 +41,7 @@ public class WaterHistoryManager {
 
     public static synchronized void resetInstance() {
         if (instance != null) {
-
+            
             instance = null;
         }
     }
@@ -78,8 +78,7 @@ public class WaterHistoryManager {
 
         updateDailyWaterData(amount);
         
-
-
+        
               
         return true;
     }
@@ -109,7 +108,7 @@ public class WaterHistoryManager {
         updateMonthlyDataAfterDelete(amountToRemove);
         updateDailyWaterDataAfterDelete(amountToRemove);
         
-
+        
         
         return true;
     }
@@ -430,7 +429,7 @@ public class WaterHistoryManager {
         saveWeeklyData(emptyWeekly);
         saveMonthlyData(emptyMonthly);
         
-
+        
     }
     
 
@@ -485,7 +484,7 @@ public class WaterHistoryManager {
 
             checkAndResetMonthlyDataIfNeeded();
             
-
+            
         }
     }
     

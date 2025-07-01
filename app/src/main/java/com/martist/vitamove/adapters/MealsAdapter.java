@@ -37,29 +37,29 @@ public class MealsAdapter extends RecyclerView.Adapter<MealsAdapter.ViewHolder> 
         holder.mealName.setText(meal.getTitle());
         holder.mealIcon.setImageResource(meal.getIconResId());
         
-
+        
         float calories = meal.getCalories();
         holder.mealCalories.setText(String.format(Locale.getDefault(), "%.0f ккал", calories));
         
-
+        
         holder.foodList.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
         holder.foodList.setAdapter(new MealFoodsAdapter(meal.getFoods(), meal.getTitle().toLowerCase()));
         
-
+        
         ImageView expandIcon = holder.itemView.findViewById(R.id.expand_icon);
         
-
+        
         holder.itemView.setOnClickListener(v -> {
             boolean expanded = holder.foodList.getVisibility() == View.VISIBLE;
             holder.foodList.setVisibility(expanded ? View.GONE : View.VISIBLE);
             
-
+            
             if (expandIcon != null) {
                 expandIcon.setRotation(expanded ? 0 : 180);
             }
         });
         
-
+        
         TextView totalProteins = holder.itemView.findViewById(R.id.total_proteins);
         TextView totalFats = holder.itemView.findViewById(R.id.total_fats);
         TextView totalCarbs = holder.itemView.findViewById(R.id.total_carbs);

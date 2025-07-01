@@ -114,13 +114,13 @@ public abstract class WorkoutDao {
         List<WorkoutExercise> workoutExercises = new ArrayList<>();
         List<WorkoutExerciseEntity> exerciseEntities = getExercisesForWorkout(workoutEntity.getId());
 
-
+         
         
         for (WorkoutExerciseEntity exerciseEntity : exerciseEntities) {
 
             com.martist.vitamove.workout.data.models.Exercise baseExercise = repoHelper.getExerciseDetailsSync(exerciseEntity.getBaseExerciseId());
             if (baseExercise == null) {
-
+                
                 baseExercise = new com.martist.vitamove.workout.data.models.Exercise.Builder()
                         .id(exerciseEntity.getBaseExerciseId())
                         .name("Упражнение не найдено")
@@ -137,7 +137,7 @@ public abstract class WorkoutDao {
         }
         
 
-
+        
         return workoutEntity.toModel(workoutExercises);
     }
 
@@ -162,14 +162,13 @@ public abstract class WorkoutDao {
 
                         if (setModel.getExerciseId() == null && exerciseModel.getExercise() != null) {
                             setModel.setExerciseId(exerciseModel.getExercise().getId());
-
-
+                            
                         }
                         
                         ExerciseSetEntity setEntity = ExerciseSetEntity.fromModel(setModel, exerciseEntity.getId());
                         allSetEntities.add(setEntity);
                         
-
+                        
                     }
                 }
             }
@@ -178,8 +177,7 @@ public abstract class WorkoutDao {
 
             for (int i = 0; i < allSetEntities.size(); i++) {
                 ExerciseSetEntity entity = allSetEntities.get(i);
-
-
+                
             }
             
             insertExerciseSets(allSetEntities);
@@ -230,7 +228,7 @@ public abstract class WorkoutDao {
                  WorkoutExerciseEntity exercise = getWorkoutExerciseById(set.getWorkoutExerciseId());
                  if (exercise != null) {
                      set.setExerciseId(exercise.getBaseExerciseId());
-
+                     
                  } else {
                      Log.e(TAG, "addSetToExercise: Не удалось получить workout_exercise с id = " + set.getWorkoutExerciseId());
                  }
@@ -238,11 +236,11 @@ public abstract class WorkoutDao {
                  Log.e(TAG, "addSetToExercise: Ошибка при получении exercise_id", e);
              }
          } else {
-
+             
          }
          
          ExerciseSetEntity setEntity = ExerciseSetEntity.fromModel(set, set.getWorkoutExerciseId());
-
+         
          insertExerciseSet(setEntity);
     }
     
@@ -254,8 +252,7 @@ public abstract class WorkoutDao {
         insertWorkoutExercise(exerciseEntity);
         
         String exerciseId = exercise.getExercise().getId();
-
-
+        
         
         if (exercise.getSetsCompleted() != null && !exercise.getSetsCompleted().isEmpty()) {
              List<ExerciseSetEntity> setEntities = new ArrayList<>();
@@ -271,11 +268,12 @@ public abstract class WorkoutDao {
                 ExerciseSetEntity entity = ExerciseSetEntity.fromModel(setModel, exerciseEntity.getId());
                 setEntities.add(entity);
                 
-
+                
             }
             
 
-
+            
+            
             insertExerciseSets(setEntities);
         }
     }

@@ -69,7 +69,7 @@ public class DashboardManager {
 
     public static synchronized void resetInstance() {
         if (instance != null) {
-
+            
             instance = null;
         }
     }
@@ -89,7 +89,7 @@ public class DashboardManager {
         this.stepCounterManager = StepCounterManager.getInstance(context);
         boolean sensorAvailable = this.stepCounterManager.startTracking();
         if (!sensorAvailable) {
-
+            
         }
         
 
@@ -185,7 +185,7 @@ public class DashboardManager {
         
 
         if (weeklySteps.isEmpty()) {
-
+            
             return new ArrayList<>(Arrays.asList(9500, 9200, 10800, 11500, 6800, 8400, stepsToday));
         }
         
@@ -213,8 +213,7 @@ public class DashboardManager {
             
 
             if (Math.abs(previousStepsToday - stepsToday) > 1000) {
-
-
+                
             }
             
 
@@ -223,9 +222,9 @@ public class DashboardManager {
 
             stepHistoryRepository.saveStepsForToday(stepsToday);
             
-
+            
         } else {
-
+            
         }
     }
     
@@ -235,7 +234,7 @@ public class DashboardManager {
         syncStepsData();
         
 
-
+        
     }
     
 
@@ -272,7 +271,7 @@ public class DashboardManager {
             sharedPreferences.edit().putFloat(KEY_WATER_GOAL, waterGoal).apply();
             
 
-
+            
         }
     }
     
@@ -291,7 +290,7 @@ public class DashboardManager {
             caloriesManager.setTargetCalories(caloriesGoal);
             
 
-
+            
         }
     }
     
@@ -317,9 +316,9 @@ public class DashboardManager {
 
                 sharedPreferences.edit().putLong(KEY_LAST_RESET_DATE, todayInMillis).apply();
                 
-
+                
             } else {
-
+                
             }
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при проверке даты для сброса данных: " + e.getMessage(), e);

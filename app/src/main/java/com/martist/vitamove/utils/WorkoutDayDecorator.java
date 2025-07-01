@@ -29,7 +29,7 @@ public class WorkoutDayDecorator implements DayViewDecorator {
 
     @Override
     public void decorate(DayViewFacade view) {
-        
+
         view.addSpan(new DotSpan(6, color));
     }
 

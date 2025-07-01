@@ -38,7 +38,7 @@ public class FoodSelectionActivity extends BaseActivity {
         setContentView(R.layout.activity_food_selection);
         
         mealType = getIntent().getStringExtra(Constants.EXTRA_MEAL_TYPE);
-
+        
         
         if (mealType == null) {
             Log.e(TAG, "mealType is null! Intent extras: " + getIntent().getExtras());
@@ -47,18 +47,18 @@ public class FoodSelectionActivity extends BaseActivity {
             return;
         }
         
-
+        
         findViewById(R.id.back_button).setOnClickListener(v -> finish());
         
-
+        
         View barcodeButton = findViewById(R.id.barcode_scan_button);
         barcodeButton.setOnClickListener(v -> {
-
+            
             v.animate().scaleX(0.9f).scaleY(0.9f).setDuration(100).withEndAction(() -> {
                 v.animate().scaleX(1f).scaleY(1f).setDuration(100);
-
+                
                 Intent intent = new Intent(FoodSelectionActivity.this, BarcodeScannerActivity.class);
-
+                
                 intent.putExtra(Constants.EXTRA_MEAL_TYPE, mealType);
                 barcodeScanLauncher.launch(intent);
             }).start();
@@ -72,7 +72,7 @@ public class FoodSelectionActivity extends BaseActivity {
             setupRecyclerView();
             setupSearchView();
             
-
+            
             loadAllFoods();
         } catch (Exception e) {
             Log.e(TAG, "Error initializing FoodSelectionActivity: " + e.getMessage());
@@ -96,10 +96,10 @@ public class FoodSelectionActivity extends BaseActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (newText.isEmpty()) {
-
+                    
                     showPopularFoods();
                 } else {
-
+                    
                     performSearch(newText);
                 }
                 return true;
@@ -115,7 +115,7 @@ public class FoodSelectionActivity extends BaseActivity {
             Intent intent = new Intent(this, PortionSizeActivity.class);
             intent.putExtra(Constants.EXTRA_FOOD, food);
             intent.putExtra(Constants.EXTRA_MEAL_TYPE, mealType);
-
+            
             String selectedDateStr = foodManager.getSelectedDateFormatted();
             intent.putExtra(Constants.EXTRA_SELECTED_DATE, selectedDateStr);
             portionSizeLauncher.launch(intent);
@@ -124,38 +124,38 @@ public class FoodSelectionActivity extends BaseActivity {
         foodsList.setAdapter(adapter);
     }
 
-
+    
     private void loadAllFoods() {
         new Thread(() -> {
             try {
-
+                
                 allFoods = foodManager.getAllFoods();
                 
-
+                
                 if (allFoods != null && !allFoods.isEmpty()) {
-
+                    
                     int count = Math.min(allFoods.size(), 10);
                     for (int i = 0; i < count; i++) {
                         Food food = allFoods.get(i);
-
+                        
                     }
                     
-
-
+                    
+                    
                     int kolaCount = 0;
                     for (Food food : allFoods) {
                         if (food.getName().toLowerCase().contains("кола")) {
-
+                            
                             kolaCount++;
                         }
                     }
-
+                    
                 }
                 
-
+                
                 showPopularFoods();
                 
-
+                
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при загрузке продуктов: " + e.getMessage());
                 runOnUiThread(() -> {
@@ -165,79 +165,79 @@ public class FoodSelectionActivity extends BaseActivity {
         }).start();
     }
 
-
+    
     private void showPopularFoods() {
         if (allFoods == null || allFoods.isEmpty()) {
             return;
         }
         
-
+        
         List<Food> popularFoods = new ArrayList<>(allFoods);
         popularFoods.sort((food1, food2) -> {
-
+            
             Integer p1 = food1.getPopularity();
             Integer p2 = food2.getPopularity();
             
-
+            
             if (p1 == null && p2 == null) {
                 return 0;
             }
             
-
+            
             if (p1 == null) {
                 return 1;
             }
             
-
+            
             if (p2 == null) {
                 return -1;
             }
             
-
+            
             return Integer.compare(p2, p1);
         });
         
-
+        
         if (popularFoods.size() > 10) {
             popularFoods = popularFoods.subList(0, 10);
         }
         
         updateFoodList(popularFoods);
         
-
+        
         runOnUiThread(() -> {
             findViewById(R.id.empty_results_text).setVisibility(View.GONE);
             foodsList.setVisibility(View.VISIBLE);
         });
     }
 
-
+    
     private void performSearch(String query) {
         if (query == null || query.trim().isEmpty()) {
-
+            
             adapter.updateFoods(foodManager.getPopularFoods());
             return;
         }
 
+        
 
-
-
+        
         List<Food> localResults = foodManager.searchFoods(query);
         if (!localResults.isEmpty()) {
-
+            
             updateFoodList(localResults);
             
-
+            
             runOnUiThread(() -> {
                 findViewById(R.id.empty_results_text).setVisibility(View.GONE);
             });
             return;
         }
 
-
-
+        
+        
         runOnUiThread(() -> {
-
+            
             adapter.updateFoods(new ArrayList<>());
             findViewById(R.id.empty_results_text).setVisibility(View.VISIBLE);
 
@@ -248,7 +248,7 @@ public class FoodSelectionActivity extends BaseActivity {
         portionSizeLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-
+                
             });
     }
 
@@ -261,11 +261,11 @@ public class FoodSelectionActivity extends BaseActivity {
                     if (data != null && data.hasExtra(Constants.EXTRA_FOOD)) {
                         Food scannedFood = data.getParcelableExtra(Constants.EXTRA_FOOD);
                         if (scannedFood != null) {
-
+                            
                             Intent intent = new Intent(this, PortionSizeActivity.class);
                             intent.putExtra(Constants.EXTRA_FOOD, scannedFood);
                             intent.putExtra(Constants.EXTRA_MEAL_TYPE, mealType);
-
+                            
                             String selectedDateStr = foodManager.getSelectedDateFormatted();
                             intent.putExtra(Constants.EXTRA_SELECTED_DATE, selectedDateStr);
                             portionSizeLauncher.launch(intent);
@@ -276,10 +276,10 @@ public class FoodSelectionActivity extends BaseActivity {
     }
 
     private void updateFoodList(List<Food> foodList) {
-
+        
         runOnUiThread(() -> {
             adapter.updateFoods(foodList);
-
+            
             foodsList.scrollToPosition(0);
         });
     }

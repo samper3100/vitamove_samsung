@@ -126,7 +126,7 @@ public class HistoryViewModel extends AndroidViewModel {
         
         
         if (currentTime - lastUpdateTime > CACHE_EXPIRATION_TIME) {
-
+            
             
             prefs.edit().clear().apply();
             return;
@@ -153,7 +153,7 @@ public class HistoryViewModel extends AndroidViewModel {
                     }
                 }
                 
-
+                
                 
                 
                 for (int i = 0; i < 30; i++) {
@@ -181,7 +181,7 @@ public class HistoryViewModel extends AndroidViewModel {
                             if (i == 0) {
                                 
                                 allWorkouts.postValue(new ArrayList<>(pageWorkouts));
-
+                                
                             }
                         }
                     }
@@ -228,7 +228,7 @@ public class HistoryViewModel extends AndroidViewModel {
             }
             
             editor.apply();
-
+            
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при сохранении кэша: " + e.getMessage());
         }
@@ -521,8 +521,8 @@ public class HistoryViewModel extends AndroidViewModel {
                     }
                     
                     
-
-
+                    
+                    
                     
                     
                     allWorkouts.postValue(workouts);
@@ -531,7 +531,7 @@ public class HistoryViewModel extends AndroidViewModel {
                     totalWorkouts.postValue(workouts.size());
                     
                 } else {
-
+                    
                     
                     workoutsByDate.clear();
                     
@@ -595,14 +595,14 @@ public class HistoryViewModel extends AndroidViewModel {
             
             workoutsLiveData.observeForever(workoutEntities -> {
                 if (workoutEntities == null || workoutEntities.isEmpty()) {
-
+                    
                     workoutsByDate.clear();
                     allWorkouts.postValue(new ArrayList<>());
                     isLoading.postValue(false);
                     return;
                 }
                 
-
+                
                 
                 
                 executor.execute(() -> {
@@ -658,7 +658,7 @@ public class HistoryViewModel extends AndroidViewModel {
                         totalWorkouts.postValue(workouts.size());
                         isLoading.postValue(false);
                         
-
+                        
                     } catch (Exception e) {
                         Log.e(TAG, "LiveData: Ошибка при обработке данных наблюдателя", e);
                         errorMessage.postValue("Ошибка при обработке данных: " + e.getMessage());
@@ -667,7 +667,7 @@ public class HistoryViewModel extends AndroidViewModel {
                 });
             });
             
-
+            
         } catch (Exception e) {
             Log.e(TAG, "LiveData: Ошибка при инициализации наблюдателя", e);
             isLoading.postValue(false);
@@ -695,7 +695,7 @@ public class HistoryViewModel extends AndroidViewModel {
                 
                 isLoading.postValue(false);
                 
-
+                
             } catch (Exception e) {
                 errorMessage.postValue("Ошибка обновления: " + e.getMessage());
                 isLoading.postValue(false);
@@ -757,7 +757,7 @@ public class HistoryViewModel extends AndroidViewModel {
                 String cacheFileName = PREF_NAME + "_" + userId;
                 SharedPreferences prefs = application.getSharedPreferences(cacheFileName, Application.MODE_PRIVATE);
                 prefs.edit().clear().apply();
-
+                
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при очистке кэша истории: " + e.getMessage());
             }

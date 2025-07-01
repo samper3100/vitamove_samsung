@@ -77,7 +77,7 @@ public class WorkoutExerciseHelper {
             
             builder.create().show();
             
-
+            
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при отображении диалога: " + e.getMessage(), e);
             Toast.makeText(context, 

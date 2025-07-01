@@ -80,7 +80,7 @@ public class GigaChatProductService {
             @Override
             public void onResponse(String response) {
                 try {
-
+                    
                     
                     
                     if (response == null || response.trim().isEmpty()) {
@@ -93,11 +93,11 @@ public class GigaChatProductService {
                     response = response.replaceAll("^[^{]*", "");
                     response = response.replaceAll("[^}]*$", "");
                     
-
+                    
                     
                     
                     if (response.isEmpty() || response.equals("null")) {
-
+                        
                         listener.onProductNotFound();
                         return;
                     }
@@ -138,7 +138,7 @@ public class GigaChatProductService {
                         subcategory = json.getString("subcategory");
                     }
                     
-
+                    
                     
                     
                     Food food = new Food.Builder()
@@ -178,8 +178,8 @@ public class GigaChatProductService {
                         .usefulness_index(usefulnessIndex) 
                         .build();
                     
-
-
+                    
+                    
                     listener.onProductFound(food);
                 } catch (Exception e) {
                     Log.e(TAG, "Ошибка парсинга ответа: " + e.getMessage() + ", ответ: [" + response + "]", e);

@@ -136,7 +136,7 @@ public class PortionSizeActivity extends BaseActivity {
         
         try {
             Food.ensureClassLoaded();
-
+            
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при загрузке класса Food: " + e.getMessage());
         }
@@ -144,7 +144,7 @@ public class PortionSizeActivity extends BaseActivity {
         foodManager = FoodManager.getInstance(this);
         
         
-
+        
         selectedFood = getIntent().getParcelableExtra(Constants.EXTRA_FOOD);
         mealType = getIntent().getStringExtra(Constants.EXTRA_MEAL_TYPE);
         barcode = getIntent().getStringExtra(Constants.EXTRA_BARCODE);
@@ -161,7 +161,7 @@ public class PortionSizeActivity extends BaseActivity {
                 if (selectedDate != null) {
                     
                     foodManager.setSelectedDateForView(selectedDate);
-
+                    
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при парсинге даты: " + e.getMessage());
@@ -169,15 +169,14 @@ public class PortionSizeActivity extends BaseActivity {
         }
         
         
-
-
-
-
-
+        
+        
+        
+        
+        
         
         if (selectedFood != null) {
-
-
+            
         }
         
         if (mealType == null) {
@@ -274,8 +273,8 @@ public class PortionSizeActivity extends BaseActivity {
                         return;
                     }
                     
-
-
+                    
+                    
                     
                     
                     Meal currentMeal = foodManager.getMeal(mealType);
@@ -284,7 +283,7 @@ public class PortionSizeActivity extends BaseActivity {
                     if (currentMeal == null) {
                         
                         foodManager.addFoodToMeal(mealType, selectedFood, portionSize);
-
+                        
                         
                         
                         EventBus.getDefault().post(new FoodAddedEvent(selectedFood, portionSize, mealType));
@@ -298,7 +297,7 @@ public class PortionSizeActivity extends BaseActivity {
                         boolean foundExisting = false;
                         
                         
-
+                        
                         
                         
                         int existingFoodIndex = -1;
@@ -306,22 +305,23 @@ public class PortionSizeActivity extends BaseActivity {
                             Meal.FoodPortion currentPortion = currentMeal.getFoods().get(i);
                             Food currentFood = currentPortion.getFood();
                             
-
+                            
+                            
+                            
                             
                             
                             boolean sameId = currentFood.getId() == selectedFood.getId();
                             boolean sameName = currentFood.getName().equals(selectedFood.getName());
                             
                             
-
+                            
                             
                             
                             
                             if (sameId && sameName) {
                                 foundExisting = true;
                                 existingFoodIndex = i;
-
-
+                                
                                 break;
                             }
                         }
@@ -334,19 +334,18 @@ public class PortionSizeActivity extends BaseActivity {
                             if (i == existingFoodIndex) {
                                 
                                 newMeal.addFood(selectedFood, portionSize);
-
-
+                                
                             } else {
                                 
                                 newMeal.addFood(currentFood, currentPortion.getPortionSize());
-
+                                
                             }
                         }
                         
                         
                         if (!foundExisting) {
                             newMeal.addFood(selectedFood, portionSize);
-
+                            
                         }
                         
                         
@@ -355,12 +354,12 @@ public class PortionSizeActivity extends BaseActivity {
                         
                         if (foundExisting) {
                             Toast.makeText(this, "Размер порции обновлен", Toast.LENGTH_SHORT).show();
-
+                            
                         } else {
                             
                             EventBus.getDefault().post(new FoodAddedEvent(selectedFood, portionSize, mealType));
                             Toast.makeText(this, "Продукт добавлен", Toast.LENGTH_SHORT).show();
-
+                            
                         }
                     }
                     
@@ -368,7 +367,7 @@ public class PortionSizeActivity extends BaseActivity {
                     if (barcode != null && !barcode.isEmpty() && selectedFood != null) {
                         
                         new Thread(() -> {
-
+                            
                             
                             try {
                                 SupabaseBarcodeRepository barcodeRepository = foodManager.getBarcodeRepository();
@@ -382,8 +381,7 @@ public class PortionSizeActivity extends BaseActivity {
                                 
                                 Food existingFoodByBarcode = barcodeRepository.findFoodByBarcode(barcode);
                                 if (existingFoodByBarcode != null) {
-
-
+                                    
                                     
                                     return;
                                 }
@@ -393,7 +391,7 @@ public class PortionSizeActivity extends BaseActivity {
                                 
                                 
                                 if (uuid == null || uuid.isEmpty()) {
-
+                                    
                                     
                                     
                                     Food existingFood = foodRepository.getFoodByName(selectedFood.getName());
@@ -401,7 +399,7 @@ public class PortionSizeActivity extends BaseActivity {
                                     if (existingFood != null) {
                                         
                                         uuid = existingFood.getIdUUID();
-
+                                        
                                     } else {
                                         
                                         uuid = foodRepository.addFood(selectedFood);
@@ -411,10 +409,10 @@ public class PortionSizeActivity extends BaseActivity {
                                             return;
                                         }
                                         
-
+                                        
                                     }
                                 } else {
-
+                                    
                                 }
                                 
                                 
@@ -441,7 +439,7 @@ public class PortionSizeActivity extends BaseActivity {
                                 boolean saved = barcodeRepository.addBarcode(barcode, foodWithUUID);
                                 
                                 if (saved) {
-
+                                    
                                 } else {
                                     Log.e(TAG, "Не удалось сохранить штрихкод в базе данных");
                                 }
@@ -450,8 +448,7 @@ public class PortionSizeActivity extends BaseActivity {
                             }
                         }).start();
                     } else {
-
-
+                        
                     }
                     
                     finish();

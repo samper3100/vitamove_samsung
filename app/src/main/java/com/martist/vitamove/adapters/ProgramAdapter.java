@@ -76,14 +76,12 @@ public class ProgramAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public void updatePrograms(List<WorkoutProgram> newPrograms) {
-
-
+        
         
         if (newPrograms != null) {
             for (int i = 0; i < newPrograms.size(); i++) {
                 WorkoutProgram program = newPrograms.get(i);
-
-
+                
             }
         }
         

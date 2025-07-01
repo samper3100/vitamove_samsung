@@ -74,14 +74,14 @@ public class OpenFoodFactsService {
                                 listener.onProductFound(food);
                             } else if (product.getProductName() != null && !product.getProductName().isEmpty()) {
 
-
+                                
                                 listener.onProductFoundWithoutNutrients(product.getProductName());
                             } else {
                                 listener.onProductNotFound();
                             }
                         } else if (product != null && product.getProductName() != null && !product.getProductName().isEmpty()) {
 
-
+                            
                             listener.onProductFoundWithoutNutrients(product.getProductName());
                         } else {
                             listener.onProductNotFound();
@@ -128,7 +128,7 @@ public class OpenFoodFactsService {
             }
         }
         
-
+        
         
 
         int usefulnessIndex = calculateUsefulnessIndex(
@@ -228,7 +228,7 @@ public class OpenFoodFactsService {
                 .usefulness_index(usefulnessIndex)
                 .build();
                 
-
+        
                   
         return food;
     }

@@ -144,11 +144,11 @@ public class Meal implements Parcelable {
 
     
     public boolean removeFood(int position) {
-
+        
         if (foods != null && position >= 0 && position < foods.size()) {
             foods.remove(position);
             updateNutrients();
-
+            
             return true;
         }
         Log.e(TAG, "Ошибка при удалении продукта: некорректная позиция " + position);
@@ -157,7 +157,7 @@ public class Meal implements Parcelable {
 
     
     public boolean updateFoodPortion(String foodId, int newPortionSize) {
-
+        
         if (foods != null) {
             for (int i = 0; i < foods.size(); i++) {
                 FoodPortion portion = foods.get(i);
@@ -168,12 +168,12 @@ public class Meal implements Parcelable {
                     foods.set(i, newPortion);
                     
                     updateNutrients();
-
+                    
                     return true;
                 }
             }
         }
-
+        
         return false;
     }
     
@@ -193,7 +193,7 @@ public class Meal implements Parcelable {
                     FoodPortion newPortion = new FoodPortion(food, portionSize);
                     foods.set(i, newPortion);
                     updateNutrients();
-
+                    
                     return true;
                 }
             }
@@ -202,7 +202,7 @@ public class Meal implements Parcelable {
         
         foods.add(new FoodPortion(food, portionSize));
         updateNutrients();
-
+        
         return false;
     }
 

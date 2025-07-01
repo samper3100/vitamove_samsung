@@ -336,7 +336,7 @@ public class AnalyticsFragment extends Fragment implements
     private void loadExerciseProgressData() {
         if (trackedExerciseId == null) return;
         
-
+        
         
 
         loadCustomValues();
@@ -346,7 +346,7 @@ public class AnalyticsFragment extends Fragment implements
 
                 List<ExerciseSet> sets = repository.getExerciseSetsHistoryById(trackedExerciseId);
                 
-
+                
                 
 
                 if (sets == null || sets.isEmpty()) {
@@ -428,13 +428,13 @@ public class AnalyticsFragment extends Fragment implements
                     }
                     
                     editor.apply();
-
+                    
                 } else {
 
                     initialExerciseSet = new ExerciseSet();
                     initialExerciseSet.setWeight(customInitialWeight);
                     initialExerciseSet.setReps(customInitialReps);
-
+                    
                 }
                 
 

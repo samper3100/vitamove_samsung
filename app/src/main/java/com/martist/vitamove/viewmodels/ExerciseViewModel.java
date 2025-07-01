@@ -98,7 +98,7 @@ public class ExerciseViewModel extends AndroidViewModel {
             return;
         }
         
-
+        
         
 
         safeSetValue(isLoading, true);
@@ -113,7 +113,7 @@ public class ExerciseViewModel extends AndroidViewModel {
             
 
             if (currentExercise != null && (currentExercise.getSetsCompleted() == null || currentExercise.getSetsCompleted().isEmpty())) {
-
+                
                 currentExercise.getSetsCompleted().clear();
                 currentExercise.getSetsCompleted().addAll(cachedSets);
                 safeSetValue(workoutExercise, currentExercise);
@@ -135,17 +135,17 @@ public class ExerciseViewModel extends AndroidViewModel {
         try {
             executor.execute(() -> {
                 try {
-
+                    
                     List<ExerciseSet> sets = workoutRepository.getExerciseSets(workoutExerciseId);
                     
                     if (sets != null && !sets.isEmpty()) {
-
+                        
                         
 
                         if (exercise != null && exercise.isFunctionalExercise()) {
                             List<ExerciseSet> uniqueSets = removeDuplicateSets(sets);
                             if (uniqueSets.size() < sets.size()) {
-
+                                
                                 sets = uniqueSets;
                             }
                         }
@@ -162,7 +162,7 @@ public class ExerciseViewModel extends AndroidViewModel {
                         }
                         
                     } else {
-
+                        
 
                         String exerciseType = exercise != null ? exercise.getExerciseType() : null;
                         int defaultSetsCount = exercise != null ? exercise.getDefaultSets() : 3;
@@ -241,22 +241,22 @@ public class ExerciseViewModel extends AndroidViewModel {
                         if (lastReps != null && lastReps > 0) {
 
                             set.setReps(lastReps);
-
+                            
                         } else if (defaultReps != null && !defaultReps.isEmpty()) {
 
                             try {
                                 int reps = Integer.parseInt(defaultReps.split("-")[0].trim());
                                 set.setReps(reps);
-
+                                
                             } catch (NumberFormatException e) {
 
                                 set.setReps(12);
-
+                                
                             }
                         } else {
 
                             set.setReps(12);
-
+                            
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "createDefaultSets: Ошибка при установке повторений: " + e.getMessage(), e);
@@ -275,7 +275,7 @@ public class ExerciseViewModel extends AndroidViewModel {
                     if (lastWeight != null && lastWeight > 0) {
 
                         set.setWeight(lastWeight);
-
+                        
                     } else {
 
                         set.setWeight(0.0f);
@@ -295,7 +295,7 @@ public class ExerciseViewModel extends AndroidViewModel {
                 allHaveExerciseId = false;
                 Log.e(TAG, "createDefaultSets: Подход #" + (i+1) + " НЕ имеет exercise_id!");
             } else {
-
+                
             }
         }
         
@@ -309,23 +309,23 @@ public class ExerciseViewModel extends AndroidViewModel {
 
     private List<ExerciseSet> loadSetsFromCache() {
         try {
-
+            
             String key = KEY_EXERCISE_SETS + exerciseId;
             String setsJson = sharedPreferences.getString(key, null);
             
             if (setsJson != null && !setsJson.isEmpty()) {
-
+                
                 Type listType = new TypeToken<List<ExerciseSet>>(){}.getType();
                 List<ExerciseSet> cachedSets = gson.fromJson(setsJson, listType);
                 
                 if (cachedSets != null && !cachedSets.isEmpty()) {
-
+                    
                     return cachedSets;
                 } else {
-
+                    
                 }
             } else {
-
+                
             }
         } catch (Exception e) {
             Log.e(TAG, "ИСТОЧНИК ДАННЫХ: Ошибка при загрузке подходов из КЭША: " + e.getMessage(), e);
@@ -338,7 +338,7 @@ public class ExerciseViewModel extends AndroidViewModel {
         if (sets == null) return;
         
         try {
-
+            
             long startTime = System.currentTimeMillis();
             
             String key = KEY_EXERCISE_SETS + exerciseId;
@@ -349,8 +349,7 @@ public class ExerciseViewModel extends AndroidViewModel {
                 .apply();
                 
             long endTime = System.currentTimeMillis();
-
-
+            
         } catch (Exception e) {
             Log.e(TAG, "ИСТОЧНИК ДАННЫХ: Ошибка при сохранении подходов в КЭШ: " + e.getMessage(), e);
         }
@@ -373,7 +372,7 @@ public class ExerciseViewModel extends AndroidViewModel {
 
         boolean isTempId = setId.startsWith("temp_");
         if (isTempId) {
-
+            
             
 
             List<ExerciseSet> currentSets = exerciseSets.getValue();
@@ -437,7 +436,7 @@ public class ExerciseViewModel extends AndroidViewModel {
                     saveToCache(updatedSets);
                 }
                 
-
+                
             } catch (Exception e) {
                 Log.e(TAG, "updateSet: Ошибка при обновлении подхода: " + e.getMessage(), e);
                 
@@ -477,7 +476,7 @@ public class ExerciseViewModel extends AndroidViewModel {
                     workoutExercise.postValue(updatedExercise);
                 }
                 
-
+                
             } catch (Exception e) {
                 Log.e(TAG, "updateWorkoutExercise: Ошибка при обновлении WorkoutExercise: " + e.getMessage(), e);
             }
@@ -523,7 +522,7 @@ public class ExerciseViewModel extends AndroidViewModel {
 
 
             if (setId != null && setId.startsWith("temp_")) {
-
+                
                 return;
             }
             
@@ -532,7 +531,7 @@ public class ExerciseViewModel extends AndroidViewModel {
             executor.execute(() -> {
                 try {
                     workoutRepository.deleteSet(setId);
-
+                    
                     
 
                     for (int i = finalPosition; i < currentSets.size(); i++) {
@@ -591,13 +590,12 @@ public class ExerciseViewModel extends AndroidViewModel {
             return;
         } 
         
-
+        
         
 
         for (int i = 0; i < defaultSets.size(); i++) {
             ExerciseSet set = defaultSets.get(i);
-
-
+            
         }
         
 
@@ -608,15 +606,15 @@ public class ExerciseViewModel extends AndroidViewModel {
 
             for (ExerciseSet set : defaultSets) {
                 try {
-
-
+                    
+                    
 
                     String setId = workoutRepository.addSet(workoutExerciseId, set);
                     if (setId != null && !setId.isEmpty()) {
 
                         set.setId(setId);
                         savedSetsWithId.add(set);
-
+                        
                     } else {
 
                         allSavedSuccessfully = false;
@@ -643,9 +641,9 @@ public class ExerciseViewModel extends AndroidViewModel {
             }
             
             if (allSavedSuccessfully) {
-
+                 
             } else {
-
+                 
                  
 
                  if (savedSetsWithId.isEmpty()) {
@@ -654,10 +652,9 @@ public class ExerciseViewModel extends AndroidViewModel {
 
                          set.setId("temp_" + UUID.randomUUID().toString());
                          savedSetsWithId.add(set);
-
-
+                         
                      }
-
+                     
                  }
             }
 
@@ -699,13 +696,13 @@ public class ExerciseViewModel extends AndroidViewModel {
         for (ExerciseSet set : updatedSetsList) {
             if (set.getId() != null && set.getId().startsWith("temp_") && !set.isCompleted()) {
                 hasTemporarySet = true;
-
+                
                 break;
             }
         }
         
         if (hasTemporarySet) {
-
+            
 
             safeSetValue(exerciseSets, updatedSetsList);
             return;
@@ -756,7 +753,7 @@ public class ExerciseViewModel extends AndroidViewModel {
                                 updatedSet.setId(setId);
                                 newUpdatedSetsList.add(updatedSet);
                                 foundAndReplaced = true;
-
+                                
                             } else {
                                 newUpdatedSetsList.add(set);
                             }
@@ -769,7 +766,7 @@ public class ExerciseViewModel extends AndroidViewModel {
                             for (ExerciseSet existingSet : newUpdatedSetsList) {
                                 if (existingSet.getSetNumber() == newSet.getSetNumber()) {
                                     alreadyHasSetWithSameNumber = true;
-
+                                    
                                     break;
                                 }
                             }
@@ -777,9 +774,9 @@ public class ExerciseViewModel extends AndroidViewModel {
 
                             if (!alreadyHasSetWithSameNumber) {
                                 newUpdatedSetsList.add(newSet);
-
+                                
                             } else {
-
+                                
                             }
                         }
                         
@@ -801,7 +798,7 @@ public class ExerciseViewModel extends AndroidViewModel {
                         saveToCache(newUpdatedSetsList);
                     }
                     
-
+                    
                 } else {
                     Log.e(TAG, "addNewSet: Не удалось сохранить подход в БД, получен null или пустой ID");
                     errorMessage.postValue("Ошибка: не удалось сохранить новый подход");
@@ -835,8 +832,7 @@ public class ExerciseViewModel extends AndroidViewModel {
         String ratedExerciseKey = "rated_exercise_" + workoutExerciseId;
         boolean isRated = sharedPreferences.getBoolean(ratedExerciseKey, false);
         
-
-
+        
               
         return isRated;
     }
@@ -873,7 +869,7 @@ public class ExerciseViewModel extends AndroidViewModel {
             return;
         }
         
-
+        
         safeSetValue(exerciseSets, new ArrayList<>(sets));
         
 
@@ -921,7 +917,7 @@ public class ExerciseViewModel extends AndroidViewModel {
 
                 for (ExerciseSet set : sortedSets) {
                     if (exerciseId.equals(set.getExerciseId()) && set.getWeight() != null && set.getWeight() > 0) {
-
+                        
                         return set.getWeight();
                     }
                 }
@@ -930,10 +926,10 @@ public class ExerciseViewModel extends AndroidViewModel {
 
             Float lastWeight = workoutRepository.getLastWeightForExercise(exerciseId);
             if (lastWeight != null) {
-
+                
                 return lastWeight;
             } else {
-
+                
                 return null;
             }
         } catch (Exception e) {
@@ -964,7 +960,7 @@ public class ExerciseViewModel extends AndroidViewModel {
 
                 for (ExerciseSet set : sortedSets) {
                     if (exerciseId.equals(set.getExerciseId()) && set.getReps() != null && set.getReps() > 0) {
-
+                        
                         return set.getReps();
                     }
                 }
@@ -973,10 +969,10 @@ public class ExerciseViewModel extends AndroidViewModel {
 
             Integer lastReps = workoutRepository.getLastRepsForExercise(exerciseId);
             if (lastReps != null) {
-
+                
                 return lastReps;
             } else {
-
+                
                 return null;
             }
         } catch (Exception e) {

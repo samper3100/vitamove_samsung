@@ -87,7 +87,7 @@ public class WorkoutSettingsFragment extends Fragment {
         autoNextExercise = settingsManager.isAutoNextExerciseEnabled();
         restTimerEnabled = settingsManager.isRestTimerEnabled();
         
-
+        
     }
     
     
@@ -171,8 +171,7 @@ public class WorkoutSettingsFragment extends Fragment {
         settingsManager.setAutoNextExerciseEnabled(autoNextExercise);
         settingsManager.setRestTimerEnabled(restTimerEnabled);
         
-
-
+        
     }
     
     

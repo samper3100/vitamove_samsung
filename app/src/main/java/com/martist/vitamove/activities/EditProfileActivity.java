@@ -211,7 +211,7 @@ public class EditProfileActivity extends BaseActivity {
         if (currentWeight != oldWeight && currentWeight > 0) {
             
             userWeightViewModel.addWeightRecord(currentWeight, new Date(), null);
-
+            
         }
         
         
@@ -234,8 +234,7 @@ public class EditProfileActivity extends BaseActivity {
                                 .getString("user_fitness_level", "intermediate"));
         
         
-
-
+        
         
         
         if (userId != null) {
@@ -289,7 +288,7 @@ public class EditProfileActivity extends BaseActivity {
                 }
             }).start();
         } else {
-
+            
             Toast.makeText(this, "Профиль обновлен", Toast.LENGTH_SHORT).show();
             setResult(RESULT_OK);
             finish();

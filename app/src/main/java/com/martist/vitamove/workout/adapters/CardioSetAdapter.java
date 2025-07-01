@@ -117,7 +117,7 @@ public class CardioSetAdapter extends RecyclerView.Adapter<CardioSetAdapter.SetV
                     RecyclerView parent = getRecyclerView();
                     if (parent == null || parent.isComputingLayout()) {
                         
-
+                        
                         parent.post(() -> safeUpdateList(setsCopy));
                     } else {
                         
@@ -206,7 +206,7 @@ public class CardioSetAdapter extends RecyclerView.Adapter<CardioSetAdapter.SetV
             
             diffResult.dispatchUpdatesTo(this);
             
-
+            
         } catch (Exception e) {
             Log.e(TAG, "safeUpdateList: ошибка при безопасном обновлении списка: " + e.getMessage(), e);
             
@@ -416,7 +416,7 @@ public class CardioSetAdapter extends RecyclerView.Adapter<CardioSetAdapter.SetV
                     }
                     
                     if (hasTemporarySet) {
-
+                        
                         return;
                     }
                     

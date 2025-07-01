@@ -58,7 +58,7 @@ public class SettingsActivity extends BaseActivity {
     
 
     private void logout() {
-
+        
         
 
         androidx.appcompat.app.AlertDialog loadingDialog = new androidx.appcompat.app.AlertDialog.Builder(this)
@@ -83,7 +83,7 @@ public class SettingsActivity extends BaseActivity {
         SettingsFragment fragment = (SettingsFragment) getSupportFragmentManager().findFragmentById(R.id.settings_container);
         if (fragment != null) {
             fragment.unregisterListener();
-
+            
         }
 
 
@@ -97,7 +97,7 @@ public class SettingsActivity extends BaseActivity {
                 try {
                     WorkoutRepository workoutRepository = new SupabaseWorkoutRepository(SupabaseClient.getInstance(SupabaseClient.SUPABASE_URL, Constants.SUPABASE_CLIENT_SECRET));
                     workoutRepository.deleteUnfinishedWorkouts(userId);
-
+                    
                 } catch (Exception e) {
                     Log.e("SettingsActivity", "Ошибка при удалении незавершенных тренировок: " + e.getMessage(), e);
 
@@ -136,7 +136,7 @@ public class SettingsActivity extends BaseActivity {
         try {
 
             clearApplicationData();
-
+            
         } catch (Exception e) {
             Log.e("SettingsActivity", "Ошибка при очистке кэша приложения: " + e.getMessage(), e);
         }
@@ -145,7 +145,7 @@ public class SettingsActivity extends BaseActivity {
         updateLoadingMessage(finalMessageTextView, "Финальная очистка данных...");
         try {
             clearApplicationDataViaContentProvider();
-
+            
         } catch (Exception e) {
             Log.e("SettingsActivity", "Ошибка при очистке через ContentProvider: " + e.getMessage(), e);
         }
@@ -153,7 +153,7 @@ public class SettingsActivity extends BaseActivity {
 
         updateLoadingMessage(finalMessageTextView, "Выход завершен. Возврат на экран входа...");
         Toast.makeText(this, "Вы вышли из аккаунта", Toast.LENGTH_SHORT).show();
-
+        
 
 
         try {
@@ -202,7 +202,7 @@ public class SettingsActivity extends BaseActivity {
                 "food_meal_history"
             };
             
-
+            
             
 
             for (String prefName : prefsFiles) {
@@ -211,7 +211,7 @@ public class SettingsActivity extends BaseActivity {
                 editor.clear();
                 try {
                     editor.commit();
-
+                    
                 } catch (Exception e) {
                     Log.e("SettingsActivity", "Ошибка при очистке настроек " + prefName + ": " + e.getMessage(), e);
 
@@ -235,7 +235,7 @@ public class SettingsActivity extends BaseActivity {
                             if (filename.endsWith(".xml")) {
 
                                 if (file.delete()) {
-
+                                    
                                 }
                             }
                         } catch (Exception e) {
@@ -269,7 +269,7 @@ public class SettingsActivity extends BaseActivity {
             SharedPreferences.Editor editor = defaultPrefs.edit();
             editor.clear();
             editor.commit();
-
+            
         } catch (Exception e) {
             Log.e("SettingsActivity", "Ошибка при безопасной очистке стандартных настроек: " + e.getMessage(), e);
         }
@@ -277,12 +277,12 @@ public class SettingsActivity extends BaseActivity {
     
 
     private void resetManagers() {
-
+        
 
 
         try {
             com.martist.vitamove.db.AppDatabase.resetInstance();
-
+            
         } catch (Exception e) {
             Log.e("SettingsActivity", "Ошибка при сбросе AppDatabase: " + e.getMessage(), e);
         }
@@ -290,7 +290,7 @@ public class SettingsActivity extends BaseActivity {
 
         try {
             com.martist.vitamove.managers.FoodManager.resetInstance();
-
+            
         } catch (Exception e) {
             Log.e("SettingsActivity", "Ошибка при сбросе FoodManager: " + e.getMessage(), e);
         }
@@ -298,7 +298,7 @@ public class SettingsActivity extends BaseActivity {
 
         try {
             com.martist.vitamove.managers.CaloriesManager.resetInstance();
-
+            
         } catch (Exception e) {
             Log.e("SettingsActivity", "Ошибка при сбросе CaloriesManager: " + e.getMessage(), e);
         }
@@ -306,7 +306,7 @@ public class SettingsActivity extends BaseActivity {
 
         try {
             com.martist.vitamove.managers.FoodManager.resetInstance();
-
+            
         } catch (Exception e) {
             Log.e("SettingsActivity", "Ошибка при повторном сбросе FoodManager: " + e.getMessage(), e);
         }
@@ -314,7 +314,7 @@ public class SettingsActivity extends BaseActivity {
 
         try {
             com.martist.vitamove.managers.DashboardManager.resetInstance();
-
+            
         } catch (Exception e) {
             Log.e("SettingsActivity", "Ошибка при сбросе DashboardManager: " + e.getMessage(), e);
         }
@@ -322,7 +322,7 @@ public class SettingsActivity extends BaseActivity {
 
         try {
             com.martist.vitamove.managers.WaterHistoryManager.resetInstance();
-
+            
         } catch (Exception e) {
             Log.e("SettingsActivity", "Ошибка при сбросе WaterHistoryManager: " + e.getMessage(), e);
         }
@@ -330,7 +330,7 @@ public class SettingsActivity extends BaseActivity {
 
         try {
             resetMealsDatabase();
-
+            
         } catch (Exception e) {
             Log.e("SettingsActivity", "Ошибка при сбросе MealsDatabase: " + e.getMessage(), e);
         }
@@ -339,7 +339,7 @@ public class SettingsActivity extends BaseActivity {
         try {
 
             Runtime.getRuntime().gc();
-
+            
             
 
             System.runFinalization();
@@ -347,7 +347,7 @@ public class SettingsActivity extends BaseActivity {
             Log.e("SettingsActivity", "Ошибка при очистке кэшей: " + e.getMessage(), e);
         }
         
-
+        
     }
     
 
@@ -362,17 +362,17 @@ public class SettingsActivity extends BaseActivity {
             
 
             instanceField.set(null, null);
-
+            
             
 
             try {
                 java.lang.reflect.Method resetMethod = mealsDatabaseClass.getDeclaredMethod("resetInstance");
                 resetMethod.setAccessible(true);
                 resetMethod.invoke(null);
-
+                
             } catch (NoSuchMethodException e) {
 
-
+                
             }
         } catch (Exception e) {
             Log.e("SettingsActivity", "Ошибка при сбросе MealsDatabase: " + e.getMessage(), e);
@@ -383,18 +383,18 @@ public class SettingsActivity extends BaseActivity {
 
     private void clearRoomDatabases(String userId) {
         if (userId == null || userId.isEmpty()) {
-
+            
             return;
         }
         
         try {
 
             com.martist.vitamove.viewmodels.HistoryViewModel.clearCache(getApplication(), userId);
-
+            
             
 
             try {
-
+                
                 
 
                 try {
@@ -405,7 +405,7 @@ public class SettingsActivity extends BaseActivity {
 
                     com.martist.vitamove.database.MealsDatabase.resetInstance();
                     
-
+                    
                 } catch (Exception e) {
                     Log.e("SettingsActivity", "Ошибка при очистке meals через DAO: " + e.getMessage(), e);
                 }
@@ -421,7 +421,7 @@ public class SettingsActivity extends BaseActivity {
                     
 
                     mealsDb.execSQL("VACUUM");
-
+                    
                 } catch (Exception e) {
                     Log.e("SettingsActivity", "Ошибка при очистке таблицы meals: " + e.getMessage(), e);
                 } finally {
@@ -436,13 +436,13 @@ public class SettingsActivity extends BaseActivity {
                 if (mealsDbFile.exists()) {
                     boolean deleted = mealsDbFile.delete();
                     if (deleted) {
-
+                        
                     } else {
                         Log.e("SettingsActivity", "Не удалось удалить файл meals_database");
                         
 
                         boolean deletedAlt = getApplicationContext().deleteDatabase("meals_database");
-
+                        
                     }
                 }
                 
@@ -462,7 +462,7 @@ public class SettingsActivity extends BaseActivity {
                     mealsDbWal.delete();
                 }
                 
-
+                
             } catch (Exception e) {
                 Log.e("SettingsActivity", "Ошибка при принудительной очистке meals_database: " + e.getMessage(), e);
             }
@@ -479,7 +479,7 @@ public class SettingsActivity extends BaseActivity {
             
             for (String dbName : databases) {
                 try {
-
+                    
                     android.database.sqlite.SQLiteDatabase db = getApplication().openOrCreateDatabase(dbName, MODE_PRIVATE, null);
                     
 
@@ -492,7 +492,7 @@ public class SettingsActivity extends BaseActivity {
                         String tableName = cursor.getString(0);
                         try {
                             db.execSQL("DELETE FROM " + tableName);
-
+                            
                         } catch (Exception e) {
                             Log.e("SettingsActivity", "Ошибка при очистке таблицы " + tableName + ": " + e.getMessage());
                         }
@@ -508,7 +508,7 @@ public class SettingsActivity extends BaseActivity {
                     }
                     
                     db.close();
-
+                    
                 } catch (Exception e) {
                     Log.e("SettingsActivity", "Ошибка при работе с базой данных " + dbName + ": " + e.getMessage(), e);
                 }
@@ -527,14 +527,14 @@ public class SettingsActivity extends BaseActivity {
 
                     boolean deleted = getApplication().getDatabasePath(dbName).delete();
                     if (deleted) {
-
+                        
                     } else {
-
+                        
                         
 
                         boolean deletedAlt = getApplicationContext().deleteDatabase(dbName);
                         if (deletedAlt) {
-
+                            
                         }
                     }
                     
@@ -566,7 +566,7 @@ public class SettingsActivity extends BaseActivity {
                                  fileName.contains(".sqlite"))) {
                                 try {
                                     boolean success = file.delete();
-
+                                    
                                 } catch (Exception e) {
                                     Log.e("SettingsActivity", "Ошибка при удалении файла " + fileName + ": " + e.getMessage());
                                 }
@@ -578,7 +578,7 @@ public class SettingsActivity extends BaseActivity {
                 Log.e("SettingsActivity", "Ошибка при очистке директории баз данных: " + e.getMessage());
             }
             
-
+            
             
         } catch (Exception e) {
             Log.e("SettingsActivity", "Ошибка при очистке баз данных Room: " + e.getMessage(), e);
@@ -592,7 +592,7 @@ public class SettingsActivity extends BaseActivity {
             SharedPreferences.Editor editor = prefs.edit();
             editor.clear();
             editor.commit();
-
+            
         } catch (Exception e) {
             Log.e("SettingsActivity", "Ошибка при очистке SharedPreferences " + prefsName + ": " + e.getMessage(), e);
         }
@@ -612,7 +612,7 @@ public class SettingsActivity extends BaseActivity {
             supabaseClient.setUserToken(null);
             supabaseClient.setRefreshToken(null);
             
-
+            
         } catch (Exception e) {
             Log.e("SettingsActivity", "Ошибка при сбросе токенов SupabaseClient: " + e.getMessage(), e);
         }
@@ -630,7 +630,7 @@ public class SettingsActivity extends BaseActivity {
                 deleteDir(getExternalCacheDir());
             }
             
-
+            
         } catch (Exception e) {
             Log.e("SettingsActivity", "Ошибка при очистке кэша: " + e.getMessage(), e);
         }
@@ -659,12 +659,12 @@ public class SettingsActivity extends BaseActivity {
 
     private void removeMealsDatabaseSaveTags() {
         try {
-
+            
             
 
             File roomSharedPrefs = new File(getApplicationInfo().dataDir + "/shared_prefs/androidx.room.RoomSharedPreferences.xml");
             if (roomSharedPrefs.exists() && roomSharedPrefs.delete()) {
-
+                
             }
             
 
@@ -675,14 +675,14 @@ public class SettingsActivity extends BaseActivity {
             if (cacheFiles != null) {
                 for (File file : cacheFiles) {
                     if (file.delete()) {
-
+                        
                     }
                 }
             }
             
         
             
-
+            
         } catch (Exception e) {
             Log.e("SettingsActivity", "Ошибка при удалении тегов сохранения: " + e.getMessage(), e);
         }
@@ -700,7 +700,7 @@ public class SettingsActivity extends BaseActivity {
 
     private void updateLoadingMessage(final TextView messageTextView, final String message) {
         if (messageTextView == null) {
-
+            
             return;
         }
         
@@ -709,7 +709,7 @@ public class SettingsActivity extends BaseActivity {
             runOnUiThread(() -> {
                 try {
                     messageTextView.setText(message);
-
+                    
                 } catch (Exception e) {
                     Log.e("SettingsActivity", "Ошибка при обновлении сообщения в диалоге: " + e.getMessage(), e);
                 }

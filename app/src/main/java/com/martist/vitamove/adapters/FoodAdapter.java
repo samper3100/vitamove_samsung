@@ -31,10 +31,10 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.ViewHolder> {
     }
 
     public void updateFoods(List<Food> newFoods) {
-
+        
         if (newFoods != null) {
             for (Food food : newFoods) {
-
+                
             }
         }
         this.foods = newFoods;

@@ -149,7 +149,7 @@ public class WeightHistoryActivity extends BaseActivity {
                     if ("initial_weight".equals(key)) {
                         float newInitialWeight = sharedPreferences.getFloat(key, 0f);
                         initialWeightLiveData.postValue(newInitialWeight);
-
+                        
                     }
                 }
             };
@@ -210,10 +210,9 @@ public class WeightHistoryActivity extends BaseActivity {
                 weightLostView.setTextColor(ContextCompat.getColor(this, R.color.green_500));
             }
             
-
-
+            
         } else {
-
+            
         }
     }
     
@@ -269,7 +268,7 @@ public class WeightHistoryActivity extends BaseActivity {
                         String payload = new String(android.util.Base64.decode(jwtParts[1], android.util.Base64.DEFAULT));
                         JSONObject jwtJson = new JSONObject(payload);
                         userId = jwtJson.getString("sub");
-
+                        
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Ошибка при извлечении userId из токена: " + e.getMessage());
@@ -277,7 +276,7 @@ public class WeightHistoryActivity extends BaseActivity {
             }
         }
         
-
+        
     }
     
     
@@ -392,7 +391,7 @@ public class WeightHistoryActivity extends BaseActivity {
         DashboardManager dashboardManager = DashboardManager.getInstance(this);
         dashboardManager.updateCaloriesGoalFromProfile();
         
-
+        
     }
     
     
@@ -421,7 +420,7 @@ public class WeightHistoryActivity extends BaseActivity {
                         weight, targetWeight, fitnessLevel, isMetric);
                 
                 if (success) {
-
+                    
                 } else {
                     Log.e(TAG, "Не удалось обновить профиль в Supabase");
                 }
@@ -483,7 +482,7 @@ public class WeightHistoryActivity extends BaseActivity {
             
             if (currentWeightFromPrefs > 0) {
                 currentWeightView.setText(String.format(Locale.getDefault(), "%.1f кг", currentWeightFromPrefs));
-
+                
             } else {
                 currentWeightView.setText("--");
             }
@@ -512,8 +511,7 @@ public class WeightHistoryActivity extends BaseActivity {
         
         boolean usePrefsWeight = false;
         if (currentWeightFromPrefs > 0 && Math.abs(currentWeightFromPrefs - currentWeightFromDb) > 5) {
-
-
+            
             
             usePrefsWeight = true;
         }
@@ -540,7 +538,7 @@ public class WeightHistoryActivity extends BaseActivity {
             editor.putFloat("current_weight", currentWeight);
             editor.apply();
             
-
+            
         }
         
         
@@ -699,9 +697,7 @@ public class WeightHistoryActivity extends BaseActivity {
                         if (record.getNotes() != null && 
                             record.getNotes().equals(uniqueRecords.get(key).getNotes())) {
                             duplicatesToRemove.add(record);
-
-
-
+                            
                         }
                     } else {
                         
@@ -718,14 +714,13 @@ public class WeightHistoryActivity extends BaseActivity {
                     
                     for (int i = 1; i < correctionRecords.size(); i++) {
                         duplicatesToRemove.add(correctionRecords.get(i));
-
-
+                        
                     }
                 }
                 
                 
                 if (!duplicatesToRemove.isEmpty()) {
-
+                    
                     
                     for (UserWeightEntity duplicate : duplicatesToRemove) {
                         weightViewModel.deleteWeightRecord(duplicate);

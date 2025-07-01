@@ -64,12 +64,12 @@ public class StepHistoryRepository {
 
                     entity = new StepHistoryEntity(today, validatedStepCount);
                     stepHistoryDao.insert(entity);
-
+                    
                 } else {
 
                     entity.setStepCount(validatedStepCount);
                     stepHistoryDao.update(entity);
-
+                    
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при сохранении истории шагов: " + e.getMessage(), e);
@@ -106,7 +106,7 @@ public class StepHistoryRepository {
             String startDate = formatDate(startOfWeek.getTime());
             String endDate = formatDate(endOfWeek.getTime());
 
-
+            
 
 
             Future<List<StepHistoryEntity>> future = executor.submit(() ->
@@ -149,10 +149,10 @@ public class StepHistoryRepository {
 
             if (todayIndex >= 0 && todayIndex < 7 && weeklySteps.get(todayIndex) < currentSteps) {
                 weeklySteps.set(todayIndex, currentSteps);
-
+                
             }
 
-
+            
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при получении истории шагов за неделю: " + e.getMessage(), e);
         }
@@ -192,7 +192,7 @@ public class StepHistoryRepository {
             String startDate = formatDate(startOfMonth.getTime());
             String endDate = formatDate(endOfMonth.getTime());
             
-
+            
             
 
             Future<List<StepHistoryEntity>> future = executor.submit(() -> 
@@ -224,7 +224,7 @@ public class StepHistoryRepository {
 
                 monthlySteps.set(dayOfMonth - 1, stepCount);
                 
-
+                
             }
             
 
@@ -241,11 +241,11 @@ public class StepHistoryRepository {
                     
 
                     monthlySteps.set(currentDay - 1, currentSteps);
-
+                    
                 }
             }
             
-
+            
             return monthlySteps;
         } catch (Exception e) {
             Log.e(TAG, "Ошибка при получении истории шагов за месяц: " + e.getMessage(), e);
@@ -264,7 +264,7 @@ public class StepHistoryRepository {
                 
 
                 stepHistoryDao.deleteHistoryOlderThan(thirtyDaysAgo);
-
+                
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при удалении старой истории шагов: " + e.getMessage(), e);
             }
@@ -292,16 +292,16 @@ public class StepHistoryRepository {
 
                     entity = new StepHistoryEntity(date, validatedStepCount);
                     stepHistoryDao.insert(entity);
-
+                    
                 } else {
 
                     if (entity.getStepCount() < validatedStepCount) {
 
                         entity.setStepCount(validatedStepCount);
                         stepHistoryDao.update(entity);
-
+                        
                     } else {
-
+                        
                     }
                 }
             } catch (Exception e) {
